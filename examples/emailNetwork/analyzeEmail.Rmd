@@ -2,7 +2,7 @@
 title: "Analyzing euEmail with Latent Channel Networks"
 author: "Clifford Anderson-Bergman"
 date: "5/10/2019"
-output: md_document
+output: html_document
 ---
 
 

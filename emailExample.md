@@ -86,4 +86,4 @@ probabilities, sorted by department.
                ylab = "Channel", 
                main = "Channel Strengths by Department")
 
-![](analyzeEmail_files/figure-markdown_strict/unnamed-chunk-4-1.png)
+![](emailExample_files/figure-markdown_strict/unnamed-chunk-4-1.png)
