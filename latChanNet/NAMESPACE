@@ -1,4 +1,0 @@
-useDynLib(latChanNet, .registration=TRUE)
-exportPattern("^[[:alpha:]]+")
-importFrom(Rcpp, evalCpp)
-import(Rcpp)
