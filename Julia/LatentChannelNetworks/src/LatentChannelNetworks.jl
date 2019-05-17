@@ -9,5 +9,7 @@ include("UserUtils.jl")
 export simSBM, augSBM
 export makeLatChan, probEdge, hubSizes, computeTheta
 export em_cached!, computeLLK
+export heatMap
+export dropLoops
 
 end # module

@@ -67,8 +67,7 @@ minGrpSize = 15
 
 heatmapLCN(mod, labels, minGrpSize = minGrpSize, 
            xlab = "Department Number", 
-           ylab = "Channel", 
-           main = "Channel Strengths by Department")
+           ylab = "Channel")
 
 ```
 

@@ -9,7 +9,7 @@ function hubDivergenceByLabel(this_label, label_vec,
     p_isLabel = copy(lcn.pmat[is_label,:])
     p_isNotLabel = copy(lcn.pmat[is_not_label,:])
 
-    K = eh.dim
+    K = lcn.dim
     ans = zeros(K)
     for k in 1:K
         phat_label = sum( p_isLabel[:,k] ) / length(p_isLabel)
@@ -23,11 +23,29 @@ end
 function heatMap(lcn::LatentChannelNetwork,
                  label::Vector,
                  colorGradient = :pu_or,
+                 minGrp = 15,
                  divideColor = "red",
                  divideWidth = 0.5,
                  sortByHubprob = true,
                  drawDivide = true)
     new_order = sortperm(label)
+    sorted_label = sort(label)
+
+    # Deriving vectors for tick markers
+    tick_name = []
+    tick_location = []
+    old_point = 0.0
+    for i in 1:(length(sorted_label) - 1)
+        if sorted_label[i] != sorted_label[i+1]
+            push!(tick_name, sorted_label[i])
+            push!(tick_location, (old_point + i) / 2.0)
+            old_point = i + 1
+        end
+    end
+    n = length(sorted_label)
+    push!(tick_name, sorted_label[n])
+    push!(tick_location, (old_point + n) / 2.0)
+
     p_mat = copy(lcn.pmat[new_order,:])
     if sortByHubprob
         max_label = 1
@@ -36,7 +54,11 @@ function heatMap(lcn::LatentChannelNetwork,
         p_mat = p_mat[:,new_hub_order]
     end
     p_mat = transpose(p_mat)
-    ans = heatmap(p_mat, c = colorGradient)
+    K = lcn.dim
+    ans = heatmap(p_mat, c = colorGradient,
+                  xticks = (tick_location, tick_name),
+                  xrotation = 270,
+                  yticks = collect(1:K))
     if drawDivide
         max_h = size(p_mat)[1]
         slab = sort(label)
@@ -49,22 +71,6 @@ function heatMap(lcn::LatentChannelNetwork,
             end
         end
     end
-    return(ans)
-end
-
-
-function relabelBySize(x::Vector)::Vector
-    x_rank = denserank(x)
-    cnt_map = countmap(x_rank)
-    cnts = values(cnt_map)
-    cnt_array = Matrix{Int64}(undef, length(cnts), 2)
-    for (k,v) in cnt_map
-        cnt_array[k,1] = k
-        cnt_array[k,2] = v
-    end
-    vs = cnt_array[:,2]
-    rnk = ordinalrank(vs, rev = true)
-    ans = rnk[x_rank]
     return(ans)
 end
 
@@ -89,7 +95,7 @@ function computeTheta(i::Int64,
                       j::Int64,
                       lcn::LatentChannelNetwork)::Vector{Float64}
     margEdgeProb = probEdge(i, j, lcn)
-    K = eh.dim
+    K = lcn.dim
     ans = zeros(K)
     for k in 1:K
         ans[k] = lcn.pmat[i,k] * lcn.pmat[j,k] / margEdgeProb
