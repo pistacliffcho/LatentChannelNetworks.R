@@ -64,7 +64,8 @@ end
 
 function em_cached!(lcn::LatentChannelNetwork,
                     iters::Int64 = 10000,
-                    tol::Float64 = 0.0001)::Dict
+                    tol::Float64 = 0.0001,
+                    warn::Bool = true)::Dict
     m_p_diff = tol + 1
     for i in 1:iters
         p_old = copy(lcn.pmat)
@@ -76,7 +77,42 @@ function em_cached!(lcn::LatentChannelNetwork,
             return(ans)
         end
     end
-    println("Warning: maximum iterations reached")
+    if warn
+        println("Warning: maximum iterations reached")
+    end
     ans = Dict("its" => iters, "p_diff" => m_p_diff)
     return(ans)
+end
+
+
+# Run EM from several starting points, chose best
+function multi_em!(lcn::LatentChannelNetwork,
+                   nStarts::Int64 = 10,
+                   start_iters = 500,
+                   finish_iters = 10000,
+                   verbose = true)::Dict
+    pmat_dim = size(lcn.pmat)
+    max_llk = -Inf
+    pmat_max = copy(lcn.pmat)
+    for i in 1:nStarts
+        rand_mat = rand(pmat_dim[1], pmat_dim[2])
+        lcn.pmat = rand_mat
+        initialize_cache!(lcn, false)
+        res = em_cached!(lcn, start_iters, 0.00001, false)
+        this_llk = computeLLK(lcn)
+        if verbose
+            println("This log likelihood = ", this_llk)
+        end
+        if (this_llk > max_llk)
+            max_llk = this_llk
+            pmat_max = copy(lcn.pmat)
+        end
+    end
+    lcn.pmat = pmat_max
+    initialize_cache!(lcn, false)
+    res = em_cached!(lcn, finish_iters)
+    if verbose
+        println("Final LLK = ", computeLLK(lcn))
+    end
+    return(res)
 end

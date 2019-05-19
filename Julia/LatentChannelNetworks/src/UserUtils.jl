@@ -21,13 +21,13 @@ end
 
 # Makes a heatmap by label
 function heatMap(lcn::LatentChannelNetwork,
-                 label::Vector,
+                 label::Vector;
                  colorGradient = :pu_or,
-                 minGrp = 15,
                  divideColor = "red",
                  divideWidth = 0.5,
                  sortByHubprob = true,
-                 drawDivide = true)
+                 drawDivide = true,
+                 plot_size = (650, 450))
     new_order = sortperm(label)
     sorted_label = sort(label)
 
@@ -58,7 +58,8 @@ function heatMap(lcn::LatentChannelNetwork,
     ans = heatmap(p_mat, c = colorGradient,
                   xticks = (tick_location, tick_name),
                   xrotation = 270,
-                  yticks = collect(1:K))
+                  yticks = collect(1:K),
+                  size = plot_size)
     if drawDivide
         max_h = size(p_mat)[1]
         slab = sort(label)

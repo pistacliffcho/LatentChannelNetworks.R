@@ -112,6 +112,11 @@ function initialize_cache!(lcn::LatentChannelNetwork,
 
     nNodes = lcn.nNodes
     cache = Vector{Vector{Float64}}(undef, nNodes)
+
+    for k in 1:lcn.dim
+        lcn.pbar[k] = mean(lcn.pmat[:,k])
+    end
+
     for i in 1:nNodes
         these_edges = lcn.edgeList[i]
         these_probs = zeros(length(these_edges))

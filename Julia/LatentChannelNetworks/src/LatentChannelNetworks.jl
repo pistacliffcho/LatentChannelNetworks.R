@@ -10,6 +10,7 @@ export simSBM, augSBM
 export makeLatChan, probEdge, hubSizes, computeTheta
 export em_cached!, computeLLK
 export heatMap
-export dropLoops
+export dropLoops, LatentChannelNetwork
+export multi_em!
 
 end # module
