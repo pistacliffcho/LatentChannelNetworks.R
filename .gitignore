@@ -4,3 +4,5 @@
 .Ruserdata
 paper/plots/analyzeBerkFB.jl
 paper/plots/paper_sbmExample.jl
+.DS_Store
+

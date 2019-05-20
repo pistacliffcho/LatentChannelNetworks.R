@@ -1,1 +1,3 @@
 # LatentChannelNetworks
+
+Work in progress!
