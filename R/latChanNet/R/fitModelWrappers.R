@@ -79,9 +79,7 @@ makeLCN = function(edgeList, nDims = 5){
 #' @export
 emLCN = function(LCN_mod, iters = 1000, 
                  tol = 10^-4, 
-                 pTol = 10^-8, 
-                 return_pmat = F){
+                 pTol = 10^-8){
   ans = LCN_mod$cache_em(iters, tol, pTol)
-  if(!return_pmat){ ans$pmat = NULL }
   return(ans)
 }

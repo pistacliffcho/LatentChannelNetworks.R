@@ -100,19 +100,8 @@ function makeTransposeMap(edgeList::Vector{Vector{Int64}})::Vector{Vector{Int64}
 end
 
 # Initialize edgelist probability cache
-function initialize_cache!(lcn::LatentChannelNetwork,
-                           makeInverseMap::Bool = true)
-    if makeInverseMap
-        lcn.cache_map = makeTransposeMap(lcn.edgeList)
-    end
-
-    if (length(lcn.cache_map) == 0)
-        error("map not initialized, set makeInverseMap == true")
-    end
-
+function initialize_cache!(lcn::LatentChannelNetwork)
     nNodes = lcn.nNodes
-    cache = Vector{Vector{Float64}}(undef, nNodes)
-
     for k in 1:lcn.dim
         lcn.pbar[k] = mean(lcn.pmat[:,k])
     end
@@ -124,9 +113,8 @@ function initialize_cache!(lcn::LatentChannelNetwork,
             j_ind = these_edges[j]
             these_probs[j] = probEdge(i,j_ind, lcn)
         end
-        cache[i] = these_probs
+        lcn.cache_probs[i] = these_probs
     end
-    lcn.cache_probs = cache
 end
 
 # Find mapping
@@ -177,12 +165,13 @@ function makeLatChan(edgeList::Array{Int64, 2},
     probs = rand(nNodes, dims)
     prob_means = vec( mean(probs, dims = 1) )
     empty_cache_probs = Vector{Vector{Float64}}(undef, 0)
-    empty_map = Vector{Matrix{Int64}}(undef, 0)
+    cache_map = makeTransposeMap(preppedEdgeList)
+    cache_prob = Vector{Vector{Float64}}(undef, nNodes)
     # Making Latent Hub Modeler
     ans = LatentChannelNetwork(nNodes, dims,
                                preppedEdgeList,
                                probs, prob_means,
-                               empty_cache_probs, empty_map)
+                               cache_prob, cache_map)
 
     initialize_cache!(ans)
 

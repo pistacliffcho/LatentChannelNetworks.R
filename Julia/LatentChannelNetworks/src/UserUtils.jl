@@ -65,7 +65,8 @@ function heatMap(lcn::LatentChannelNetwork,
         slab = sort(label)
         for i in 1:(length(slab) - 1)
             if (slab[i] != slab[i+1])
-                plot!([i,i], [0.5, max_h + 0.5],
+                x_loc = i - 0.5
+                plot!([x_loc, x_loc], [0.5, max_h + 0.5],
                       color = divideColor,
                       linewidth = divideWidth,
                       leg = false)

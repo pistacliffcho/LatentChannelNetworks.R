@@ -17,6 +17,8 @@ public:
   vec<vec<double>> cache_probs;
   vec<vec<double*>> cache_map;
   
+  double err;
+  
   void ingestEdges(List lst);
   void initializeCache();
   double edgeProb(int i, int j);
@@ -27,6 +29,9 @@ public:
   LCN(List edgeList, NumericMatrix input_pmat);
   NumericMatrix get_pmat();
 };
+
+double my_abs(double);
+double max(double, double);
 
 double LCN::llk(){
   double ans = 0.0;
@@ -143,38 +148,41 @@ void LCN::one_update(int i, int k, double pTol){
   if( (pik < pTol) || (1.0 - pik < pTol) ){
     return;
   }
-  vec<int>* theseEdges = &edgeList[i];
-  int this_J_tot = theseEdges->size();
+  int this_J_tot = edgeList[i].size(); 
   if(this_J_tot == 0){
     pmat(i,k) = 0.0;
     return;
   }
-  vec<double>* theseEdgePs = &cache_probs[i];
   double edgeContribution = 0.0;
-  double noEdgeContribution = nNodes * pik * (1.0 - pbar[k]) - pik * (1.0 - pik);
+  double noEdgeContribution = nNodes * pik * 
+    (1.0 - pbar[k]) - pik * (1.0 - pik);
   int j;
   double pjk, this_edgeP, pikpjk;
+  int* jPtr = &edgeList[i][0];
+  double* epPtr = &cache_probs[i][0];
   for(int j_cnt = 0; j_cnt < this_J_tot; j_cnt++){
-    j = (*theseEdges)[j_cnt];
+    j = jPtr[j_cnt];
     pjk = pmat(j,k);
     pikpjk = pik * pjk;
-    noEdgeContribution -= pik - pikpjk; 
-    this_edgeP = (*theseEdgePs)[j_cnt];
+    noEdgeContribution += pikpjk;
+    this_edgeP = epPtr[j_cnt];
     edgeContribution +=  (pikpjk + (pik - pikpjk) * 
       ( 1.0 - (1.0 - this_edgeP) / (1.0 - pikpjk))  )/this_edgeP;
   }
+  noEdgeContribution -= double(this_J_tot) * pik;
   
   double pikNew = (edgeContribution + noEdgeContribution) 
     / (double(nNodes) - 1.0);
   pmat(i,k) = pikNew;
   double pikDiff = pikNew - pik;
+  err = max(err, my_abs(pikDiff));
   pbar[k] += pikDiff/(double(nNodes));
   
   double oldEdgeP,newEdgeP, oldPNoEdge, newPNoEdge;
   for(int j_cnt = 0; j_cnt < this_J_tot; j_cnt++){
-    j = (*theseEdges)[j_cnt];
+    j = edgeList[i][j_cnt]; 
     pjk = pmat(j,k);
-    oldEdgeP = (*theseEdgePs)[j_cnt];
+    oldEdgeP = epPtr[j_cnt];
     oldPNoEdge = 1.0 - oldEdgeP;
     newPNoEdge = oldPNoEdge * (1.0 - pikNew * pjk) / (1.0 - pik*pjk);
     newEdgeP = 1.0 - newPNoEdge;
@@ -196,7 +204,7 @@ NumericMatrix deepcopy(NumericMatrix m){
 }
 
 double my_abs(double x){
-  if( x >= 0.0){ return(x); }
+  if( x > 0.0){ return(x); }
   else{ return(-x); }
 }
 
@@ -209,27 +217,19 @@ double max(double a, double b){
 
 List LCN::cache_em(int max_its, double tol, double pTol){
   int iter = 0;
-  double err = tol + 1.0;
-  NumericMatrix old_pmat = deepcopy(pmat);
+  err = tol + 1.0;
   while( (iter < max_its) & (err > tol) ){
     iter++;
-    one_iter(pTol);
+    // Error is updated *inside* one_iter
     err = 0.0;
-    for(int i = 0; i < nNodes; i++){  
-      for(int j = 0; j < dim; j++){
-        err = max(err, my_abs(pmat(i,j) - old_pmat(i,j) ) );
-        old_pmat(i,j) = pmat(i,j);
-      }
-    }
+    one_iter(pTol);
   }
   if(iter == max_its){
     Rprintf("Warning: maximum iterations reached\n");
   }
   
-  // Note that old_pmat will actually be == pmat after exiting loop
   List ans = List::create(Named("err") = err, 
-                          Named("its") = iter, 
-                          Named("pmat") = old_pmat);
+                          Named("its") = iter);
   return(ans);
 }
 
@@ -237,7 +237,6 @@ NumericMatrix LCN::get_pmat(){
   NumericMatrix ans = deepcopy(pmat);
   return(ans);
 }
-
 
 
 RCPP_MODULE(LCN){

@@ -28,7 +28,7 @@ function doubleAndSortEdges(edgeList::Array{Int, 2})
 end
 
 # Takes in an Array of edges, prepares important info
-function prepEdges(edgeList::Array{Int, 2})::Array{Array{Int64}}
+function prepEdges(edgeList::Matrix{Int})::Vector{Vector{Int64}}
     min_e = minimum(edgeList)
     if (min_e != 1)
         error("edgeList does not start with 1")
