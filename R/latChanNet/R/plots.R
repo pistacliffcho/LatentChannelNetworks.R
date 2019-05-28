@@ -1,15 +1,15 @@
-#' @import Heatmap grid circlize
-
-#' @export
-default_cols = c("black", "lightblue", "orange", "red") 
-
-# #' @export
-#defaultColFxn = circlize::colorRamp2(seq(from = 0, to = 1, 
-#                        length.out = length(cols)), cols)
-
+#' @title Build heatmap from model
+#' @param lcn_mod LCN model 
+#' @param grp Vector of group categories for each node
+#' @param minGrpSize Minimum size of group in both. Smaller groups put in "other"
+#' @param cols Colors for color gradient
+#' @param reorderRows Should Channels be reorder by dependency on grp?
+#' @param xlab X-axis label
+#' @param ylab Y-asix label
+#' @param ... Additional arguments passed to ComplexHeatmap::Heatmap
 #' @export
 heatmapLCN = function(lcn_mod, 
-                      grp = NULL, 
+                      grp, 
                       minGrpSize = NULL,
                       cols = default_cols,
                       plotChannelNumber = T,
@@ -17,8 +17,14 @@ heatmapLCN = function(lcn_mod,
                       sortColumns = T,
                       ...){
   pmat = lcn_mod$get_pmat()
-  if(is.null(grp)){
-    pheatmap::pheatmap(t(pmat), color = col_grad, ...)
+  if(reorderRows){
+    cnts = table(grp)
+    biggestGrp_ind = which.max(cnts)
+    biggestGrp = names(cnts)[biggestGrp_ind]
+    
+    biggestGrp_colSums = colSums(pmat[grp == biggestGrp,])
+    new_col_order = order(biggestGrp_colSums, decreasing = T)
+    pmat = pmat[,new_col_order]
   }
   
   
