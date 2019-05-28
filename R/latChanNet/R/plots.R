@@ -1,4 +1,3 @@
-#' @import Heatmap grid circlize
 
 cols = c("purple4", "lightblue", "orange", "red") 
 

@@ -1,5 +1,3 @@
-loadModule("LCN", TRUE)
-
 split_wEmpty = function(n1, n2){
   n12 = c(n1,n2)
   n21 = c(n2,n1)
@@ -64,6 +62,9 @@ prepEdgeList = function(edgeList){
   return(ans)
 }
 
+#' @title Make Latent Channel Network Model
+#' @param edgeList A nx2 matrix of edges
+#' @param nDims Number of Latent Channels
 #' @export
 makeLCN = function(edgeList, nDims = 5){
   preppedEdgeList = prepEdgeList(edgeList)
@@ -76,8 +77,13 @@ makeLCN = function(edgeList, nDims = 5){
   return(ans)
 }
 
+#' @title Optimization of Latent Channel Network via EM
+#' @param LCN_mod LCN model, output from makeLCN
+#' @param iters Maximum iterations
+#' @param tol Convergence tolerance
+#' @param pTol Tolerance for skipping parameter updates
 #' @export
-emLCN = function(LCN_mod, iters = 1000, 
+emLCN = function(LCN_mod, iters = 10000, 
                  tol = 10^-4, 
                  pTol = 10^-8){
   ans = LCN_mod$cache_em(iters, tol, pTol)

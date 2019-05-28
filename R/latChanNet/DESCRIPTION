@@ -1,12 +1,13 @@
 Package: latChanNet
 Type: Package
-Title: What the Package Does in One 'Title Case' Line
+Title: Latent Channel Networks
 Version: 1.0
 Date: 2019-05-09
-Author: Your Name
-Maintainer: Your Name <your@email.com>
-Description: One paragraph description of what the package does as one
-        or more full sentences.
+Author: Clifford Anderson-Bergman
+Maintainer: Clifford Anderson-Bergman <pistacliffcho@gmail.com>
+Description: Analysis of undirected networks via Latent Channel Networks
 License: GPL (>= 2)
+bioViews:
 Imports: Rcpp (>= 1.0.1)
 LinkingTo: Rcpp
+RoxygenNote: 6.1.1
