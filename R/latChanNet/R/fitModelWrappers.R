@@ -69,7 +69,7 @@ makeLCN = function(edgeList, nDims = 5){
   preppedEdgeList = prepEdgeList(edgeList)
   nRows = length(preppedEdgeList)
   pmat_init = matrix(
-    runif(nRows * nDims), 
+    runif(nRows * nDims, max = 1 / sqrt(nDims)), 
     nrow = nRows)
   
   ans = LCN$new(preppedEdgeList, pmat_init)

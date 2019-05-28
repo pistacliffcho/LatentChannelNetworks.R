@@ -28,6 +28,7 @@ public:
   List cache_em(int max_its, double tol, double pTol);
   LCN(List edgeList, NumericMatrix input_pmat);
   NumericMatrix get_pmat();
+  void set_pmat(NumericMatrix m);
 };
 
 double my_abs(double);
@@ -238,11 +239,22 @@ NumericMatrix LCN::get_pmat(){
   return(ans);
 }
 
+void LCN::set_pmat(NumericMatrix m){
+  int nRows = m.rows();
+  int nCols = m.cols();
+  if(nRows != nNodes){ stop("nRows != nNodes");}
+  if(nCols != dim){ stop("nCols != dim");}
+  pmat = deepcopy(m);
+  initializeCache();
+}
+
 
 RCPP_MODULE(LCN){
   class_<LCN>("LCN")
   .constructor<List, NumericMatrix>("Args: EdgeList, Initial p-mat")
   .method("cache_em", &LCN::cache_em)
   .method("llk", &LCN::llk)
-  .method("get_pmat", &LCN::get_pmat);
+  .method("get_pmat", &LCN::get_pmat)
+  .method("set_pmat", &LCN::set_pmat);
+  
 }
