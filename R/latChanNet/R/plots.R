@@ -3,7 +3,7 @@
 #' @param grp Vector of group categories for each node
 #' @param minGrpSize Minimum size of group in both. Smaller groups put in "other"
 #' @param cols Colors for color gradient
-#' @param reorderRows Should Channels be reorder by dependency on grp?
+#' @param reorderChannels Should Channels be reorder by dependency on grp?
 #' @param xlab X-axis label
 #' @param ylab Y-asix label
 #' @param ... Additional arguments passed to ComplexHeatmap::Heatmap
@@ -11,13 +11,14 @@
 heatmapLCN = function(lcn_mod, 
                       grp, 
                       minGrpSize = NULL,
-                      cols = default_cols,
+                      cols = c("black", "lightblue","orange","red"),
+                      reorderChannels = T,
                       plotChannelNumber = T,
                       xlab = " ", ylab = " ",
                       sortColumns = T,
                       ...){
   pmat = lcn_mod$get_pmat()
-  if(reorderRows){
+  if(reorderChannels){
     cnts = table(grp)
     biggestGrp_ind = which.max(cnts)
     biggestGrp = names(cnts)[biggestGrp_ind]
