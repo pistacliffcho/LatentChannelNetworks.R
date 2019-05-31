@@ -4,9 +4,9 @@
 \alias{heatmapLCN}
 \title{Build heatmap from model}
 \usage{
-heatmapLCN(lcn_mod, grp, minGrpSize = NULL, cols = c("darkslateblue",
-  "lightblue", "orange", "red"), reorderRows = T, xlab = "",
-  ylab = "", ...)
+heatmapLCN(lcn_mod, grp, minGrpSize = NULL, cols = c("black",
+  "lightblue", "orange", "red"), plotChannelNumber = T, xlab = " ",
+  ylab = " ", sortColumns = T, ...)
 }
 \arguments{
 \item{lcn_mod}{LCN model}
@@ -17,13 +17,13 @@ heatmapLCN(lcn_mod, grp, minGrpSize = NULL, cols = c("darkslateblue",
 
 \item{cols}{Colors for color gradient}
 
-\item{reorderRows}{Should Channels be reorder by dependency on grp?}
-
 \item{xlab}{X-axis label}
 
 \item{ylab}{Y-asix label}
 
 \item{...}{Additional arguments passed to ComplexHeatmap::Heatmap}
+
+\item{reorderChannels}{Should Channels be reorder by dependency on grp?}
 }
 \description{
 Build heatmap from model

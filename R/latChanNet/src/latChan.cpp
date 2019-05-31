@@ -29,6 +29,8 @@ public:
   LCN(List edgeList, NumericMatrix input_pmat);
   NumericMatrix get_pmat();
   void set_pmat(NumericMatrix m);
+  NumericVector computeTheta(int i, int j);
+  NumericVector expectedConnections(int i);
 };
 
 double my_abs(double);
@@ -249,12 +251,38 @@ void LCN::set_pmat(NumericMatrix m){
 }
 
 
+NumericVector LCN::computeTheta(int i, int j){
+  if(i < 0 | i >= nNodes){ stop("i out of bounds");}
+  if(j < 0 | j >= nNodes){ stop("j out of bounds");}
+  NumericVector ans(dim);
+  double this_edgeProb = edgeProb(i,j);
+  for(int k = 0; k < dim; k++){
+    ans[k] = pmat(i,k) * pmat(j,k) / this_edgeProb;
+  }
+  return(ans);
+}
+
+NumericVector LCN::expectedConnections(int i){
+  NumericVector ans(dim);
+  int this_j;
+  int nNodes = edgeList[i].size();
+  for(int ii = 0; ii < nNodes; ii++){
+    this_j = edgeList[i][ii];
+    NumericVector this_theta = computeTheta(i, this_j);
+    for(int k = 0; k < dim; k++){
+      ans[k] = ans[k] + this_theta[k];
+    }
+  }
+  return(ans);
+}
+
 RCPP_MODULE(LCN){
   class_<LCN>("LCN")
   .constructor<List, NumericMatrix>("Args: EdgeList, Initial p-mat")
   .method("cache_em", &LCN::cache_em)
   .method("llk", &LCN::llk)
   .method("get_pmat", &LCN::get_pmat)
-  .method("set_pmat", &LCN::set_pmat);
-  
+  .method("set_pmat", &LCN::set_pmat)
+  .method("computeTheta", &LCN::computeTheta)
+  .method("expectedConnections", &LCN::expectedConnections);
 }

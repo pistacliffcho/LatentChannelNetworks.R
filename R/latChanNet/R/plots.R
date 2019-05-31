@@ -12,22 +12,13 @@ heatmapLCN = function(lcn_mod,
                       grp, 
                       minGrpSize = NULL,
                       cols = c("black", "lightblue","orange","red"),
-                      reorderChannels = T,
                       plotChannelNumber = T,
                       xlab = " ", ylab = " ",
                       sortColumns = T,
                       ...){
   pmat = lcn_mod$get_pmat()
-  if(reorderChannels){
-    cnts = table(grp)
-    biggestGrp_ind = which.max(cnts)
-    biggestGrp = names(cnts)[biggestGrp_ind]
-    
-    biggestGrp_colSums = colSums(pmat[grp == biggestGrp,])
-    new_col_order = order(biggestGrp_colSums, decreasing = T)
-    pmat = pmat[,new_col_order]
-  }
-  
+  # Keeping track of original channel names
+  colnames(pmat) = 1:ncol(pmat)
   
   if(!is.null(minGrpSize)){
     cnts = table(grp)
@@ -40,14 +31,16 @@ heatmapLCN = function(lcn_mod,
     }
   }
   
+  ## CREATE GROUP NAMES
+  #  Finds the middle index for each group and gives that the name of group
+  #  All other names will be blank
   ord = order(grp)
   ord_grp = grp[ord]
   pmat_ord = pmat[ord,]
-  
+
   is_break = ord_grp[-1] != head(ord_grp, -1)
   is_break[1] = TRUE
   breaks = which(is_break)
-  
   plot_grp_names = rep("", nrow(pmat_ord) ) 
   for(i in seq_len(length(breaks) - 1) ){
     brk_loc = round( ( breaks[i+1] + breaks[i] ) / 2)
@@ -57,17 +50,15 @@ heatmapLCN = function(lcn_mod,
   last_loc = round( (tail(breaks,1) + length(ord_grp) )/2 )
   last_name = ord_grp[last_loc]
   plot_grp_names[last_loc] = last_name
-  
-  
-  labels_row = seq_len(ncol(pmat_ord))
-  colnames(pmat_ord) = labels_row
   rownames(pmat_ord) = plot_grp_names
   
+  # Make color gradient function
   nColors = length(cols)
   colFxn = circlize::colorRamp2(seq(from = 0, to = max(pmat_ord), 
                                     length.out = nColors), 
                                 colors = cols)
   
+  # Sorting columns by variance of category means
   if(sortColumns){
     ord_grp_char = as.character(ord_grp)
     use_grps = !(ord_grp_char %in% c("Missing", "Other"))
@@ -77,7 +68,7 @@ heatmapLCN = function(lcn_mod,
     pmat_ord = pmat_ord[,colOrd]
   }
   
-  
+  # Make plot
   p = ComplexHeatmap::Heatmap(t(pmat_ord), 
                           name = "",
                           cluster_rows = F, 

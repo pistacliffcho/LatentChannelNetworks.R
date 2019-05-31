@@ -28,6 +28,10 @@ getUniqueEdges = function(ind, split_list){
   return(edges)
 }
 
+#' @title Prep Edgelist
+#' @description Prepares edgelist for \code{makeLCN}
+#' @param edgeList An nx2 matrix of undirected edge pairs
+#' @export
 prepEdgeList = function(edgeList){
   edgeList = as.matrix(edgeList)
   if(ncol(edgeList) != 2){ stop("edgeList should have only two columns") }
