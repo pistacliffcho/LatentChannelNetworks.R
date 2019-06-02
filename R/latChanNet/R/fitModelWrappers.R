@@ -83,13 +83,15 @@ makeLCN = function(edgeList, nDims = 5){
 
 #' @title Optimization of Latent Channel Network via EM
 #' @param LCN_mod LCN model, output from makeLCN
+#' @param use_par Should iterations be performed in parallel?
 #' @param iters Maximum iterations
 #' @param tol Convergence tolerance
 #' @param pTol Tolerance for skipping parameter updates
 #' @export
 emLCN = function(LCN_mod, iters = 10000, 
+                 use_par = F,
                  tol = 10^-4, 
                  pTol = 10^-8){
-  ans = LCN_mod$cache_em(iters, tol, pTol)
+  ans = LCN_mod$cache_em(iters, use_par, tol, pTol)
   return(ans)
 }

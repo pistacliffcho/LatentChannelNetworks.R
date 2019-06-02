@@ -9,5 +9,5 @@ Description: Analysis of undirected networks via Latent Channel Networks
 License: GPL (>= 2)
 bioViews:
 Imports: Rcpp (>= 1.0.1)
-LinkingTo: Rcpp
+LinkingTo: Rcpp, RcppParallel
 RoxygenNote: 6.1.1
