@@ -84,12 +84,17 @@ makeLCN = function(edgeList, nDims = 5){
 #' @title Optimization of Latent Channel Network via EM
 #' @param LCN_mod LCN model, output from makeLCN
 #' @param iters Maximum iterations
+#' @param type Algorithm type. Choices are ECM and EM
 #' @param tol Convergence tolerance
 #' @param pTol Tolerance for skipping parameter updates
 #' @export
 emLCN = function(LCN_mod, iters = 10000, 
+                 type = "ECM",
                  tol = 10^-4, 
                  pTol = 10^-8){
-  ans = LCN_mod$cache_em(iters, tol, pTol)
+  if(type == "ECM") int_type = 1
+  else if(type == "EM") int_type = 2
+  else stop("type must be 'EM' or 'ECM'")
+  ans = LCN_mod$cache_em(iters, int_type, tol, pTol)
   return(ans)
 }

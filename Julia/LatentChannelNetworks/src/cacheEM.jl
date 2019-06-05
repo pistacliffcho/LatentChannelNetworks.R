@@ -1,7 +1,7 @@
-# Updates single probability using caching EM algorithm
-function em_oneProb_cache!(i::Int64, k::Int64,
-                          lcn::LatentChannelNetwork,
-                          ptol::Float64 = 10^-10)
+# Updates single probability using EM algorithm
+function update_prob(i::Int64, k::Int64,
+                     lcn::LatentChannelNetwork,
+                     ptol::Float64 = 10^-10)::Float64
     # Extracting information about this probability
     pik_old = lcn.pmat[i,k]
     if (pik_old < ptol)
@@ -23,12 +23,18 @@ function em_oneProb_cache!(i::Int64, k::Int64,
         # Grabbing cached edge prob
         pi_ij = these_edge_probs[j]
         # Adding contribution of having an edge
-#        prob_sum = prob_sum + edgeSumContribution(pik_old, pjk, pi_ij)
         prob_sum = prob_sum + edgeSumContribution(pik_old, pjk, pi_ij)
     end
-
     # Computing new probability
     pik_new = prob_sum / (nNodes - 1.)
+    return(pik_new)
+end
+
+
+
+function em_oneProb_cache!(i::Int64, k::Int64,
+                          lcn::LatentChannelNetwork,
+                          ptol::Float64 = 10^-10)
     # Computing change in probability to
     # efficiently update new mean probabilities
     prob_diff = pik_new - pik_old
