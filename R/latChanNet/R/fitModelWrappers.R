@@ -81,12 +81,21 @@ makeLCN = function(edgeList, nDims = 5){
   return(ans)
 }
 
-#' @title Optimization of Latent Channel Network via EM
+#' @title Optimization of Latent Channel Network via EM-style algorithms
 #' @param LCN_mod LCN model, output from makeLCN
 #' @param iters Maximum iterations
-#' @param type Algorithm type. Choices are ECM and EM
+#' @param type Algorithm type. Choices are "ECM", "EM" and "ParEM"
 #' @param tol Convergence tolerance
 #' @param pTol Tolerance for skipping parameter updates
+#' @details Fits a latent channel network with either an ECM algorithm 
+#' (\code{type = "ECM"}), an EM algorithm (\code{type = "EM"}) or 
+#' a parallel implementation of the EM algorithm (\code{type = "ParEM"}). 
+#' In serial, the ECM algorithm tends to be fastest, 
+#' but with at least two threads, the parallel EM algorithm 
+#' is expected to be fastest. 
+#' 
+#' To control the number of threads used by the parallel EM algorithm, 
+#' use \code{RcppParallel::setThreadOptions}.
 #' @export
 emLCN = function(LCN_mod, iters = 10000, 
                  type = "ECM",
@@ -94,7 +103,8 @@ emLCN = function(LCN_mod, iters = 10000,
                  pTol = 10^-8){
   if(type == "ECM") int_type = 1
   else if(type == "EM") int_type = 2
-  else stop("type must be 'EM' or 'ECM'")
-  ans = LCN_mod$cache_em(iters, int_type, tol, pTol)
+  else if(type == "ParEM") int_type = 3
+  else stop("type must be 'ParEM', 'EM' or 'ECM'")
+  ans = LCN_mod$em(iters, int_type, tol, pTol)
   return(ans)
 }

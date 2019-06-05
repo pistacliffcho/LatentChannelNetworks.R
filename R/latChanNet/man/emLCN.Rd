@@ -2,7 +2,7 @@
 % Please edit documentation in R/fitModelWrappers.R
 \name{emLCN}
 \alias{emLCN}
-\title{Optimization of Latent Channel Network via EM}
+\title{Optimization of Latent Channel Network via EM-style algorithms}
 \usage{
 emLCN(LCN_mod, iters = 10000, type = "ECM", tol = 10^-4,
   pTol = 10^-8)
@@ -12,12 +12,23 @@ emLCN(LCN_mod, iters = 10000, type = "ECM", tol = 10^-4,
 
 \item{iters}{Maximum iterations}
 
-\item{type}{Algorithm type. Choices are ECM and EM}
+\item{type}{Algorithm type. Choices are "ECM", "EM" and "ParEM"}
 
 \item{tol}{Convergence tolerance}
 
 \item{pTol}{Tolerance for skipping parameter updates}
 }
 \description{
-Optimization of Latent Channel Network via EM
+Optimization of Latent Channel Network via EM-style algorithms
+}
+\details{
+Fits a latent channel network with either an ECM algorithm 
+(\code{type = "ECM"}), an EM algorithm (\code{type = "EM"}) or 
+a parallel implementation of the EM algorithm (\code{type = "ParEM"}). 
+In serial, the ECM algorithm tends to be fastest, 
+but with at least two threads, the parallel EM algorithm 
+is expected to be fastest. 
+
+To control the number of threads used by the parallel EM algorithm, 
+use \code{RcppParallel::setThreadOptions}.
 }

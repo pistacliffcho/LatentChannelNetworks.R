@@ -3,6 +3,7 @@
 #include <vector>
 #include <iostream>
 #include "utils.h"
+#include <RcppParallel.h>
 #define vec std::vector
 using namespace Rcpp;
 
@@ -27,6 +28,7 @@ public:
   void ingestEdges(List lst);
   void initializeNode(int);
   void initializeCache();
+  void parInitCache();
   LCN(List edgeList, NumericMatrix input_pmat);
   
   double edgeProb(int i, int j);
@@ -37,7 +39,8 @@ public:
   void one_ecm_update(int i, int k);
   void one_ecm_iter();
   void one_em_iter();
-  List cache_em(int max_its, int type, double tol, double pTol);
+  void one_par_em_iter();
+  List em(int max_its, int type, double tol, double pTol);
   
   NumericMatrix get_pmat();
   void set_pmat(NumericMatrix m);
@@ -210,16 +213,57 @@ double compute_err(Mat &m1, Mat &m2){
 }
 
 /***
- * EM Algorithm: Serial methods
+ * EM Algorithm: Parallel methods
  ***/
 
-void LCN::one_ecm_iter(){
-  for(int k = 0; k < dim; k++){
-    for(int i = 0; i < nNodes; i++){
-      one_ecm_update(i,k);
+// Structure for updating edge probabilities in parallel 
+struct ParInitCache : public RcppParallel::Worker{
+  LCN* mod_ptr;
+  ParInitCache(LCN* mod){ mod_ptr = mod; }
+  void operator()(size_t begin, size_t end){
+    for(int i = begin; i < end; i++){
+      mod_ptr->initializeNode(i);
     }
   }
+};
+
+void LCN::parInitCache(){
+  ParInitCache cache_worker(this);
+  RcppParallel::parallelFor(0, nNodes, cache_worker);
 }
+
+struct ParEMIter : public RcppParallel::Worker{
+  LCN* mod;
+  Mat* pmat_new;
+  ParEMIter(LCN* mod_ptr, Mat* pmat_new_ptr){
+    mod = mod_ptr;
+    pmat_new = pmat_new_ptr;
+  }
+  void operator()(size_t begin, size_t end){
+    int i,k;
+    for(int flat_i = begin; flat_i < end; flat_i++){
+      i = flat_i % mod->nNodes;
+      k = int(flat_i / mod->nNodes);
+      pmat_new->operator()(i,k) = mod->update_pik(i,k);
+    }
+  }
+};
+
+void LCN::one_par_em_iter(){
+  Mat pmat_new = pmat.copy();
+  int tot_pars = nNodes * dim;
+  ParEMIter par_em_worker(this, &pmat_new);
+  RcppParallel::parallelFor(0, tot_pars, par_em_worker);
+  err = compute_err(pmat, pmat_new);
+  pmat = pmat_new;
+  pbar = pmat.colMeans();
+  parInitCache();
+}
+
+
+/***
+ * EM Algorithm: Serial methods
+ ***/
 
 void LCN::one_em_iter(){
   Mat pmat_new = pmat.copy();
@@ -233,6 +277,19 @@ void LCN::one_em_iter(){
   pbar = pmat.colMeans();
   initializeCache();
 }
+
+/***
+ * ECM Algorithm: Serial (only option) methods
+ ***/
+
+void LCN::one_ecm_iter(){
+  for(int k = 0; k < dim; k++){
+    for(int i = 0; i < nNodes; i++){
+      one_ecm_update(i,k);
+    }
+  }
+}
+
 
 
 void LCN::one_ecm_update(int i, int k){
@@ -260,8 +317,11 @@ void LCN::one_ecm_update(int i, int k){
   }
 }
 
-
-List LCN::cache_em(int max_its, int type, double rtol, double rpTol){
+// EM algorithm method. type allows to dictate whether to use 
+// ECM (type = 1) 
+// EM  (type = 2)
+// Parallel EM (type = 3)
+List LCN::em(int max_its, int type, double rtol, double rpTol){
   tol = rtol;
   pTol = rpTol;
   int iter = 0;
@@ -272,6 +332,7 @@ List LCN::cache_em(int max_its, int type, double rtol, double rpTol){
     err = 0.0;
     if(type == 1){ one_ecm_iter(); }
     if(type == 2){ one_em_iter(); }
+    if(type == 3){ one_par_em_iter(); }
   }
   if(iter == max_its){
     Rprintf("Warning: maximum iterations reached\n");
@@ -336,7 +397,7 @@ NumericVector LCN::expectedConnections(int i){
 RCPP_MODULE(LCN){
   class_<LCN>("LCN")
   .constructor<List, NumericMatrix>("Args: EdgeList, Initial p-mat")
-  .method("cache_em", &LCN::cache_em)
+  .method("em", &LCN::em)
   .method("llk", &LCN::llk)
   .method("get_pmat", &LCN::get_pmat)
   .method("set_pmat", &LCN::set_pmat)

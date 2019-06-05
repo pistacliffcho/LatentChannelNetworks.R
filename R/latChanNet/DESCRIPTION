@@ -8,6 +8,6 @@ Maintainer: Clifford Anderson-Bergman <pistacliffcho@gmail.com>
 Description: Analysis of undirected networks via Latent Channel Networks
 License: GPL (>= 2)
 bioViews:
-Imports: Rcpp (>= 1.0.1)
-LinkingTo: Rcpp
+Imports: Rcpp (>= 1.0.1), RcppParallel (>= 4.4.3)
+LinkingTo: Rcpp, RcppParallel
 RoxygenNote: 6.1.1
