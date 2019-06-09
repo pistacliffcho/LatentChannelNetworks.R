@@ -5,7 +5,7 @@ function update_prob(i::Int64, k::Int64,
     # Extracting information about this probability
     pik_old = lcn.pmat[i,k]
     if (pik_old < ptol)
-        return
+        return(pik_old)
     end
     these_edges = lcn.edgeList[i]
     these_edge_probs = lcn.cache_probs[i]
@@ -17,6 +17,7 @@ function update_prob(i::Int64, k::Int64,
     # Readjusting sum for edges
     for j in 1:length(these_edges)
         j_ind = these_edges[j]
+
         pjk = lcn.pmat[j_ind, k]
         # Subtracting off contribution of not having an edge
         prob_sum = prob_sum - pik_old * (1. - pjk)
@@ -34,17 +35,21 @@ end
 
 function em_oneProb_cache!(i::Int64, k::Int64,
                           lcn::LatentChannelNetwork,
-                          ptol::Float64 = 10^-10)
+                          ptol::Float64 = 10^-10)::Nothing
+    pik_old = lcn.pmat[i,k]
+    pik_new = update_prob(i, k, lcn, ptol)
     # Computing change in probability to
     # efficiently update new mean probabilities
     prob_diff = pik_new - pik_old
     # Updating new probability
     lcn.pmat[i,k] = pik_new
     # Updating average probability
-    lcn.pbar[k] = lcn.pbar[k] + prob_diff / nNodes
+    lcn.pbar[k] = lcn.pbar[k] + prob_diff / lcn.nNodes
 
     # Updating cached edge probabilities
     this_map = lcn.cache_map[i]
+    these_edges = lcn.edgeList[i]
+    these_edge_probs = lcn.cache_probs[i]
     for j in 1:length(these_edges)
         # Extracting pjk
         j_ind = these_edges[j]
@@ -68,26 +73,30 @@ function em_cached_iter!(lcn::LatentChannelNetwork)
     if !checkCacheInit(lcn)
         error("Cache not initialized")
     end
-    nNodes = length(lcn.edgeList)
+    nNodes = lcn.nNodes
     K = lcn.dim
     for i in 1:nNodes
         for k in 1:K
-        em_oneProb_cache!(i, k, lcn)
+            em_oneProb_cache!(i, k, lcn)
         end
     end
 end
 
 function getMaxDiff(m1::Matrix{Float64}, m2::Matrix{Float64})::Float64
-    nRows = size(m1)[1]
-    nCols = size(m1)[2]
+    N = length(m1)
     max_diff = 0
-    for j in 1:nCols
-        for i in 1:nRows
-            diff = abs( m1[i,j] - m2[i,j] )
-            max_diff = max(max_diff, diff)
-        end
+    for i in 1:N
+        diff = abs( m1[i] - m2[i] )
+        max_diff = max(max_diff, diff)
     end
     return(max_diff)
+end
+
+function copyMatVals(matTo::Matrix{Float64}, matFrom::Matrix{Float64})
+    N = length(matTo)
+    for i in 1:N
+        matTo[i] = matFrom[i]
+    end
 end
 
 function em_cached!(lcn::LatentChannelNetwork,
@@ -95,8 +104,9 @@ function em_cached!(lcn::LatentChannelNetwork,
                     tol::Float64 = 0.0001,
                     warn::Bool = true)::Dict
     m_p_diff = tol + 1
+    p_old = copy(lcn.pmat)
     for i in 1:iters
-        p_old = copy(lcn.pmat)
+        copyMatVals(p_old, lcn.pmat)
         em_cached_iter!(lcn)
 #        p_diff = abs.( lcn.pmat .- p_old )
         m_p_diff = getMaxDiff(lcn.pmat, p_old)
@@ -108,7 +118,7 @@ function em_cached!(lcn::LatentChannelNetwork,
     if warn
         println("Warning: maximum iterations reached")
     end
-    ans = Dict("its" => iters, "p_diff" => m_p_diff)
+    ans = Dict("its" => iters, "err" => m_p_diff)
     return(ans)
 end
 

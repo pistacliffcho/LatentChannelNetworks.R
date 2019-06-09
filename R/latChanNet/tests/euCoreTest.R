@@ -1,22 +1,24 @@
 library(latChanNet)
 library(RcppParallel)
-setThreadOptions(numThreads = 4)
+setThreadOptions(numThreads = 2)
 
 setwd("~/Documents/GitHub/LatentChannelNetworks/R/examples/emailNetwork")
 edgeList = read.table("email-Eu-core.txt") + 1
 
-mod = makeLCN(edgeList, 10)
+nChan = 40
+
+mod = makeLCN(edgeList, nChan)
 system.time( res <- emLCN(mod, 10000, type = "ECM") )
 res
 mod$llk()
 
-mod = makeLCN(edgeList, 10)
+mod = makeLCN(edgeList, nChan)
 system.time( res <- emLCN(mod, 10000, type = "EM") )
 res
 mod$llk()
 
 
-mod = makeLCN(edgeList, 10)
+mod = makeLCN(edgeList, nChan)
 system.time( res <- emLCN(mod, 10000, type = "ParEM") )
 res
 mod$llk()

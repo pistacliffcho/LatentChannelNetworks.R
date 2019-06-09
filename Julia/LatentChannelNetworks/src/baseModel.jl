@@ -99,21 +99,32 @@ function makeTransposeMap(edgeList::Vector{Vector{Int64}})::Vector{Vector{Int64}
     return( t_map )
 end
 
-# Initialize edgelist probability cache
-function initialize_cache!(lcn::LatentChannelNetwork)
-    nNodes = lcn.nNodes
-    for k in 1:lcn.dim
+# Update pbar vector
+function initialize_pbar!(lcn::LatentChannelNetwork)
+    K = lcn.dim
+    for k in 1:K
         lcn.pbar[k] = mean(lcn.pmat[:,k])
     end
+end
 
+# Update edge probabilities for one node
+function initialize_one_node!(i::Int64, lcn::LatentChannelNetwork)
+    n_edges = length( lcn.edgeList[i] )
+    these_edges = lcn.edgeList[i]
+    these_probs = zeros(length(these_edges))
+    for j in 1:length(these_edges)
+        j_ind = these_edges[j]
+        these_probs[j] = probEdge(i,j_ind, lcn)
+    end
+    lcn.cache_probs[i] = these_probs
+end
+
+# Initialize edgelist probability cache
+function initialize_cache!(lcn::LatentChannelNetwork)
+    initialize_pbar!(lcn)
+    nNodes = lcn.nNodes
     for i in 1:nNodes
-        these_edges = lcn.edgeList[i]
-        these_probs = zeros(length(these_edges))
-        for j in 1:length(these_edges)
-            j_ind = these_edges[j]
-            these_probs[j] = probEdge(i,j_ind, lcn)
-        end
-        lcn.cache_probs[i] = these_probs
+        initialize_one_node!(i, lcn)
     end
 end
 
