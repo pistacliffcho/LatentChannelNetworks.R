@@ -6,6 +6,7 @@ emails sent between them.
 First we will load and examine the data.
 
     # Loading edge list
+    # Datafile found in link above
     edgeList = read.table("email-Eu-core.txt")
     head(edgeList)
 
