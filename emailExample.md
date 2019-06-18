@@ -1,3 +1,6 @@
+
+**This demonstration uses the R implemenation.**
+
 For this example, we will analyze a small [email
 network](https://snap.stanford.edu/data/email-Eu-core.html). Nodes in
 this network are faculty at a European department and edges represent
@@ -91,7 +94,7 @@ probabilities, sorted by department.
 
 A couple of observations: 
 
-    1. Most nodes within the same department are strongly attached to one shared channel. 
-    2. Department 37 has nodes strongly attached to *all* channels. Furthermore, there is a single channel that is strongly used by department 37, in which each other department has at least one member who uses this channel strongly. 
+  1. Most nodes within the same department are strongly attached to one shared channel. 
+  2. Department 37 has nodes strongly attached to *all* channels. Furthermore, there is a single channel that is strongly used by department 37, in which each other department has at least one member who uses this channel strongly. 
     
 This suggests that in general, department 37 communicates very differently than other departments. We hypothesize that this may be an administrative group.     
