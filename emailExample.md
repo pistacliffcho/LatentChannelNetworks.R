@@ -88,3 +88,10 @@ probabilities, sorted by department.
                main = "Channel Strengths by Department")
 
 ![](emailExample_files/figure-markdown_strict/unnamed-chunk-4-1.png)
+
+A couple of observations: 
+
+    1. Most nodes within the same department are strongly attached to one shared channel. 
+    2. Department 37 has nodes strongly attached to *all* channels. Furthermore, there is a single channel that is strongly used by department 37, in which each other department has at least one member who uses this channel strongly. 
+    
+This suggests that in general, department 37 communicates very differently than other departments. We hypothesize that this may be an administrative group.     
