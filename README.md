@@ -6,4 +6,4 @@ The Latent Channel Network (LCN) is a model for undirected graphs in which nodes
 
 We can describe this model mathematically by giving each node in the graph a vector of probabilities of length *K*. The probability of two nodes making a connection through the k'th channel is the product of the k'th element of their probability vectors. For here, the probability two nodes share an edge is one minus the probability they make **no** connections through any of the *K* channels. 
 
-In this repository, we provide both R and Julia scripts for analyzing a classic email network at an European university. Analysis of these results can be found in the paper link above, along with an analysis of a large Facebook network not included in this repository. 
+In the email example, we provide sample R code for analyzing a classic email network at an European university. Analysis of these results can be found in the paper link above, along with an analysis of a large Facebook network not included in this repository. 
