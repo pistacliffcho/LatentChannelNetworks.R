@@ -16,12 +16,12 @@ public:
   int nNodes;
   int dim;
   double tol, pTol;
-  vec<vec<int>>edgeList;
+  vec<vec<int> >edgeList;
   Mat pmat;
   vec<double> pbar;
   
-  vec<vec<double>> cache_probs;
-  vec<vec<double*>> cache_map;
+  vec<vec<double> > cache_probs;
+  vec<vec<double*> > cache_map;
   
   double err;
   
