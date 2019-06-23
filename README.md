@@ -1,6 +1,6 @@
 # LatentChannelNetworks
 
-R and Julia implementation of the [Latent Channel Networks](https://arxiv.org/abs/1906.04563) EM algorithm. 
+R implementation of the [Latent Channel Networks](https://arxiv.org/abs/1906.04563) EM algorithm. The Julia implementation can be found [here](https://github.com/pistacliffcho/LatentChannelNetwork.jl).
 
 ## Introduction
 
