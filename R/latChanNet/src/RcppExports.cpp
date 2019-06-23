@@ -5,10 +5,22 @@
 
 using namespace Rcpp;
 
+// parallelVectorSum
+double parallelVectorSum(NumericVector x);
+RcppExport SEXP _latChanNet_parallelVectorSum(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(parallelVectorSum(x));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 RcppExport SEXP _rcpp_module_boot_LCN();
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_latChanNet_parallelVectorSum", (DL_FUNC) &_latChanNet_parallelVectorSum, 1},
     {"_rcpp_module_boot_LCN", (DL_FUNC) &_rcpp_module_boot_LCN, 0},
     {NULL, NULL, 0}
 };

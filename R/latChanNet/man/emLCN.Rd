@@ -4,12 +4,15 @@
 \alias{emLCN}
 \title{Optimization of Latent Channel Network via EM}
 \usage{
-emLCN(LCN_mod, iters = 10000, tol = 10^-4, pTol = 10^-8)
+emLCN(LCN_mod, iters = 10000, use_par = F, tol = 10^-4,
+  pTol = 10^-8)
 }
 \arguments{
 \item{LCN_mod}{LCN model, output from makeLCN}
 
 \item{iters}{Maximum iterations}
+
+\item{use_par}{Should iterations be performed in parallel?}
 
 \item{tol}{Convergence tolerance}
 

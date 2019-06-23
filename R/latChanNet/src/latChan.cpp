@@ -72,12 +72,12 @@ class LCN{
 public:
   int nNodes;
   int dim;
-  vec<vec<int>>edgeList;
+  vec<vec<int> >edgeList;
   Mat pmat;
   Mat new_pmat;
   vec<double> pbar;
   
-  vec<vec<double>> cache_probs;
+  vec<vec<double> > cache_probs;
 
   double err;
   
@@ -246,12 +246,8 @@ List LCN::cache_em(int max_its, bool use_par, double tol, double pTol){
     iter++;
     // Error is updated *inside* one_iter
     err = 0.0;
-    if(use_par){
-      par_one_iter();
-    }
-    else{
-      one_iter(pTol);
-    }
+    if(use_par){ par_one_iter(); }
+    else{ one_iter(pTol); }
   }
   if(iter == max_its){
     Rprintf("Warning: maximum iterations reached\n");
@@ -324,7 +320,6 @@ struct ParIter : public RcppParallel::Worker{
   ParIter(LCN* mod){ this_lcn = mod; }
   void operator()(std::size_t begin, std::size_t end){
     int nRow = this_lcn->pmat.nRows;
-//    int nCol = this_lcn->pmat.nCols;
     int flat_index = begin;
     int i, k;
     while(flat_index < end){
@@ -348,6 +343,7 @@ void LCN::par_one_iter(){
   pmat = new_pmat.copy();
   par_init_cache();
 }
+
 
 RCPP_MODULE(LCN){
   class_<LCN>("LCN")
