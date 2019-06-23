@@ -13,7 +13,7 @@ We can describe this model mathematically by giving each node in the graph a vec
 To install the R package:
 
 ```
-devtools::install_github("https://github.com/pistacliffcho/LatentChannelNetworks", 
+devtools::install_github("https://github.com/pistacliffcho/LatentChannelNetworks.R", 
                          subdir = "R/latChanNet")
 ```
 
