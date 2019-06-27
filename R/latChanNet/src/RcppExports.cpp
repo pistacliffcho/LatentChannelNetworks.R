@@ -7,9 +7,11 @@ using namespace Rcpp;
 
 
 RcppExport SEXP _rcpp_module_boot_LCN();
+RcppExport SEXP _rcpp_module_boot_BKN();
 
 static const R_CallMethodDef CallEntries[] = {
     {"_rcpp_module_boot_LCN", (DL_FUNC) &_rcpp_module_boot_LCN, 0},
+    {"_rcpp_module_boot_BKN", (DL_FUNC) &_rcpp_module_boot_BKN, 0},
     {NULL, NULL, 0}
 };
 
