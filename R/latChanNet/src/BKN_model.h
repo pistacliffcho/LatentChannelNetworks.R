@@ -42,8 +42,37 @@ public:
   
   void update_ti(int i);
   void one_em();
+  List em(int max_it, double tol);
+  
+  double expectedDegree(int i);
   NumericMatrix get_theta();
 };
+
+List BKN::em(int max_it, double tol){
+  double err = tol + 1.0;
+  int iter = 0;
+  Mat theta_old = theta_mat.copy();
+  while( (iter < max_it) & (err > tol) ){
+    one_em();
+    err = compute_err(theta_old, theta_mat);
+    theta_old = theta_mat.copy();
+    iter++;
+  }
+  if(iter == max_it){ Rcout << "Warning: max iterations reached\n"; }
+  List ans = List::create(Named("err") = err, 
+                          Named("its") = iter);
+  return(ans);
+}
+
+double BKN::expectedDegree(int i){
+  i--;
+  if(i < 0 || i >= nNodes){ stop("invalid i"); }
+  double ans = 0.0;
+  for(int j = 0; j < nNodes; j++){
+    ans += meanEdges(i,j);
+  }
+  return(ans);
+}
 
 NumericMatrix BKN::get_theta(){
   NumericMatrix ans = theta_mat.getNumMat();

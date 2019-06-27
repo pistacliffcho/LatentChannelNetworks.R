@@ -10,7 +10,9 @@ RCPP_MODULE(LCN){
   .method("get_pmat", &LCN::get_pmat)
   .method("set_pmat", &LCN::set_pmat)
   .method("computeTheta", &LCN::computeTheta)
-  .method("expectedConnections", &LCN::expectedConnections);
+  .method("expectedConnections", &LCN::expectedConnections)
+  .method("expectedDegree", &LCN::expectedDegree)
+  ;
 }
 
 // BKN MODEL
@@ -19,5 +21,7 @@ RCPP_MODULE(BKN){
   .constructor<List, NumericMatrix>("Args: EdgeCountList, Initial theta-mat")
   .method("llk", &BKN::llk)
   .method("one_em", &BKN::one_em)
-  .method("get_theta", &BKN::get_theta);
+  .method("em", &BKN::em)
+  .method("get_theta", &BKN::get_theta)
+  .method("expectedDegree", &BKN::expectedDegree);
 }

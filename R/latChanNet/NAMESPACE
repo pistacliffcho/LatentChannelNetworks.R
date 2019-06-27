@@ -2,6 +2,7 @@
 
 export(computeExpConnects)
 export(computeTheta)
+export(emBKN)
 export(emLCN)
 export(heatmapLCN)
 export(makeBKN)

@@ -7,6 +7,5 @@ countList = data.frame(i = c(1,1,2,3),
 bkn_mod = makeBKN(countList, 2)
 bkn_mod$get_theta()
 bkn_mod$llk()
-for(i in 1:1000)
-  bkn_mod$one_em()
+emBKN(bkn_mod, 10)
 bkn_mod$llk()

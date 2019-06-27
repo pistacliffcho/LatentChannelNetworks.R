@@ -85,6 +85,17 @@ double max(double a, double b){
  * Computation functions
  */
 
+double compute_err(Mat &m1, Mat &m2){
+  double err = 0; 
+  double this_err;
+  for(int i = 0; i < m1.nRows; i++){
+    for(int j = 0; j < m1.nCols; j++){
+      this_err = my_abs(m1(i,j) - m2(i,j));
+      err = max(err, this_err);
+    }
+  }
+  return(err);
+}
 
 
 #endif

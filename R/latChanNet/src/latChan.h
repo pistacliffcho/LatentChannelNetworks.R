@@ -46,6 +46,7 @@ public:
   void set_pmat(NumericMatrix m);
   NumericVector computeTheta(int i, int j);
   NumericVector expectedConnections(int i);
+  double expectedDegree(int i);
 };
 
 
@@ -200,17 +201,6 @@ double LCN::update_pik(int i, int k){
   return(ans);
 }
 
-double compute_err(Mat &m1, Mat &m2){
-  double err = 0; 
-  double this_err;
-  for(int i = 0; i < m1.nRows; i++){
-    for(int j = 0; j < m1.nCols; j++){
-      this_err = my_abs(m1(i,j) - m2(i,j));
-      err = max(err, this_err);
-    }
-  }
-  return(err);
-}
 
 /***
  * EM Algorithm: Parallel methods
@@ -375,7 +365,7 @@ NumericVector LCN::computeTheta(int i, int j){
 }
 
 // Compute expected number of connections through each channel 
-// for a given node, conditional on observed graph
+// for a given node
 NumericVector LCN::expectedConnections(int i){
   NumericVector ans(dim);
   int this_j;
@@ -390,4 +380,13 @@ NumericVector LCN::expectedConnections(int i){
   return(ans);
 }
 
-
+// Expected degree of a node
+double LCN::expectedDegree(int i){
+  i--;
+  double ans = 0.0;
+  for(int j = 0; j < nNodes; j++){
+    if(i == j){ continue; }
+    ans += edgeProb(i, j);
+  }
+  return(ans);
+}

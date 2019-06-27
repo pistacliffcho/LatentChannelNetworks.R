@@ -4,7 +4,7 @@
 #' n1, n2, count
 prepEdgeCountList = function(edgeCountList){
   edgeCountList = as.matrix(edgeCountList)
-  if(ncol(edgeCountList) != 3){ stop("edgeList should have only two columns") }
+  if(ncol(edgeCountList) != 3){ stop("edgeList should have three columns") }
   storage.mode(edgeCountList) = "integer"
   
   min_n = min(edgeCountList[,1:2])
@@ -52,5 +52,12 @@ makeBKN = function(edgeCountList, nDims = 5){
     nrow = nRows)
   
   ans = BKN$new(preppedCountList, theta_init)
+  return(ans)
+}
+
+
+#' @export
+emBKN = function(BKN_mod, max_its = 10000, tol = 0.0001){
+  ans = BKN_mod$em(max_its, tol)
   return(ans)
 }
