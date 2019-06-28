@@ -169,9 +169,7 @@ double LCN::llk(){
 
 double LCN::update_pik(int i, int k){
   double pik = pmat(i,k);
-  if( (pik < pTol) || (1.0 - pik < pTol) ){
-    return(pik);
-  }
+  if( pik < pTol ){ return(pik); }
   int this_J_tot = edgeList[i].size(); 
   if(this_J_tot == 0){
     pmat(i,k) = 0.0;

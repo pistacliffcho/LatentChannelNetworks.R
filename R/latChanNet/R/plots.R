@@ -1,5 +1,5 @@
 #' @title Build heatmap from model
-#' @param lcn_mod LCN model 
+#' @param mod LCN or BKN model 
 #' @param grp Vector of group categories for each node
 #' @param minGrpSize Minimum size of group in both. Smaller groups put in "other"
 #' @param cols Colors for color gradient
@@ -8,7 +8,7 @@
 #' @param ylab Y-asix label
 #' @param ... Additional arguments passed to ComplexHeatmap::Heatmap
 #' @export
-heatmapLCN = function(lcn_mod, 
+heatmapLCN = function(mod, 
                       grp, 
                       minGrpSize = NULL,
                       cols = c("black", "lightblue","orange","red"),
@@ -16,7 +16,12 @@ heatmapLCN = function(lcn_mod,
                       xlab = " ", ylab = " ",
                       sortColumns = T,
                       ...){
-  pmat = lcn_mod$get_pmat()
+  if(is(mod, "Rcpp_LCN")){
+    pmat = mod$get_pmat()
+  }
+  else if(is(mod, "Rcpp_BKN")){
+    pmat = mod$get_theta()
+  }
   # Keeping track of original channel names
   colnames(pmat) = 1:ncol(pmat)
   

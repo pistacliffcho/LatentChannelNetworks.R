@@ -24,7 +24,7 @@ res
 lcn_mod$llk()
 
 
-#dpt = read.table("email-Eu-core-department-labels.txt")[,2] + 1
+dpt = read.table("email-Eu-core-department-labels.txt")[,2] + 1
 #heatmapLCN(mod, dpt, minGrpSize = 15)
 
 
@@ -45,7 +45,9 @@ unq_edges = function(edgeList){
 edgeList = unq_edges(edgeList)
 countList = cbind(edgeList, 1)
 bkn_mod = makeBKN(countList, nChan)
-system.time( res <- emBKN(bkn_mod) )
+system.time( res <- emBKN(bkn_mod, par = T) )
+bkn_mod$llk()
+
 
 bkn_degs = NULL
 for(i in 1:max(edgeList)){
@@ -57,4 +59,15 @@ for(i in 1:max(edgeList)){
   lcn_degs[i] = lcn_mod$expectedDegree(i)
 }
 
-plot(lcn_degs, bkn_degs)
+true_degs = NULL
+for(i in 1:max(edgeList)){
+  true_degs[i] = sum(edgeList == i)
+}
+
+plot(lcn_degs, true_degs)
+lines(c(0, 500), c(0, 500), col = 'red')
+
+plot(bkn_degs, true_degs)
+
+heatmapLCN(lcn_mod, dpt)
+heatmapLCN(bkn_mod, dpt)

@@ -23,10 +23,11 @@ public:
   vec<vec<vec<int> > >edgeCounts;
   vec<vec<double> >qList;
   vec<double> qSqrtSums;
-  vec<double> temp_meanEdges;
   Mat theta_mat;
+  Mat QMat;
   
   void update_qSqrtSums();
+  void update_qSqrtSums(int i);
   
   void ingestEdges(List lst);
   void updateQ(int);
@@ -42,18 +43,20 @@ public:
   
   void update_ti(int i);
   void one_em();
-  List em(int max_it, double tol);
+  void par_one_em();
+  List em(int max_it, double tol, bool par);
   
   double expectedDegree(int i);
   NumericMatrix get_theta();
 };
 
-List BKN::em(int max_it, double tol){
+List BKN::em(int max_it, double tol, bool par){
   double err = tol + 1.0;
   int iter = 0;
   Mat theta_old = theta_mat.copy();
   while( (iter < max_it) & (err > tol) ){
-    one_em();
+    if(!par){ one_em(); }
+    else{ par_one_em(); }
     err = compute_err(theta_old, theta_mat);
     theta_old = theta_mat.copy();
     iter++;
@@ -86,6 +89,7 @@ BKN::BKN(List edgeCountList, NumericMatrix input_pmat){
   ingestEdges(edgeCountList);
   pTol = 0.00000001;
   tol = 0.0001;
+  QMat = theta_mat.copy();
 }
 
 void BKN::ingestEdges(List lst){
@@ -109,27 +113,29 @@ void BKN::ingestEdges(List lst){
   }
 }
 
-
-void BKN::one_em(){
-  updateQ();
-  update_qSqrtSums();
-  for(int i = 0; i < nNodes; i++){ update_ti(i); }
+void BKN::update_qSqrtSums(int i){
+  int this_n, this_j, this_A;
+  double meanSum;
+  this_n = edgeCounts[i].size();
+  for(int k = 0; k < dim; k++){ QMat(i,k) = 0.0; }
+  for(int ii = 0; ii < this_n; ii++){
+    this_j = edgeCounts[i][ii][0];
+    this_A = edgeCounts[i][ii][1];
+    meanSum = meanEdges(i, this_j);
+    for(int k = 0; k < dim; k++){
+      QMat(i, k) = QMat(i,k) + this_A * qijz(i, this_j, k, meanSum);
+    }
+  }
 }
+
 
 void BKN::update_qSqrtSums(){
   qSqrtSums.resize(dim);
-  int this_n, this_j, this_A;
-  double meanSum;
   for(int k = 0; k < dim; k++){ qSqrtSums[k] = 0.0; }
-  for(int i = 0; i <nNodes; i++){
-    this_n = edgeCounts[i].size();
-    for(int ii = 0; ii < this_n; ii++){
-      this_j = edgeCounts[i][ii][0];
-      this_A = edgeCounts[i][ii][1];
-      meanSum = meanEdges(i, this_j);
-      for(int k = 0; k < dim; k++){
-        qSqrtSums[k] += this_A * qijz(i, this_j, k, meanSum);
-      }
+  for(int i = 0; i < nNodes; i++){ update_qSqrtSums(i); }
+  for(int i = 0; i < nNodes; i++){
+    for(int k = 0; k < dim; k++){
+      qSqrtSums[k] += QMat(i,k);
     }
   }
   for(int k = 0; k < dim; k++){
@@ -141,7 +147,7 @@ void BKN::update_ti(int i){
   int this_n = edgeCounts[i].size();
   int this_j, this_A;
   double these_meanEdges;
-  temp_meanEdges.resize(dim);
+  vec<double> temp_meanEdges(dim);
   for(int k = 0; k < dim; k++){ temp_meanEdges[k] = 0.0; }
   for(int ii = 0; ii < this_n; ii++){
     this_j = edgeCounts[i][ii][0];
@@ -209,3 +215,67 @@ double BKN::llk(){
   }
   return(ans);
 }
+
+
+
+/*
+ * Parallel Tools
+ * 
+ */
+
+struct ThetaUpdater : public RcppParallel::Worker{
+  BKN* bkn_mod;
+  void operator()(size_t begin, size_t end){
+    for(int i = begin; i < end; i++){ bkn_mod->update_ti(i); }
+  }
+  ThetaUpdater(BKN* ptr){
+    bkn_mod = ptr;
+  }
+};
+
+struct QMat_Updater : public RcppParallel::Worker{
+  BKN* bkn_mod;
+  QMat_Updater(BKN* ptr){ bkn_mod = ptr; }
+  
+  void operator()(size_t begin, size_t end){
+    for(int i = begin; i < end; i++){ 
+      bkn_mod->update_qSqrtSums(i); 
+    }
+  }
+};
+
+struct QUpdater : public RcppParallel::Worker{
+  BKN* bkn_mod;
+  void operator()(size_t begin, size_t end){
+    for(int i = begin; i < end; i++){ bkn_mod->updateQ(i); }
+  }
+  QUpdater(BKN* ptr){ bkn_mod = ptr; }
+};
+
+void BKN::one_em(){
+  updateQ();
+  update_qSqrtSums();
+  for(int i = 0; i < nNodes; i++){ update_ti(i); }
+}
+
+void BKN::par_one_em(){
+  QUpdater qup(this);
+  QMat_Updater qsqup(this);
+  ThetaUpdater tup(this);
+  
+  RcppParallel::parallelFor(0, nNodes, qup);
+  
+  qSqrtSums.resize(dim);
+  for(int k = 0; k < dim; k++){ qSqrtSums[k] = 0.0; }
+  RcppParallel::parallelFor(0, nNodes, qsqup);
+  for(int i = 0; i < nNodes; i++){
+    for(int k = 0; k < dim; k++){
+      qSqrtSums[k] += QMat(i,k);
+    }
+  }
+  
+  for(int k = 0; k < dim; k++){ qSqrtSums[k] = sqrt(qSqrtSums[k]); }
+  
+  RcppParallel::parallelFor(0, nNodes, tup);
+}
+
