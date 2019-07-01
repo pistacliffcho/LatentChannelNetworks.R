@@ -39,7 +39,7 @@ public:
     return(ans);
   }
   
-  vec<double> colMeans(){
+  vec<double> colSums(){
     vec<double> ans(nCols);
     double curVal;
     for(int j = 0; j < nCols; j++){
@@ -47,7 +47,15 @@ public:
       for(int i = 0; i < nRows; i++){
         curVal += vals[ i + j * nRows ];
       }
-      ans[j] = curVal / (double(nRows));
+      ans[j] = curVal;
+    }
+    return(ans);
+  }
+  
+  vec<double> colMeans(){
+    vec<double> ans = colSums();
+    for(int j = 0; j < nCols; j++){
+      ans[j] = ans[j] / (double(nRows));
     }
     return(ans);
   }

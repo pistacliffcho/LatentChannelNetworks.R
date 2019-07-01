@@ -9,3 +9,6 @@ bkn_mod$get_theta()
 bkn_mod$llk()
 emBKN(bkn_mod, 10)
 bkn_mod$llk()
+emBKN(bkn_mod, 10, type = 2)
+bkn_mod$llk()
+

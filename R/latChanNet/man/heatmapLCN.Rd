@@ -4,12 +4,12 @@
 \alias{heatmapLCN}
 \title{Build heatmap from model}
 \usage{
-heatmapLCN(lcn_mod, grp, minGrpSize = NULL, cols = c("black",
-  "lightblue", "orange", "red"), plotChannelNumber = T, xlab = " ",
-  ylab = " ", sortColumns = T, ...)
+heatmapLCN(mod, grp, minGrpSize = NULL, cols = c("black", "lightblue",
+  "orange", "red"), plotChannelNumber = T, xlab = " ", ylab = " ",
+  sortColumns = T, ...)
 }
 \arguments{
-\item{lcn_mod}{LCN model}
+\item{mod}{LCN or BKN model}
 
 \item{grp}{Vector of group categories for each node}
 

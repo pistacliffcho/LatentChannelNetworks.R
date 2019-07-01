@@ -21,6 +21,25 @@ public:
   int dim;
   double tol, pTol;
   vec<vec<vec<int> > >edgeCounts;
+  
+  /**
+   * Initialization tools
+   **/
+  BKN(List edgeCountList, NumericMatrix input_pmat);
+  void ingestEdges(List lst);
+  
+  /**
+   * Likelihood tools
+   **/
+  
+  double node_llk(int i);
+  double llk();
+  double meanEdges(int i, int j);
+  
+  
+  /** 
+   * Fields + methods for BKN's algorithm
+   **/
   vec<vec<double> >qList;
   vec<double> qSqrtSums;
   Mat theta_mat;
@@ -29,34 +48,76 @@ public:
   void update_qSqrtSums();
   void update_qSqrtSums(int i);
   
-  void ingestEdges(List lst);
   void updateQ(int);
   void updateQ();
-//  void parInitCache();
-  BKN(List edgeCountList, NumericMatrix input_pmat);
-  
-  double meanEdges(int i, int j);
   double qijz(int i, int j, int k, double meanEdges);
-  
-  double node_llk(int i);
-  double llk();
-  
+
   void update_ti(int i);
   void one_em();
   void par_one_em();
-  List em(int max_it, double tol, bool par);
+  List em(int max_it, double tol, bool par, int type);
+
+  /**
+   * LCN-style EM
+   **/
+  void update_ti2(int i);
+  void one_em2();
+  vec<double> thetaColSums;
   
+  /**
+   * Querying tools
+   **/  
   double expectedDegree(int i);
   NumericMatrix get_theta();
 };
 
-List BKN::em(int max_it, double tol, bool par){
+void BKN::one_em2(){
+  thetaColSums = theta_mat.colSums();
+  for(int i = 0; i < nNodes; i++){ update_ti2(i); }
+}
+
+void BKN::update_ti2(int i){
+  int n_edges = edgeCounts[i].size();
+  vec<double> denom(n_edges, 0.0);
+  int this_j;
+  double tik, tjk;
+  for(int k = 0; k < dim; k++){
+    tik = theta_mat(i,k);
+    for(int ii = 0; ii < n_edges; ii++){
+      this_j = edgeCounts[i][ii][0];
+      tjk = theta_mat(this_j,k);
+      denom[ii] += tik * tjk;
+    }
+  }
+  
+  double tik_new;
+  for(int k = 0; k < dim; k++){
+    tik_new = 0.0;
+    tik = theta_mat(i,k);
+    double this_A;
+    for(int ii = 0; ii < n_edges; ii++){
+      this_j = edgeCounts[i][ii][0];
+      tjk = theta_mat(this_j,k);
+      this_A = edgeCounts[i][ii][1];
+      tik_new += this_A * tjk / denom[ii];
+    }
+    theta_mat(i,k) = tik_new * tik / thetaColSums[k];
+  }
+}
+
+
+List BKN::em(int max_it, double tol, bool par, int type){
   double err = tol + 1.0;
   int iter = 0;
   Mat theta_old = theta_mat.copy();
   while( (iter < max_it) & (err > tol) ){
-    if(!par){ one_em(); }
-    else{ par_one_em(); }
+    if(type == 1){
+      if(!par){ one_em(); }
+      else{ par_one_em(); }
+    }
+    if(type == 2){
+      one_em2();
+    }
     err = compute_err(theta_old, theta_mat);
     theta_old = theta_mat.copy();
     iter++;
