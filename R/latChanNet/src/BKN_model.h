@@ -60,7 +60,7 @@ public:
   /**
    * LCN-style EM
    **/
-  void update_ti2(int i);
+  void update_ti2(int i, Mat &new_theta);
   void one_em2();
   vec<double> thetaColSums;
   
@@ -73,10 +73,19 @@ public:
 
 void BKN::one_em2(){
   thetaColSums = theta_mat.colSums();
-  for(int i = 0; i < nNodes; i++){ update_ti2(i); }
+  Mat new_theta = theta_mat.copy();
+  for(int i = 0; i < nNodes; i++){ update_ti2(i, new_theta); }
+  theta_mat = new_theta.copy();
 }
 
-void BKN::update_ti2(int i){
+double expected_y(double Aij, 
+                  double tik, double tjk, 
+                  double denom){
+  double ans = Aij * tik * tjk / denom;
+  return(ans);
+}
+
+void BKN::update_ti2(int i, Mat &new_theta){
   int n_edges = edgeCounts[i].size();
   vec<double> denom(n_edges, 0.0);
   int this_j;
@@ -90,7 +99,7 @@ void BKN::update_ti2(int i){
     }
   }
   
-  double tik_new;
+  double tik_new, exp_y;
   for(int k = 0; k < dim; k++){
     tik_new = 0.0;
     tik = theta_mat(i,k);
@@ -99,9 +108,10 @@ void BKN::update_ti2(int i){
       this_j = edgeCounts[i][ii][0];
       tjk = theta_mat(this_j,k);
       this_A = edgeCounts[i][ii][1];
-      tik_new += this_A * tjk / denom[ii];
+      exp_y = expected_y(this_A, tik, tjk, denom[ii]);
+      tik_new += exp_y;
     }
-    theta_mat(i,k) = tik_new * tik / thetaColSums[k];
+    new_theta(i, k) = tik_new / (thetaColSums[k]);
   }
 }
 
@@ -261,11 +271,16 @@ double BKN::node_llk(int i){
   double this_meanEdges, this_x;
   double ans = 0.0;
   for(int j = 0; j < nNodes; j++){
-    if(i == j){ continue; }
     this_meanEdges = meanEdges(i,j);
     this_x = these_edgeCounts[j];
-    ans += R::dpois(this_x, this_meanEdges, true);
+    if(i == j){
+      ans += 2.0 * R::dpois(this_x, this_meanEdges, true);
+    }
+    else{
+      ans += R::dpois(this_x, this_meanEdges, true);
+    }
   }
+  ans = ans/2.0;
   return(ans);
 }
 

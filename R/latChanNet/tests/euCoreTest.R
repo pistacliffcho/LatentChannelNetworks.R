@@ -44,10 +44,14 @@ unq_edges = function(edgeList){
 
 edgeList = unq_edges(edgeList)
 countList = cbind(edgeList, 1)
+set.seed(1)
 bkn_mod = makeBKN(countList, nChan)
-system.time( res <- emBKN(bkn_mod, par = T) )
+system.time( res <- emBKN(bkn_mod, par = F, type = 1) )
+set.seed(1)
+bkn_mod2 = makeBKN(countList, nChan)
+system.time( res2 <- emBKN(bkn_mod2, par = F, type = 2) )
 bkn_mod$llk()
-
+bkn_mod2$llk()
 
 bkn_degs = NULL
 for(i in 1:max(edgeList)){
