@@ -42,10 +42,12 @@ public:
   vec<double> colSums(){
     vec<double> ans(nCols);
     double curVal;
+    int this_col_flat;
     for(int j = 0; j < nCols; j++){
       curVal = 0.0;
+      this_col_flat = j * nRows;
       for(int i = 0; i < nRows; i++){
-        curVal += vals[ i + j * nRows ];
+        curVal += vals[ i + this_col_flat ];
       }
       ans[j] = curVal;
     }

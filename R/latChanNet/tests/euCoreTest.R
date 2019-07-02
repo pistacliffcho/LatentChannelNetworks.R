@@ -50,12 +50,25 @@ system.time( res <- emBKN(bkn_mod, par = F, type = 1) )
 set.seed(1)
 bkn_mod2 = makeBKN(countList, nChan)
 system.time( res2 <- emBKN(bkn_mod2, par = F, type = 2) )
-bkn_mod$llk()
 bkn_mod2$llk()
+pre_t = bkn_mod2$get_theta()
+node_llk = NULL
+for(i in 0:1004){
+  node_llk[i+1] = bkn_mod2$node_llk(i)
+}
+
+system.time( res <- emBKN(bkn_mod2, par = F, type = 1) )
+node_llk2 = NULL
+for(i in 0:1004){
+  node_llk2[i+1] = bkn_mod2$node_llk(i)
+}
+
+node_llk2 = NULL
+heatmapLCN(bkn_mod2, dpt, minGrpSize = 15)
 
 bkn_degs = NULL
 for(i in 1:max(edgeList)){
-  bkn_degs[i] = bkn_mod$expectedDegree(i)
+  bkn_degs[i] = bkn_mod2$expectedDegree(i)
 }
 
 lcn_degs = NULL

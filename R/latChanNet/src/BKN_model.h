@@ -15,18 +15,33 @@
 using namespace Rcpp;
 
 
+/**
+ * Class for information on edges
+ * Because model is Poisson, want both connected node ID and count
+ **/
+class Edge{
+public:
+  int j;
+  double cnt;
+};
+
+
+/**
+ * Class for BKN model
+ **/
 class BKN{
 public:
   int nNodes;
   int dim;
   double tol, pTol;
-  vec<vec<vec<int> > >edgeCounts;
+  vec<vec<Edge> >edgeCounts;
   
   /**
    * Initialization tools
    **/
   BKN(List edgeCountList, NumericMatrix input_pmat);
   void ingestEdges(List lst);
+  void set_theta(NumericMatrix theta);
   
   /**
    * Likelihood tools
@@ -55,15 +70,8 @@ public:
   void update_ti(int i);
   void one_em();
   void par_one_em();
-  List em(int max_it, double tol, bool par, int type);
+  List em(int max_it, double tol, bool par);
 
-  /**
-   * LCN-style EM
-   **/
-  void update_ti2(int i, Mat &new_theta);
-  void one_em2();
-  vec<double> thetaColSums;
-  
   /**
    * Querying tools
    **/  
@@ -71,63 +79,17 @@ public:
   NumericMatrix get_theta();
 };
 
-void BKN::one_em2(){
-  thetaColSums = theta_mat.colSums();
-  Mat new_theta = theta_mat.copy();
-  for(int i = 0; i < nNodes; i++){ update_ti2(i, new_theta); }
-  theta_mat = new_theta.copy();
-}
+/**
+ * EM call: controls which EM method used
+ **/
 
-double expected_y(double Aij, 
-                  double tik, double tjk, 
-                  double denom){
-  double ans = Aij * tik * tjk / denom;
-  return(ans);
-}
-
-void BKN::update_ti2(int i, Mat &new_theta){
-  int n_edges = edgeCounts[i].size();
-  vec<double> denom(n_edges, 0.0);
-  int this_j;
-  double tik, tjk;
-  for(int k = 0; k < dim; k++){
-    tik = theta_mat(i,k);
-    for(int ii = 0; ii < n_edges; ii++){
-      this_j = edgeCounts[i][ii][0];
-      tjk = theta_mat(this_j,k);
-      denom[ii] += tik * tjk;
-    }
-  }
-  
-  double tik_new, exp_y;
-  for(int k = 0; k < dim; k++){
-    tik_new = 0.0;
-    tik = theta_mat(i,k);
-    double this_A;
-    for(int ii = 0; ii < n_edges; ii++){
-      this_j = edgeCounts[i][ii][0];
-      tjk = theta_mat(this_j,k);
-      this_A = edgeCounts[i][ii][1];
-      exp_y = expected_y(this_A, tik, tjk, denom[ii]);
-      tik_new += exp_y;
-    }
-    new_theta(i, k) = tik_new / (thetaColSums[k]);
-  }
-}
-
-
-List BKN::em(int max_it, double tol, bool par, int type){
+List BKN::em(int max_it, double tol, bool par){
   double err = tol + 1.0;
   int iter = 0;
   Mat theta_old = theta_mat.copy();
   while( (iter < max_it) & (err > tol) ){
-    if(type == 1){
-      if(!par){ one_em(); }
-      else{ par_one_em(); }
-    }
-    if(type == 2){
-      one_em2();
-    }
+    if(!par){ one_em(); }
+    else{ par_one_em(); }
     err = compute_err(theta_old, theta_mat);
     theta_old = theta_mat.copy();
     iter++;
@@ -138,51 +100,18 @@ List BKN::em(int max_it, double tol, bool par, int type){
   return(ans);
 }
 
-double BKN::expectedDegree(int i){
-  i--;
-  if(i < 0 || i >= nNodes){ stop("invalid i"); }
-  double ans = 0.0;
-  for(int j = 0; j < nNodes; j++){
-    ans += meanEdges(i,j);
-  }
-  return(ans);
+
+
+/**
+ * EM as presented in BKN 2011
+ **/
+
+void BKN::one_em(){
+  updateQ();
+  update_qSqrtSums();
+  for(int i = 0; i < nNodes; i++){ update_ti(i); }
 }
 
-NumericMatrix BKN::get_theta(){
-  NumericMatrix ans = theta_mat.getNumMat();
-  return(ans);
-}
-
-BKN::BKN(List edgeCountList, NumericMatrix input_pmat){
-  theta_mat = Mat(input_pmat);
-  dim = input_pmat.cols();
-  nNodes = input_pmat.rows();
-  ingestEdges(edgeCountList);
-  pTol = 0.00000001;
-  tol = 0.0001;
-  QMat = theta_mat.copy();
-}
-
-void BKN::ingestEdges(List lst){
-  nNodes = lst.length();
-  edgeCounts.resize(nNodes);
-  qList.resize(nNodes);
-  int this_length, j, A;
-  for(int i = 0; i < nNodes; i++){
-    IntegerMatrix theseEdges = lst[i];
-    this_length = theseEdges.nrow();
-    edgeCounts[i].resize(this_length);
-    qList[i].resize(this_length);
-    for(int ii = 0; ii < this_length; ii++){
-      edgeCounts[i][ii].resize(2);
-      // Switching from 1 to zero index
-      j = theseEdges(ii,0) - 1;
-      A = theseEdges(ii,1);
-      edgeCounts[i][ii][0] = j;
-      edgeCounts[i][ii][1] = A;
-    }
-  }
-}
 
 void BKN::update_qSqrtSums(int i){
   int this_n, this_j, this_A;
@@ -190,8 +119,8 @@ void BKN::update_qSqrtSums(int i){
   this_n = edgeCounts[i].size();
   for(int k = 0; k < dim; k++){ QMat(i,k) = 0.0; }
   for(int ii = 0; ii < this_n; ii++){
-    this_j = edgeCounts[i][ii][0];
-    this_A = edgeCounts[i][ii][1];
+    this_j = edgeCounts[i][ii].j;
+    this_A = edgeCounts[i][ii].cnt;
     meanSum = meanEdges(i, this_j);
     for(int k = 0; k < dim; k++){
       QMat(i, k) = QMat(i,k) + this_A * qijz(i, this_j, k, meanSum);
@@ -221,8 +150,8 @@ void BKN::update_ti(int i){
   vec<double> temp_meanEdges(dim);
   for(int k = 0; k < dim; k++){ temp_meanEdges[k] = 0.0; }
   for(int ii = 0; ii < this_n; ii++){
-    this_j = edgeCounts[i][ii][0];
-    this_A = edgeCounts[i][ii][1];
+    this_j = edgeCounts[i][ii].j;
+    this_A = edgeCounts[i][ii].cnt;
     these_meanEdges = meanEdges(i, this_j);
     for(int k = 0; k < dim; k++){
       temp_meanEdges[k] += qijz(i, this_j, k, these_meanEdges) * this_A;
@@ -251,7 +180,7 @@ void BKN::updateQ(int i){
   int j, n_these_edges;
   n_these_edges = edgeCounts[i].size();
   for(int ii = 0; ii < n_these_edges; ii++){
-    j = edgeCounts[i][ii][0];
+    j = edgeCounts[i][ii].j;
     qList[i][ii] = meanEdges(i,j);
   }
 }
@@ -261,24 +190,95 @@ void BKN::updateQ(){
 }
 
 
+/**
+ * Model querying
+ **/
+
+double BKN::expectedDegree(int i){
+  i--;
+  if(i < 0 || i >= nNodes){ stop("invalid i"); }
+  double ans = 0.0;
+  for(int j = 0; j < nNodes; j++){
+    ans += meanEdges(i,j);
+  }
+  return(ans);
+}
+
+NumericMatrix BKN::get_theta(){
+  NumericMatrix ans = theta_mat.getNumMat();
+  return(ans);
+}
+
+/**
+ * Model initialization
+ **/
+
+BKN::BKN(List edgeCountList, NumericMatrix input_pmat){
+  theta_mat = Mat(input_pmat);
+  dim = input_pmat.cols();
+  nNodes = input_pmat.rows();
+  ingestEdges(edgeCountList);
+  pTol = 0.00000001;
+  tol = 0.0001;
+  QMat = theta_mat.copy();
+}
+
+void BKN::ingestEdges(List lst){
+  nNodes = lst.length();
+  edgeCounts.resize(nNodes);
+  qList.resize(nNodes);
+  int this_length, j, A;
+  for(int i = 0; i < nNodes; i++){
+    IntegerMatrix theseEdges = lst[i];
+    this_length = theseEdges.nrow();
+    edgeCounts[i].resize(this_length);
+    qList[i].resize(this_length);
+    for(int ii = 0; ii < this_length; ii++){
+      edgeCounts[i][ii];
+      // Switching from 1 to zero index
+      j = theseEdges(ii,0) - 1;
+      A = theseEdges(ii,1);
+      edgeCounts[i][ii].j = j;
+      edgeCounts[i][ii].cnt = A;
+    }
+  }
+}
+
+void BKN::set_theta(NumericMatrix new_theta){
+  if(new_theta.rows() != theta_mat.nRows || 
+     new_theta.cols() != theta_mat.nCols){
+    stop("Incorrect dimensions for new theta");
+  }
+  
+  for(int i = 0; i < theta_mat.nRows; i++){
+    for(int j = 0; j < theta_mat.nCols; j++){
+      theta_mat(i,j) = new_theta(i,j);
+    }
+  }
+}
+
+
+/**
+ * Log-likelihood tools
+ **/
 
 double BKN::node_llk(int i){
   int nEdges = edgeCounts[i].size();
   vec<double> these_edgeCounts(nNodes, 0);
   for(int ii = 0; ii < nEdges; ii++){
-    these_edgeCounts[ edgeCounts[i][ii][0] ] = edgeCounts[i][ii][1];
+    these_edgeCounts[ edgeCounts[i][ii].j ] = edgeCounts[i][ii].cnt;
   }
   double this_meanEdges, this_x;
   double ans = 0.0;
   for(int j = 0; j < nNodes; j++){
     this_meanEdges = meanEdges(i,j);
     this_x = these_edgeCounts[j];
-    if(i == j){
-      ans += 2.0 * R::dpois(this_x, this_meanEdges, true);
-    }
-    else{
+//    if(i == j){
+//      ans += 2.0 * R::dpois(this_x, this_meanEdges, true);
+//    }
+//    else{
       ans += R::dpois(this_x, this_meanEdges, true);
-    }
+//    }
   }
   ans = ans/2.0;
   return(ans);
@@ -328,11 +328,6 @@ struct QUpdater : public RcppParallel::Worker{
   QUpdater(BKN* ptr){ bkn_mod = ptr; }
 };
 
-void BKN::one_em(){
-  updateQ();
-  update_qSqrtSums();
-  for(int i = 0; i < nNodes; i++){ update_ti(i); }
-}
 
 void BKN::par_one_em(){
   QUpdater qup(this);

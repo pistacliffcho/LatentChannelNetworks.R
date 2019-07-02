@@ -57,7 +57,7 @@ makeBKN = function(edgeCountList, nDims = 5){
 
 
 #' @export
-emBKN = function(BKN_mod, max_its = 10000, tol = 0.0001, par = F, type = 1){
-  ans = BKN_mod$em(max_its, tol, par, type)
+emBKN = function(BKN_mod, max_its = 10000, tol = 0.0001, par = F){
+  ans = BKN_mod$em(max_its, tol, par)
   return(ans)
 }

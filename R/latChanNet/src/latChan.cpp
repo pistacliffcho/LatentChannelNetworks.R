@@ -23,5 +23,7 @@ RCPP_MODULE(BKN){
   .method("one_em", &BKN::one_em)
   .method("em", &BKN::em)
   .method("get_theta", &BKN::get_theta)
-  .method("expectedDegree", &BKN::expectedDegree);
+  .method("set_theta", &BKN::set_theta)
+  .method("expectedDegree", &BKN::expectedDegree)
+  .method("node_llk", &BKN::node_llk);
 }
