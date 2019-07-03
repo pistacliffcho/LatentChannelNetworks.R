@@ -4,10 +4,12 @@
 \alias{prepEdgeList}
 \title{Prep Edgelist}
 \usage{
-prepEdgeList(edgeList)
+prepEdgeList(edgeList, max_node = NULL)
 }
 \arguments{
 \item{edgeList}{An nx2 matrix of undirected edge pairs}
+
+\item{max_node}{Optional max node value: max(edgeList) used if null}
 }
 \description{
 Prepares edgelist for \code{makeLCN}

@@ -4,12 +4,14 @@
 \alias{makeBKN}
 \title{Make Ball-Karrer-Newman (BKN) Model}
 \usage{
-makeBKN(edgeCountList, nDims = 5)
+makeBKN(edgeCountList, nDims = 5, unknownEdges = NULL)
 }
 \arguments{
-\item{edgeCountList}{A nx3 matrix of edges. See details.}
+\item{edgeCountList}{An nx3 matrix of edges. See details.}
 
 \item{nDims}{Number of Latent Communities}
+
+\item{unknownEdges}{An nx2 matrix of edges for which the count is unknown}
 }
 \description{
 Make Ball-Karrer-Newman (BKN) Model

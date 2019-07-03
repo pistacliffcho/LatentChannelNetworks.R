@@ -17,6 +17,7 @@ public:
   int dim;
   double tol, pTol;
   vec<vec<int> >edgeList;
+  vec<vec<int> >missingEdges;
   Mat pmat;
   vec<double> pbar;
   
@@ -26,10 +27,13 @@ public:
   double err;
   
   void ingestEdges(List lst);
+  void ingestMissingEdges(List lst);
   void initializeNode(int);
   void initializeCache();
   void parInitCache();
-  LCN(List edgeList, NumericMatrix input_pmat);
+  LCN(List edgeList, 
+      NumericMatrix input_pmat, 
+      List missingEdges);
   
   double edgeProb(int i, int j);
   double node_llk(int i);
@@ -54,12 +58,15 @@ public:
  * Initialization methods
  ***/
 
-LCN::LCN(List input_edgeList, NumericMatrix input_pmat){
+LCN::LCN(List input_edgeList, 
+         NumericMatrix input_pmat, 
+         List input_missEdges){
   pmat = Mat(input_pmat);
   pbar = pmat.colMeans();
   dim = input_pmat.cols();
   nNodes = input_pmat.rows();
   ingestEdges(input_edgeList);
+  ingestMissingEdges(input_missEdges);
   initializeCache();
   pTol = 0.00000001;
   tol = 0.0001;
@@ -90,6 +97,22 @@ int findTransposeInd(int i, int j, List rEdgeList){
   }
   stop("Lookup unsuccessful!!");
   return(0);
+}
+
+void LCN::ingestMissingEdges(List lst){
+  if(lst.size() != nNodes){ 
+    stop("missingEdges list wrong size"); 
+  }
+  missingEdges.resize(nNodes);
+  int this_n;
+  for(int i = 0; i < nNodes; i++){
+    IntegerVector these_missing_edges = lst[i];
+    this_n = these_missing_edges.size();
+    missingEdges[i].resize(this_n);
+    for(int ii = 0; ii < this_n; ii++){
+      missingEdges[i][ii] = these_missing_edges[ii];
+    }
+  }
 }
 
 void LCN::ingestEdges(List lst){
@@ -178,8 +201,15 @@ double LCN::update_pik(int i, int k){
   double edgeContribution = 0.0;
   double noEdgeContribution = nNodes * pik * 
     (1.0 - pbar[k]) - pik * (1.0 - pik);
-  int j;
   double pjk, this_edgeP, pikpjk;
+  int this_j;
+  int n_miss = missingEdges[i].size();
+  for(int ii = 0; ii < n_miss; ii++){
+    this_j = missingEdges[i][ii];
+    pjk = pmat(i,this_j);
+    noEdgeContribution -= pik * pjk;
+  }
+  int j;
   int* jPtr = &edgeList[i][0];
   double* epPtr = &cache_probs[i][0];
   for(int j_cnt = 0; j_cnt < this_J_tot; j_cnt++){
@@ -194,7 +224,7 @@ double LCN::update_pik(int i, int k){
   noEdgeContribution -= double(this_J_tot) * pik;
   
   double ans = (edgeContribution + noEdgeContribution) 
-    / (double(nNodes) - 1.0);
+    / (double(nNodes - missingEdges[i].size()) - 1.0);
   
   return(ans);
 }

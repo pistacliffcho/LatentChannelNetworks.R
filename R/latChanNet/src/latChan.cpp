@@ -4,7 +4,7 @@
 // LCN MODEL
 RCPP_MODULE(LCN){
   class_<LCN>("LCN")
-  .constructor<List, NumericMatrix>("Args: EdgeList, Initial p-mat")
+  .constructor<List, NumericMatrix, List>("Args: EdgeList, Initial p-mat, missingEdgeList")
   .method("em", &LCN::em)
   .method("llk", &LCN::llk)
   .method("get_pmat", &LCN::get_pmat)
@@ -18,7 +18,7 @@ RCPP_MODULE(LCN){
 // BKN MODEL
 RCPP_MODULE(BKN){
   class_<BKN>("BKN")
-  .constructor<List, NumericMatrix>("Args: EdgeCountList, Initial theta-mat")
+  .constructor<List, NumericMatrix, List>("Args: EdgeCountList, Initial theta-mat")
   .method("llk", &BKN::llk)
   .method("one_em", &BKN::one_em)
   .method("em", &BKN::em)

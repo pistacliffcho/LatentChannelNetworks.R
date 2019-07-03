@@ -36,22 +36,34 @@ prepEdgeCountList = function(edgeCountList){
 
 
 #' @title Make Ball-Karrer-Newman (BKN) Model
-#' @param edgeCountList A nx3 matrix of edges. See details.
+#' @param edgeCountList An nx3 matrix of edges. See details.
 #' @param nDims Number of Latent Communities
+#' @param unknownEdges An nx2 matrix of edges for which the count is unknown
 #' @details `edgeCountList` should be an nx3 matrix, with columns 1 & 2
 #' being node ID's and column 3 being the number of edges. Note that 
 #' the graph is considered to be undirected, so `[1,3,4]` and `[3,1,4]`
 #' both imply that there are 4 edges between nodes 1 and 3. 
 #' If node pairs appear more than once in edgeCountList, edge counts are summed. 
 #' @export
-makeBKN = function(edgeCountList, nDims = 5){
-  preppedCountList = prepEdgeCountList(edgeCountList)
-  nRows = length(preppedCountList)
+makeBKN = function(edgeCountList, nDims = 5, unknownEdges = NULL){
+  if(ncol(edgeCountList) != 3)
+    stop("edgeCountList should have 3 columns. See ?makeBKN")
+  nNodes = max(edgeCountList)
+  unknownMeanEdges = sum(edgeCountList[,3]) / nNodes
+  if(is.null(unknownEdges)){ unknownList = lapply(rep(0, nNodes), numeric) }
+  else{ 
+    unknownList = prepEdgeList(unknownEdges, nNodes) 
+    unknownEdges = cbind(unknownEdges, unknownMeanEdges)
+    colnames(unknownEdges) = colnames(edgeCountList)
+  }
+  aug_edgeCountList = rbind(edgeCountList, unknownEdges)
+  preppedCountList = prepEdgeCountList(aug_edgeCountList)
   theta_init = matrix(
-    runif(nRows * nDims, max = 1 / sqrt(nDims)), 
-    nrow = nRows)
+      runif(nNodes * nDims, 
+            max = 1 / sqrt(nDims)), 
+    nrow = nNodes)
   
-  ans = BKN$new(preppedCountList, theta_init)
+  ans = BKN$new(preppedCountList, theta_init, unknownList)
   return(ans)
 }
 

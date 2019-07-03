@@ -9,10 +9,9 @@
 using namespace Rcpp;
 
 
-/*
+/**
  * Threadsafe Matrix
- */
-
+ **/
 class Mat{
 public:
   vec<double> vals;

@@ -31,14 +31,15 @@
 #' @title Prep Edgelist
 #' @description Prepares edgelist for \code{makeLCN}
 #' @param edgeList An nx2 matrix of undirected edge pairs
-prepEdgeList = function(edgeList){
+#' @param max_node Optional max node value: max(edgeList) used if null
+prepEdgeList = function(edgeList, max_node = NULL){
   edgeList = as.matrix(edgeList)
+  if(is.null(max_node)){ max_node = max(edgeList) }
   if(ncol(edgeList) != 2){ stop("edgeList should have only two columns") }
   storage.mode(edgeList) = "integer"
   
-  min_n = min(edgeList)
-  if(min_n < 1) stop("Node ids must start with 1")
-  max_n = max(edgeList)
+  min_node = min(edgeList)
+  if(min_node < 1) stop("Node ids must start with 1")
   # Breaking up to and from nodes 
   # Note: we are only considering undirected graphs now
   n1 = edgeList[,1]
@@ -56,7 +57,7 @@ prepEdgeList = function(edgeList){
   n2 = n2_new
 
   splt_edges = split(n2, n1)
-  ans = rep(list(integer() ), max_n)
+  ans = rep(list(integer() ), max_node)
   for(lname in names(splt_edges) ){
     unq_edges = unique(splt_edges[[lname]])
     ind = as.integer(lname)
@@ -68,15 +69,28 @@ prepEdgeList = function(edgeList){
 #' @title Make Latent Channel Network Model
 #' @param edgeList A nx2 matrix of edges
 #' @param nDims Number of Latent Channels
+#' @param missingEdges A nx2 matrix of edges for which status in unknown
 #' @export
-makeLCN = function(edgeList, nDims = 5){
+makeLCN = function(edgeList, 
+                   nDims = 5, 
+                   missingEdges = NULL){
   preppedEdgeList = prepEdgeList(edgeList)
   nRows = length(preppedEdgeList)
+  if(is.null(missingEdges)){
+    preppedMissingList = lapply(rep(0, nRows), 
+                                numeric)
+  }
+  else{
+    preppedMissingList = prepEdgeList(missingEdges, nRows)
+  }
   pmat_init = matrix(
     runif(nRows * nDims, max = 1 / sqrt(nDims)), 
     nrow = nRows)
   
-  ans = LCN$new(preppedEdgeList, pmat_init)
+  ans = LCN$new(preppedEdgeList, 
+                pmat_init, 
+                preppedMissingList)
+  
   return(ans)
 }
 
