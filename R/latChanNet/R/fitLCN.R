@@ -74,7 +74,13 @@ prepEdgeList = function(edgeList, max_node = NULL){
 makeLCN = function(edgeList, 
                    nDims = 5, 
                    missingEdges = NULL){
-  preppedEdgeList = prepEdgeList(edgeList)
+  edgeList = as.matrix(edgeList)
+  max_n = max(edgeList)
+  if(!is.null(missingEdges)){
+    missingEdges = as.matrix(missingEdges)
+    max_n = max(c(max_n, max(missingEdges) ) )
+  }
+  preppedEdgeList = prepEdgeList(edgeList, max_n)
   nRows = length(preppedEdgeList)
   if(is.null(missingEdges)){
     preppedMissingList = lapply(rep(0, nRows), 
@@ -82,6 +88,10 @@ makeLCN = function(edgeList,
   }
   else{
     preppedMissingList = prepEdgeList(missingEdges, nRows)
+    if(length(preppedMissingList) != length(preppedEdgeList)){
+      cat("Problem: missing edges not same length as edgelist!")
+      browser()
+    }
   }
   pmat_init = matrix(
     runif(nRows * nDims, max = 1 / sqrt(nDims)), 

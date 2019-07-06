@@ -106,5 +106,11 @@ double compute_err(Mat &m1, Mat &m2){
   return(err);
 }
 
+void checkInd(int i, int max){
+  if(i < 0) stop("negative index");
+  if(i >= max) stop("i >= max");
+}
+  
+  
 
 #endif

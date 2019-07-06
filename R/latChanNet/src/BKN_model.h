@@ -178,12 +178,18 @@ void BKN::update_ti(int i){
     }
   }
   for(int k = 0; k < dim; k++){
+    if(qSqrtSums[k] < pow(10.0, -4.0)){
+      theta_mat(i,k) = 0.0;
+      continue;
+    } 
     theta_mat(i,k) = temp_meanEdges[k] / qSqrtSums[k];
   }
 }
 
 
 double BKN::meanEdges(int i, int j){
+  checkInd(i, nNodes);
+  checkInd(j, nNodes);
   double ans = 0.0;
   for(int k = 0; k < dim; k++){
     ans += theta_mat(i,k) * theta_mat(j,k);
@@ -192,6 +198,11 @@ double BKN::meanEdges(int i, int j){
 }
 
 double BKN::qijz(int i, int j, int k, double meanEdges){
+  if(meanEdges < 0.001){
+    double dk = dim;
+    double ans = 1.0 / dk;
+    return(ans);
+  }
   double ans = theta_mat(i,k) * theta_mat(j,k) / meanEdges;
   return(ans);
 }

@@ -110,7 +110,7 @@ void LCN::ingestMissingEdges(List lst){
     this_n = these_missing_edges.size();
     missingEdges[i].resize(this_n);
     for(int ii = 0; ii < this_n; ii++){
-      missingEdges[i][ii] = these_missing_edges[ii];
+      missingEdges[i][ii] = these_missing_edges[ii] - 1;
     }
   }
 }
@@ -150,6 +150,8 @@ void LCN::ingestEdges(List lst){
  ***/
 
 double LCN::edgeProb(int i, int j){
+  checkInd(i, nNodes);
+  checkInd(j, nNodes);
   double pNoEdge = 1.0;
   double pik, pjk;
   for(int k = 0; k < dim; k++){
@@ -175,7 +177,7 @@ double LCN::node_llk(int i){
     if(hasEdge[j] == 1){ ans += log(this_edgeProb); }
     else{ ans += log(1.0 - this_edgeProb); }
   }
-  return(ans);
+  return(ans/2.0);
 }
 
 double LCN::llk(){
@@ -190,42 +192,65 @@ double LCN::llk(){
  * EM Algorithm: shared between Serial and Parallel methods
  ***/
 
+// Compute latent edge probability, conditional on being an observed edge
+double expectedLatent(double pik, double pjk, double edgeProb){
+  double ans = (pik * pjk + (pik - pik * pjk) * 
+    ( 1.0 - (1.0 - edgeProb) / (1.0 - pik * pjk))  ) / edgeProb;
+  return(ans);
+}
+
 double LCN::update_pik(int i, int k){
   double pik = pmat(i,k);
+  // If value is small enough, skip update
   if( pik < pTol ){ return(pik); }
-  int this_J_tot = edgeList[i].size(); 
-  if(this_J_tot == 0){
+  // Number of edges shared with node. 
+  int n_edges = edgeList[i].size(); 
+  if(n_edges == 0.0){
     pmat(i,k) = 0.0;
     return(0.0);
   }
+  // Converting nNodes to double
+  double d_nNodes = nNodes;
+  
+  // Computing sum of latent edges
+  // Will represent contribution from pairs with observed edges
   double edgeContribution = 0.0;
-  double noEdgeContribution = nNodes * pik * 
-    (1.0 - pbar[k]) - pik * (1.0 - pik);
-  double pjk, this_edgeP, pikpjk;
-  int this_j;
+  // Will represent contribution from pairs with no observed edges
+  double noEdgeContribution = d_nNodes * pik * (1.0 - pbar[k]);
+  // Not self edges are not counted
+  noEdgeContribution -= pik * (1.0 - pik);
+  
+  // Subtracting out non-edge contribution of edges that are unknown
   int n_miss = missingEdges[i].size();
-  for(int ii = 0; ii < n_miss; ii++){
-    this_j = missingEdges[i][ii];
-    pjk = pmat(i,this_j);
-    noEdgeContribution -= pik * pjk;
-  }
   int j;
+  for(int ii = 0; ii < n_miss; ii++){
+    j = missingEdges[i][ii];
+    noEdgeContribution -= pik * (1.0 - pmat(j, k));
+  }
+  double pjk, this_edgeP;
   int* jPtr = &edgeList[i][0];
   double* epPtr = &cache_probs[i][0];
-  for(int j_cnt = 0; j_cnt < this_J_tot; j_cnt++){
+  for(int j_cnt = 0; j_cnt < n_edges; j_cnt++){
     j = jPtr[j_cnt];
     pjk = pmat(j,k);
-    pikpjk = pik * pjk;
-    noEdgeContribution += pikpjk;
+    noEdgeContribution -= pik * (1.0 - pjk);
     this_edgeP = epPtr[j_cnt];
-    edgeContribution +=  (pikpjk + (pik - pikpjk) * 
-      ( 1.0 - (1.0 - this_edgeP) / (1.0 - pikpjk))  ) / this_edgeP;
+    edgeContribution += expectedLatent(pik, pjk, this_edgeP);
   }
-  noEdgeContribution -= double(this_J_tot) * pik;
+//  noEdgeContribution -= this_J_tot * pik;
+  double denom = nNodes - n_miss - 1;
+  double ans = (edgeContribution + noEdgeContribution) / denom;
   
-  double ans = (edgeContribution + noEdgeContribution) 
-    / (double(nNodes - missingEdges[i].size()) - 1.0);
-  
+  if(ans < 0){
+    Rcout << "i = " << i << " k = " << k << " p = ";
+    Rcout << ans << "\n";
+    stop("Negative probability!");
+    }
+  if(ans > 1){
+    Rcout << "i = " << i << " k = " << k << " p = ";
+    Rcout << ans << "\n";
+    stop("Probability greater than one!");
+  }
   return(ans);
 }
 

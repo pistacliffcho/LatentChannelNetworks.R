@@ -12,6 +12,7 @@ RCPP_MODULE(LCN){
   .method("computeTheta", &LCN::computeTheta)
   .method("expectedConnections", &LCN::expectedConnections)
   .method("expectedDegree", &LCN::expectedDegree)
+  .method("edgeProb", &LCN::edgeProb)
   ;
 }
 
@@ -25,5 +26,6 @@ RCPP_MODULE(BKN){
   .method("get_theta", &BKN::get_theta)
   .method("set_theta", &BKN::set_theta)
   .method("expectedDegree", &BKN::expectedDegree)
-  .method("node_llk", &BKN::node_llk);
+  .method("node_llk", &BKN::node_llk)
+  .method("meanEdges", &BKN::meanEdges);
 }

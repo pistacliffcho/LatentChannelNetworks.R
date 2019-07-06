@@ -4,12 +4,14 @@
 \alias{makeLCN}
 \title{Make Latent Channel Network Model}
 \usage{
-makeLCN(edgeList, nDims = 5)
+makeLCN(edgeList, nDims = 5, missingEdges = NULL)
 }
 \arguments{
 \item{edgeList}{A nx2 matrix of edges}
 
 \item{nDims}{Number of Latent Channels}
+
+\item{missingEdges}{A nx2 matrix of edges for which status in unknown}
 }
 \description{
 Make Latent Channel Network Model
