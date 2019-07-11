@@ -195,7 +195,7 @@ double LCN::llk(){
 // Compute latent edge probability, conditional on being an observed edge
 double expectedLatent(double pik, double pjk, double edgeProb){
   double ans = (pik * pjk + (pik - pik * pjk) * 
-    ( 1.0 - (1.0 - edgeProb) / (1.0 - pik * pjk))  ) / edgeProb;
+     ( 1.0 - (1.0 - edgeProb) / (1.0 - pik * pjk))  ) / edgeProb;
   return(ans);
 }
 

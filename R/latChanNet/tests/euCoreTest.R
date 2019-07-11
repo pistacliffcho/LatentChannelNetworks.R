@@ -1,6 +1,6 @@
 library(latChanNet)
 library(RcppParallel)
-setThreadOptions(numThreads = 2)
+setThreadOptions(numThreads = 3)
 
 setwd("~/Documents/GitHub/LatentChannelNetworks.R/R/examples/emailNetwork")
 edgeList = read.table("email-Eu-core.txt") + 1
@@ -88,3 +88,11 @@ plot(bkn_degs, true_degs)
 
 heatmapLCN(lcn_mod, dpt)
 heatmapLCN(bkn_mod, dpt)
+
+
+meta_data = data.frame(dpt = dpt)
+md = makeLatentModel(edgeList, 10, metadata = meta_data)
+md$fit()
+md$predict(1, 2)
+md$predict(1, "dpt1")
+md$predict(2, paste0("dpt", 1:42) )
