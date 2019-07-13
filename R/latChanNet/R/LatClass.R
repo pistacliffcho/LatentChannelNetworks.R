@@ -1,7 +1,36 @@
+#' @description Predictions from LatClass objects
+#' @param mod LatClass model
+#' @param i node index
+#' @param j Either an edge index or metadata colname name
+#' @export
+predict.LatClass = function(mod, i, j, type = "edgeprob"){
+  if(type == "edgeprob"){ return(mod$predict(i,j)) }
+  if(type == "metaprob"){
+    if(length(i) != 1) stop("i must be length 1 if type == 'meta'")
+    mNames = grep(j, mod$metanames, value = T)
+    ans = mod$predict(i, mNames)
+    names(ans) = gsub(j, "", mNames)
+    ans = ans / sum(ans)
+    return(ans)
+  }
+  if(type == "metamax"){
+    probs = predict(mod, i, j, type = "metaprob")
+    max_ind = which.max(probs)
+    ans = names(probs)[max_ind]
+    if(length(ans) == 0) ans = -1
+    return(ans)
+  }
+  else{
+    stop("Unrecognized type. Options are 'edgeprob', 'metaprob' or 'metamax'")
+  }
+}
+
 LatClass = setRefClass("LatClass", 
                        fields = c("cmod", 
-                                  "edgeList", 
-                                  "missingList", 
+                                  "org_edgeList", 
+                                  "org_missingList",
+                                  "used_edgeList",
+                                  "used_missingList",
                                   "metadata", 
                                   "metanames",
                                   "modtype", 
@@ -19,8 +48,8 @@ makeLatentModel = function(edgeList, nDims,
 
   # Filling in basic fields
   ans = new("LatClass")
-  ans$edgeList = edgeList
-  ans$missingList = missingList 
+  ans$org_edgeList = edgeList
+  ans$org_missingList = missingList 
   ans$metadata = metadata
   ans$metanames = NULL
   ans$modtype = model
@@ -44,6 +73,8 @@ makeLatentModel = function(edgeList, nDims,
                               count = count)
     edgeList = aug_edges$edges
     missingList = aug_edges$missingEdges
+    ans$used_edgeList = edgeList
+    ans$used_missingList = missingList
     ans$metanames = aug_edges$metanames
   }
   

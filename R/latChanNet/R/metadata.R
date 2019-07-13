@@ -57,7 +57,7 @@ augWithFactors = function(edgeList, meta_data,
   if(nrow(missingList) == 0)
     missingList = NULL
   ans = list(edges = augEdges, 
-             missingEdges = missingList, 
+             missingEdges = missingList[,1:2], 
              metanames = metanames)
   return(ans)
 }
