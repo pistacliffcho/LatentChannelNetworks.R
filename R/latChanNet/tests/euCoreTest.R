@@ -96,3 +96,7 @@ md$fit()
 md$predict(1, 2)
 md$predict(1, "dpt1")
 md$predict(2, paste0("dpt", 1:42) )
+
+
+
+
