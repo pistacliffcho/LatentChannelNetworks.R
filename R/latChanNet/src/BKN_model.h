@@ -107,6 +107,7 @@ List BKN::em(int max_it, double tol, bool par){
   int iter = 0;
   Mat theta_old = theta_mat.copy();
   while( (iter < max_it) & (err > tol) ){
+    R_CheckUserInterrupt();
     imputeMissingEdges();
     if(!par){ one_em(); }
     else{ par_one_em(); }

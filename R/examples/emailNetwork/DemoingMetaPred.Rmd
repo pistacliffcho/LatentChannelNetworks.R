@@ -1,0 +1,204 @@
+---
+title: "Demoing Metadata Class Accuracy"
+author: "Clifford Anderson-Bergman"
+date: "7/12/2019"
+output: html_document
+---
+This document demos the prediction of metadata. We will demo this with 
+the EuCore network. This is an email network of professors at a university. 
+```{r}
+# Loading libraries and data
+library(latChanNet)
+library(RcppParallel)
+
+# Edge list pairs. Our model expects node IDs to start with 1, 
+# but in this file they start with 0, so we just add 1
+edgeList = read.table("email-Eu-core.txt") + 1
+# Filtering down to unique undirected edges
+edgeList = unq_edges(edgeList)
+# For model of Ball, Karrer and Newman (BKN), 
+# edge counts are needed. 
+# Because simple undirected graph, edge counts are all 1
+bkn_edgeList = cbind(edgeList, 1)
+
+# Department for each node
+dpt = read.table("email-Eu-core-department-labels.txt")[,2] + 1
+# Code expects metadata as data.frame with factors
+meta_data = data.frame(dpt = as.factor(dpt))
+
+# Basic data statistics
+cat("Number of nodes =", max(edgeList), 
+    "\nNumber of edges =", nrow(edgeList), 
+    "\nNumber of departments =", length(unique(dpt)), 
+    "\nRange of professors per department =", 
+    as.numeric(range(table(dpt))))
+```
+Note that we have some departments that only have a single professor in this dataset!
+Of course, we should expect 0 out-of-sample accuracy for nodes that are the only one
+in their category.
+We will revisit this later. 
+
+Below we have tools for estimating the in- and out-of-sample accuracy.
+```{r}
+#' @param edgeList edge list
+#' @param meta meta data, as data.frame
+#' @param K Number of channels
+#' @param model Model to use. Options are "LCN" or "BKN"
+#' @param nMask Number of metadata variables to mask. Does not mask edges
+est_meta_acc = function(edgeList, meta, K = 10, model = "LCN", nMask = 100){
+  n_max = max(edgeList)
+  meta_name = colnames(meta)
+  if(length(meta_name) > 1){
+    stop("est_acc currently expects only one column of metadata")
+  }
+  # Masking subset of metadata
+  mask = sample(1:n_max, nMask, replace = F)
+  meta_masked = meta
+  meta_masked[mask,] = NA
+  # Fitting either Latent Channel Model or BKN model
+  mod = makeLatentModel(edgeList, nDims = K, 
+                        model = model, 
+                        metadata = meta_masked)
+  res = mod$fit()
+  # Extracting most likely prediction for each node
+  preds = character(n_max)
+  for(i in 1:n_max){
+    preds[i] = predict(mod, i, meta_name, type = "metamax")
+  }
+  ans = NULL
+  isCorrect = preds == meta[,meta_name]
+  # "in" is in sample accuracy, "out" is out of sample accuracy
+  ans["in"] = mean(isCorrect[-mask])
+  ans["out"] = mean(isCorrect[mask])
+  return(ans)
+}
+
+# testing
+est_meta_acc(edgeList, meta_data, K = 10, model = "LCN")
+est_meta_acc(bkn_edgeList, meta_data, K = 10, model = "BKN")
+
+# Repeat est_meta_acc for better estimation
+# Also simplifies input
+repeat_acc = function(edgeList, meta, K = 10, MC = 4, 
+                      verbose = T){
+  lcn_res = NULL
+  bkn_res = NULL
+  bkn_edges = cbind(edgeList, 1)
+  for(i in 1:MC){
+    this_lcn_res = est_meta_acc(edgeList, meta, K = K, model = "LCN")
+    lcn_res = rbind(lcn_res, this_lcn_res)
+    this_bkn_res = est_meta_acc(bkn_edges, meta, K = K, model = "BKN")
+    bkn_res = rbind(bkn_res, this_bkn_res)
+    if(verbose){
+      cat(i, " ")
+    }
+  }
+  if(verbose){
+    cat("\n")
+  }
+  ans = numeric(0)
+  ans["lcn_mean_in"] = mean(lcn_res[,"in"])
+  ans["lcn_se_in"] = sd(lcn_res[,"in"])/sqrt(MC)
+  ans["lcn_mean_out"] = mean(lcn_res[,"out"])
+  ans["lcn_se_out"] = sd(lcn_res[,"out"])/sqrt(MC)
+  ans["bkn_mean_in"] = mean(bkn_res[,"in"])
+  ans["bkn_se_in"] = sd(bkn_res[,"in"])/sqrt(MC)
+  ans["bkn_mean_out"] = mean(bkn_res[,"out"])
+  ans["bkn_se_out"] = sd(bkn_res[,"out"])/sqrt(MC)
+  return(ans) 
+}
+
+# testing
+repeat_acc(edgeList, meta_data, K = 10, MC = 4)
+
+# Estimate accuracies across several number of channels
+mult_acc = function(edgeList, meta_data, K = c(5, 10), MC = 4, verbose = T){
+  ans = NULL
+  for(k in K){
+    if(verbose){
+      cat("Starting K =", k, "\n")
+    }
+    this_acc = repeat_acc(edgeList, meta_data, K = k, MC = MC, verbose = verbose)
+    ans = rbind(ans, this_acc)
+  }
+  rownames(ans) = paste("K =", K)
+  return(ans)
+}
+
+# Testing
+mult_res = mult_acc(edgeList, meta_data)
+mult_res
+
+## Plotting results tools
+draw_one_res = function(res, x_loc, col, offset){
+  points(x_loc, res[1], col = col)
+  points(x_loc + offset, res[3], col = col, pch = 16)
+  lower = res[1] - 2 * res[2]
+  upper = res[1] + 2 * res[2]
+  lines(rep(x_loc, 2), c(lower, upper), col = col)
+  lower = res[3] - 2 * res[4]
+  upper = res[3] + 2 * res[4]
+  lines(rep(x_loc + offset, 2), c(lower, upper), col = col)
+}
+
+# Plotting mult_acc results
+plot_res = function(mult_acc_res, title = "", pnt_offset = 0.25){
+  rn = rownames(mult_acc_res)
+  Ks = gsub("K = ", "", rn)
+  Ks = as.numeric(Ks)
+  
+  xLim = range(Ks)
+  xLim[1] = xLim[1] - pnt_offset * 1.5
+  xLim[2] = xLim[2] + pnt_offset * 1.5
+  
+  plot(NA, xlim = xLim, ylim = c(0,1), 
+       main = title, 
+       xlab = "Number of Channels", 
+       ylab = "Accuracy")
+
+  for(i in 1:nrow(mult_acc_res)){
+    this_row = mult_acc_res[i,]
+    this_k = Ks[i]
+    draw_one_res(this_row[1:4], x_loc = this_k - pnt_offset, 
+                 offset = pnt_offset/2, col = "blue")
+    draw_one_res(this_row[5:8], x_loc = this_k + pnt_offset, 
+                 offset = pnt_offset/2, col = "red")
+  }
+  legend("bottom", 
+         c("LCN: Out of Sample", 
+           "LCN: In Sample", 
+           "BKN: Out of Sample", 
+           "LCN: In Sample"), 
+         pch = c(16, 1, 16, 1), 
+         col = c("blue", "blue", "red", "red"))
+}
+
+# testing
+plot_res(mult_res, title = "Testing Code")
+```
+## Comparing Accuracy on Original Groups
+```{r}
+K = c(5, 10, 20, 30, 40, 60, 80)
+MC = 10
+
+res = mult_acc(edgeList, meta_data, K = K, MC = MC)
+plot_res(res, title = "Accuracy on Original Department")
+```
+# Merging Small Departments
+Many of these departments are really small, some on which only have a single professor. We're going to merge this super small departments together to have a more reasonable prediction challenge. 
+```{r}
+# Any department smaller than this will be merged into "other"
+minGrpSize = 15
+dpt_merge = dpt
+dpt_cnt = table(dpt)
+smallDpts = names(dpt_cnt)[dpt_cnt < minGrpSize]
+is_small = dpt %in% smallDpts
+dpt_merge[is_small] = "other"
+
+# Counts in new categories
+table(dpt_merge)
+
+meta_merged = data.frame(dpt = dpt_merge)
+merge_res = mult_acc(edgeList, meta_merged, K = K, MC = MC)
+plot_res(merge_res, title = "Accuracy on Original Department")
+```
