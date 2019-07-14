@@ -174,19 +174,17 @@ plot_res = function(mult_acc_res, title = "", pnt_offset = 0.25){
 }
 
 # testing
-# plot_res(mult_res, title = "Testing Code")
+plot_res(mult_res, title = "Testing Code")
 ```
 ## Comparing Accuracy on Original Groups
 ```{r}
 K = c(5, 10, 20, 30, 40, 60, 80)
-MC = 5
+MC = 10
 
 res = mult_acc(edgeList, meta_data, K = K, MC = MC)
 plot_res(res, title = "Accuracy on Original Department")
 ```
-
 # Merging Small Departments
-
 Many of these departments are really small, some on which only have a single professor. We're going to merge this super small departments together to have a more reasonable prediction challenge. 
 ```{r}
 # Any department smaller than this will be merged into "other"
@@ -202,28 +200,5 @@ table(dpt_merge)
 
 meta_merged = data.frame(dpt = dpt_merge)
 merge_res = mult_acc(edgeList, meta_merged, K = K, MC = MC)
-plot_res(merge_res, title = "Accuracy with Small Departments Merged")
+plot_res(merge_res, title = "Accuracy on Original Department")
 ```
-
-
-# Applying to Carnegie Melon FB Data
-
-```{r}
-data_dir =  "~/Documents/GitHub/latentChannelPaper/data/"
-edge_fn = paste0(data_dir, "FBCarnegieEdges.csv")
-meta_fn = paste0(data_dir, "FBCarnegieMeta.csv")
-
-carn_edges = read.csv(edge_fn)
-carn_meta = read.csv(meta_fn)
-
-meta_year = data.frame(year = carn_meta$V6)
-year_res1 = mult_acc(carn_edges, meta_year, 
-                    K = c(10, 50), MC = 4) 
-plot_res(year_res1)
-
-year_res2 = mult_acc(carn_edges, meta_year, 
-                    K = c(100, 200), MC = 4) 
-
-
-```
-

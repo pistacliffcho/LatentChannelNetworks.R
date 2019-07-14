@@ -370,6 +370,7 @@ List LCN::em(int max_its, int type, double rtol, double rpTol){
   int iter = 0;
   err = tol + 1.0;
   while( (iter < max_its) & (err > tol) ){
+    R_CheckUserInterrupt();
     iter++;
     // Error is updated *inside* one_iter
     err = 0.0;
