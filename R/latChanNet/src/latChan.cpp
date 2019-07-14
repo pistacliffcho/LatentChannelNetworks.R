@@ -1,3 +1,4 @@
+// [[Rcpp::depends(RcppParallel)]]
 #include "latChan.h"
 #include "BKN_model.h"
 

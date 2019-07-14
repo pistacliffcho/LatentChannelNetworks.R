@@ -10,4 +10,5 @@ License: GPL (>= 2)
 bioViews:
 Imports: Rcpp (>= 1.0.1), RcppParallel (>= 4.4.3)
 LinkingTo: Rcpp, RcppParallel
+SystemRequirements: GNU make
 RoxygenNote: 6.1.1
