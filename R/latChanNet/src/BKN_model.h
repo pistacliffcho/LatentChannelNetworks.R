@@ -285,7 +285,6 @@ void BKN::ingestEdges(List lst){
     edgeCounts[i].resize(this_length);
     qList[i].resize(this_length);
     for(int ii = 0; ii < this_length; ii++){
-      edgeCounts[i][ii];
       // Switching from 1 to zero index
       j = theseEdges(ii,0) - 1;
       A = theseEdges(ii,1);
@@ -302,7 +301,7 @@ void BKN::ingestEdges(List lst){
 void BKN::ingestUnknownEdges(List RunknownEdges){
   if(RunknownEdges.size() != nNodes){ stop("Input unknownEdge list wrong length"); }
   unknownEdges.resize(nNodes);
-  int this_size, n_obs, j_ind;
+  int this_size, n_obs, j_ind, this_j_lookup;
   for(int i = 0; i < nNodes; i++){
     IntegerVector these_edges = RunknownEdges[i];
     this_size = these_edges.size();
@@ -315,12 +314,15 @@ void BKN::ingestUnknownEdges(List RunknownEdges){
       }
       unknownEdges[i][ii].j_mat = j_ind;
       n_obs = edgeCounts[i].size();
+      this_j_lookup = -1;
       for(int iii = 0; iii < n_obs; iii++){
         if(edgeCounts[i][iii].j == j_ind){
-          unknownEdges[i][ii].j_lookup = iii;
+          this_j_lookup = iii;
           break;
         }
       }
+      if(this_j_lookup == -1){stop("Did not find matching edge in edgeCounts from edgeList!");}
+      unknownEdges[i][ii].j_lookup = this_j_lookup;
     }
   }
 }
