@@ -90,14 +90,14 @@ makeLatentModel = function(edgeList, nDims,
 
 LatClass$methods(
   fit = function(iters = 10000, 
-                 par = F){
+                 par = F, pTol = 10^-5){
     if(modtype == "LCN"){
       alg_type = "EM"
       if(par){ alg_type = "ParEM" }
-      emLCN(cmod, iters, type = alg_type)
+      emLCN(cmod, iters, type = alg_type, pTol = pTol)
     }
     else{
-      emBKN(cmod, iters, par = par)
+      emBKN(cmod, iters, par = par, pTol = pTol)
     }
   }
 )

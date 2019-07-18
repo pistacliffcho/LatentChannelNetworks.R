@@ -111,6 +111,30 @@ void checkInd(int i, int max){
   if(i >= max) stop("i >= max");
 }
   
+
   
+void fillPosVector(int i, vec<int> &pos_vec, Mat &theta){
+  int posCount = 0;
+  int J = theta.nCols;
+  for(int j = 0; j < J; j++){
+    if(theta(i,j) > 0){ posCount++; }
+  }
+  pos_vec.resize(posCount);
+  int pos_ind = -1;
+  for(int j = 0; j < J; j++){
+    if(theta(i,j) > 0){
+      pos_ind++;
+      pos_vec[pos_ind] = j;
+    }
+  }
+}  
+
+void setPosInds(vec<vec<int> > &pos_vecs, Mat &theta){
+  int nRows = theta.nRows;
+  pos_vecs.resize(nRows);
+  for(int i = 0; i < nRows; i++){
+    fillPosVector(i, pos_vecs[i], theta);
+  }
+}
 
 #endif

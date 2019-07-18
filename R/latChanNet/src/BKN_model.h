@@ -47,10 +47,13 @@ public:
   double tol, pTol;
   vec<vec<Edge> >edgeCounts;
   vec<vec<MissingEdge> >unknownEdges;
+
+  vec<vec<int> >posInds;
   
   /**
    * Initialization tools
    **/
+  
   BKN(List edgeCountList, 
       NumericMatrix input_pmat, 
       List missingList);
@@ -89,7 +92,7 @@ public:
   void imputeMissingEdges(){
     for(int i = 0; i < nNodes; i++){ imputeMissingEdges(i); }
   }
-  List em(int max_it, double tol, bool par);
+  List em(int max_it, double tol, double pTol, bool par);
 
   /**
    * Querying tools
@@ -102,12 +105,14 @@ public:
  * EM call: controls which EM method used
  **/
 
-List BKN::em(int max_it, double tol, bool par){
+List BKN::em(int max_it, double tol, double ptol, bool par){
+  pTol = ptol;
   double err = tol + 1.0;
   int iter = 0;
   Mat theta_old = theta_mat.copy();
   while( (iter < max_it) & (err > tol) ){
     R_CheckUserInterrupt();
+    setPosInds(posInds, theta_mat);
     imputeMissingEdges();
     if(!par){ one_em(); }
     else{ par_one_em(); }
@@ -135,15 +140,18 @@ void BKN::one_em(){
 
 
 void BKN::update_qSqrtSums(int i){
-  int this_n, this_j, this_A;
+  int this_n, this_j, this_A, k;
   double meanSum;
+  vec<int>* pos_vec = &posInds[i];
+  int nPos = (*pos_vec).size();
   this_n = edgeCounts[i].size();
   for(int k = 0; k < dim; k++){ QMat(i,k) = 0.0; }
   for(int ii = 0; ii < this_n; ii++){
     this_j = edgeCounts[i][ii].j;
     this_A = edgeCounts[i][ii].cnt;
     meanSum = meanEdges(i, this_j);
-    for(int k = 0; k < dim; k++){
+    for(int k_ind = 0; k_ind < nPos; k_ind++){
+      k = (*pos_vec)[k_ind];
       QMat(i, k) = QMat(i,k) + this_A * qijz(i, this_j, k, meanSum);
     }
   }
@@ -166,24 +174,30 @@ void BKN::update_qSqrtSums(){
 
 void BKN::update_ti(int i){
   int this_n = edgeCounts[i].size();
-  int this_j, this_A;
-  double these_meanEdges;
+  int this_j, this_A, k;
+  vec<int>* pos_vec = &posInds[i];
+  int nPos = pos_vec->size();
+  double these_meanEdges, new_t;
   vec<double> temp_meanEdges(dim);
   for(int k = 0; k < dim; k++){ temp_meanEdges[k] = 0.0; }
   for(int ii = 0; ii < this_n; ii++){
     this_j = edgeCounts[i][ii].j;
     this_A = edgeCounts[i][ii].cnt;
     these_meanEdges = meanEdges(i, this_j);
-    for(int k = 0; k < dim; k++){
+    for(int k_ind = 0; k_ind < nPos; k_ind++){
+      k = (*pos_vec)[k_ind];
       temp_meanEdges[k] += qijz(i, this_j, k, these_meanEdges) * this_A;
     }
   }
-  for(int k = 0; k < dim; k++){
-    if(qSqrtSums[k] < pow(10.0, -4.0)){
+  for(int k_ind = 0; k_ind < nPos; k_ind++){
+    k = (*pos_vec)[k_ind];
+    if(qSqrtSums[k] < 0.0001){
       theta_mat(i,k) = 0.0;
       continue;
     } 
-    theta_mat(i,k) = temp_meanEdges[k] / qSqrtSums[k];
+    new_t = temp_meanEdges[k] / qSqrtSums[k];
+    if(new_t < pTol){ new_t = 0.0; }
+    theta_mat(i,k) = new_t;
   }
 }
 
@@ -192,7 +206,13 @@ double BKN::meanEdges(int i, int j){
   checkInd(i, nNodes);
   checkInd(j, nNodes);
   double ans = 0.0;
-  for(int k = 0; k < dim; k++){
+  vec<int>* pos_vec;
+  if(posInds[i].size() > posInds[j].size()){ pos_vec = &posInds[j]; }
+  else{ pos_vec = &posInds[i]; }
+  int nPosInds = pos_vec->size();
+  int k;
+  for(int k_ind = 0; k_ind < nPosInds; k_ind++){
+    k = (*pos_vec)[k_ind];
     ans += theta_mat(i,k) * theta_mat(j,k);
   }
   return(ans);
@@ -261,6 +281,7 @@ BKN::BKN(List edgeCountList,
          NumericMatrix input_pmat, 
          List missingList){
   theta_mat = Mat(input_pmat);
+  setPosInds(posInds, theta_mat);
   dim = input_pmat.cols();
   nNodes = input_pmat.rows();
   ingestEdges(edgeCountList);

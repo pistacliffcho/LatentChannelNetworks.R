@@ -18,6 +18,7 @@ public:
   double tol, pTol;
   vec<vec<int> >edgeList;
   vec<vec<int> >missingEdges;
+  vec<vec<int> >posInds;
   Mat pmat;
   vec<double> pbar;
   
@@ -62,6 +63,7 @@ LCN::LCN(List input_edgeList,
          NumericMatrix input_pmat, 
          List input_missEdges){
   pmat = Mat(input_pmat);
+  setPosInds(posInds, pmat);
   pbar = pmat.colMeans();
   dim = input_pmat.cols();
   nNodes = input_pmat.rows();
@@ -154,7 +156,15 @@ double LCN::edgeProb(int i, int j){
   checkInd(j, nNodes);
   double pNoEdge = 1.0;
   double pik, pjk;
-  for(int k = 0; k < dim; k++){
+  // Want to walk down *only smallest* set of positive values
+  vec<int>* pos_vec;
+  if(posInds[i].size() > posInds[j].size()){ pos_vec = &posInds[j]; }
+  else{ pos_vec = &posInds[i]; }
+  int nPosInds = pos_vec->size();
+//  for(int k = 0; k < dim; k++){
+  int k;
+  for(int k_ind = 0; k_ind < nPosInds; k_ind++){
+    k = (*pos_vec)[k_ind];
     pik = pmat(i,k);
     pjk = pmat(j,k);
     pNoEdge = pNoEdge * (1.0 - pik * pjk );
@@ -202,7 +212,10 @@ double expectedLatent(double pik, double pjk, double edgeProb){
 double LCN::update_pik(int i, int k){
   double pik = pmat(i,k);
   // If value is small enough, skip update
-  if( pik < pTol ){ return(pik); }
+  if( pik < pTol ){
+    return(0.0);
+    //return(pik); 
+  }
   // Number of edges shared with node. 
   int n_edges = edgeList[i].size(); 
   if(n_edges == 0.0){
@@ -233,6 +246,9 @@ double LCN::update_pik(int i, int k){
   for(int j_cnt = 0; j_cnt < n_edges; j_cnt++){
     j = jPtr[j_cnt];
     pjk = pmat(j,k);
+    if(pjk == 0.0){
+      continue;
+    }
     noEdgeContribution -= pik * (1.0 - pjk);
     this_edgeP = epPtr[j_cnt];
     edgeContribution += expectedLatent(pik, pjk, this_edgeP);
@@ -371,6 +387,7 @@ List LCN::em(int max_its, int type, double rtol, double rpTol){
   err = tol + 1.0;
   while( (iter < max_its) & (err > tol) ){
     R_CheckUserInterrupt();
+    setPosInds(posInds, pmat);
     iter++;
     // Error is updated *inside* one_iter
     err = 0.0;
