@@ -174,15 +174,19 @@ double LCN::edgeProb(int i, int j){
 }
 
 double LCN::node_llk(int i){
+  // Make vector of indicators that edge exists
   int nEdges = edgeList[i].size();
   vec<int> hasEdge(nNodes, 0);
-  for(int ii = 0; ii < nEdges; ii++){
-    hasEdge[ edgeList[i][ii] ] = 1;
-  }
+  for(int ii = 0; ii < nEdges; ii++){ hasEdge[ edgeList[i][ii] ] = 1; }
+  // Make vector of indicators that edge status is known
+  int nUnknown = missingEdges[i].size();
+  vec<int> isKnown(nNodes, 1);
+  for(int ii = 0; ii < nUnknown; ii++){isKnown[ missingEdges[i][ii] ] = 0; }
   double this_edgeProb;
   double ans = 0.0;
   for(int j = 0; j < nNodes; j++){
     if(i == j){ continue; }
+    if(isKnown[j] == 0){ continue; }
     this_edgeProb = edgeProb(i,j);
     if(hasEdge[j] == 1){ ans += log(this_edgeProb); }
     else{ ans += log(1.0 - this_edgeProb); }
@@ -212,16 +216,10 @@ double expectedLatent(double pik, double pjk, double edgeProb){
 double LCN::update_pik(int i, int k){
   double pik = pmat(i,k);
   // If value is small enough, skip update
-  if( pik < pTol ){
-    return(0.0);
-    //return(pik); 
-  }
+  if( pik < pTol ){ return(0.0); }
   // Number of edges shared with node. 
   int n_edges = edgeList[i].size(); 
-  if(n_edges == 0.0){
-    pmat(i,k) = 0.0;
-    return(0.0);
-  }
+  if(n_edges == 0.0){ return(0.0); }
   // Converting nNodes to double
   double d_nNodes = nNodes;
   

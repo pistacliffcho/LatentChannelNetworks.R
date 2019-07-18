@@ -89,8 +89,7 @@ makeLCN = function(edgeList,
   else{
     preppedMissingList = prepEdgeList(missingEdges, nRows)
     if(length(preppedMissingList) != length(preppedEdgeList)){
-      cat("Problem: missing edges not same length as edgelist!")
-      browser()
+      stop("Problem: missing edges not same length as edgelist!")
     }
   }
   pmat_init = matrix(
