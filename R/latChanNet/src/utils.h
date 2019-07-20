@@ -137,4 +137,40 @@ void setPosInds(vec<vec<int> > &pos_vecs, Mat &theta){
   }
 }
 
+double min(double a, double b){
+  if(a < b) return(a);
+  return(b);
+}
+
+// Monotonic Overrelaxation EM augmenteation step of Yu 2012
+// Specifically for probabilities
+void emRelaxedProb(Mat &theta_new, Mat &theta_old, double w){
+  int nRows = theta_old.nRows;
+  int nCols = theta_old.nCols;
+  double new_val;
+  for(int i = 0; i < nRows; i++){
+    for(int j = 0; j < nCols; j++){
+      new_val = (1.0 + w) * theta_new(i,j) - w * theta_old(i,j);
+      new_val = max(0.0, new_val);
+      new_val = min(1.0, new_val);
+      theta_new(i,j) = new_val;
+    }
+  }
+}
+
+// Relaxation augmentation for non-negative parameters 
+void emRelaxedPos(Mat &theta_new, Mat &theta_old, double w){
+  int nRows = theta_old.nRows;
+  int nCols = theta_old.nCols;
+  double new_val;
+  for(int i = 0; i < nRows; i++){
+    for(int j = 0; j < nCols; j++){
+      new_val = (1.0 + w) * theta_new(i,j) - w * theta_old(i,j);
+      new_val = max(0.0, new_val);
+      theta_new(i,j) = new_val;
+    }
+  }
+}
+
+
 #endif
