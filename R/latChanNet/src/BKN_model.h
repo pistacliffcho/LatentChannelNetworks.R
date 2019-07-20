@@ -92,7 +92,7 @@ public:
   void imputeMissingEdges(){
     for(int i = 0; i < nNodes; i++){ imputeMissingEdges(i); }
   }
-  List em(int max_it, double tol, double pTol, bool par);
+  List em(int max_it, double tol, double pTol, bool par, double w);
 
   /**
    * Querying tools
@@ -105,7 +105,9 @@ public:
  * EM call: controls which EM method used
  **/
 
-List BKN::em(int max_it, double tol, double ptol, bool par){
+List BKN::em(int max_it, double tol, 
+             double ptol, bool par, 
+             double w){
   pTol = ptol;
   double err = tol + 1.0;
   int iter = 0;
@@ -116,6 +118,7 @@ List BKN::em(int max_it, double tol, double ptol, bool par){
     imputeMissingEdges();
     if(!par){ one_em(); }
     else{ par_one_em(); }
+//    emRelaxedPos(theta_mat, theta_old, w);
     err = compute_err(theta_old, theta_mat);
     theta_old = theta_mat.copy();
     iter++;

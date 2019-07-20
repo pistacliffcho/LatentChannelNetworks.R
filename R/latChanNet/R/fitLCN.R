@@ -120,13 +120,15 @@ makeLCN = function(edgeList,
 #' use \code{RcppParallel::setThreadOptions}.
 #' @export
 emLCN = function(LCN_mod, iters = 10000, 
-                 type = "ECM",
+                 type = "EM",
+                 a = 1, b = 1, 
                  tol = 10^-4, 
-                 pTol = 10^-8){
+                 pTol = 10^-8,
+                 w = 0.0){
   if(type == "ECM") int_type = 1
   else if(type == "EM") int_type = 2
   else if(type == "ParEM") int_type = 3
   else stop("type must be 'ParEM', 'EM' or 'ECM'")
-  ans = LCN_mod$em(iters, int_type, tol, pTol)
+  ans = LCN_mod$em(iters, int_type, tol, pTol, a, b, w)
   return(ans)
 }

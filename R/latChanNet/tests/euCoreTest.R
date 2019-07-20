@@ -5,7 +5,17 @@ setThreadOptions(numThreads = 3)
 setwd("~/Documents/GitHub/LatentChannelNetworks.R/R/examples/emailNetwork")
 edgeList = read.table("email-Eu-core.txt") + 1
 
-nChan = 10
+nChan = 100
+
+mod = makeLCN(edgeList, nChan)
+p0 = mod$get_pmat()
+emLCN(mod, w = 1)
+mean(mod$get_pmat() == 0)
+mod$llk()
+mod$set_pmat(p0)
+emLCN(mod,iters = 1, w = 0.5)
+mod$llk()
+
 
 mod = makeLCN(edgeList, nChan)
 system.time( res <- emLCN(mod, 10000, type = "ECM") )

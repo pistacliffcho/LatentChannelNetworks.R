@@ -16,6 +16,7 @@ public:
   int nNodes;
   int dim;
   double tol, pTol;
+  double a, b;
   vec<vec<int> >edgeList;
   vec<vec<int> >missingEdges;
   vec<vec<int> >posInds;
@@ -45,7 +46,10 @@ public:
   void one_ecm_iter();
   void one_em_iter();
   void one_par_em_iter();
-  List em(int max_its, int type, double tol, double pTol);
+  List em(int max_its, int type,
+          double tol, double pTol, 
+          double alpha, double beta,
+          double w);
   
   NumericMatrix get_pmat();
   void set_pmat(NumericMatrix m);
@@ -72,6 +76,8 @@ LCN::LCN(List input_edgeList,
   initializeCache();
   pTol = 0.00000001;
   tol = 0.0001;
+  a = 0.0;
+  b = 0.0;
 }
 
 void LCN::initializeNode(int i){
@@ -244,16 +250,14 @@ double LCN::update_pik(int i, int k){
   for(int j_cnt = 0; j_cnt < n_edges; j_cnt++){
     j = jPtr[j_cnt];
     pjk = pmat(j,k);
-    if(pjk == 0.0){
-      continue;
-    }
+    if(pjk == 0.0){ continue; }
     noEdgeContribution -= pik * (1.0 - pjk);
     this_edgeP = epPtr[j_cnt];
     edgeContribution += expectedLatent(pik, pjk, this_edgeP);
   }
 //  noEdgeContribution -= this_J_tot * pik;
-  double denom = nNodes - n_miss - 1;
-  double ans = (edgeContribution + noEdgeContribution) / denom;
+  double denom = nNodes - n_miss - 1 + a + b - 2;
+  double ans = (edgeContribution + noEdgeContribution + a - 1) / denom;
   
   if(ans < 0){
     Rcout << "i = " << i << " k = " << k << " p = ";
@@ -323,16 +327,15 @@ void LCN::one_par_em_iter(){
  ***/
 
 void LCN::one_em_iter(){
+  pbar = pmat.colMeans();
+  initializeCache();
+
   Mat pmat_new = pmat.copy();
   for(int i = 0; i < nNodes; i++){
-    for(int k = 0; k < dim; k++){
-      pmat_new(i,k) = update_pik(i,k);
-    }
+    for(int k = 0; k < dim; k++){ pmat_new(i,k) = update_pik(i,k); }
   }
   err = compute_err(pmat, pmat_new);
   pmat = pmat_new;
-  pbar = pmat.colMeans();
-  initializeCache();
 }
 
 /***
@@ -378,20 +381,30 @@ void LCN::one_ecm_update(int i, int k){
 // ECM (type = 1) 
 // EM  (type = 2)
 // Parallel EM (type = 3)
-List LCN::em(int max_its, int type, double rtol, double rpTol){
+List LCN::em(int max_its, int type, 
+             double rtol, double rpTol,
+             double alpha, double beta, 
+             double w){
+  a = alpha; b = beta;
   tol = rtol;
   pTol = rpTol;
   int iter = 0;
   err = tol + 1.0;
+  Mat pmat_old = pmat.copy();
   while( (iter < max_its) & (err > tol) ){
     R_CheckUserInterrupt();
-    setPosInds(posInds, pmat);
     iter++;
     // Error is updated *inside* one_iter
     err = 0.0;
+
     if(type == 1){ one_ecm_iter(); }
     if(type == 2){ one_em_iter(); }
     if(type == 3){ one_par_em_iter(); }
+    if(w > 0.0){
+      emRelaxedProb(pmat, pmat_old, w);
+      pmat_old = pmat.copy();
+    }
+    setPosInds(posInds, pmat);
   }
   if(iter == max_its){
     Rprintf("Warning: maximum iterations reached\n");
