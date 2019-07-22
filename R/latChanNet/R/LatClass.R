@@ -92,12 +92,13 @@ LatClass$methods(
   fit = function(iters = 10000, 
                  par = F, 
                  pTol = 10^-5, 
-                 w = 0){
+                 w = 1, a = 1, b = 1){
     if(modtype == "LCN"){
       alg_type = "EM"
       if(par){ alg_type = "ParEM" }
       emLCN(cmod, iters, type = alg_type, 
-            pTol = pTol, w = w)
+            pTol = pTol, w = w, 
+            a = a, b = b)
     }
     else{
       emBKN(cmod, iters, par = par, 
