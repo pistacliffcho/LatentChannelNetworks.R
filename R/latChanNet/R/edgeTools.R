@@ -60,7 +60,15 @@ unq_nondiag_flat = function(flat, max_n){
   return(ans)
 }
 
+#' Check that there are no missing edges in original edge list
+checkMissingList = function(obs_edges, missing_edges, max_n){
+  flat_edges = ij2flat(obs_edges, max_n)
+  flat_missing = ij2flat(missing_edges, max_n)
+  if(any(flat_missing %in% flat_edges))
+    stop("Missing edges found in observed edges list!")
+}
 
+  
 #' @description Sample edges NOT in undirected edgeList 
 #' @param edgeList nx2 matrix of edges
 #' @param n Number of samples
