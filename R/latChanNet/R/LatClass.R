@@ -45,7 +45,6 @@ makeLatentModel = function(edgeList, nDims,
                            missingList = NULL, 
                            metadata = NULL){
   if(missing(nDims)){ stop("nDims must be specified") }
-
   # Filling in basic fields
   ans = new("LatClass")
   ans$org_edgeList = edgeList
@@ -58,6 +57,11 @@ makeLatentModel = function(edgeList, nDims,
     max_node = max(c(max_node, max(missingList)))
   }
   ans$max_node = max_node
+  
+  # Checking that missing edges are not in original edge list
+  if(!is.null(missingList)){ 
+    checkMissingList(edgeList[,1:2], missingList, max_node)
+  }
   
   # Augmenting graph if metadata provided
   if(!is.null(metadata)){
