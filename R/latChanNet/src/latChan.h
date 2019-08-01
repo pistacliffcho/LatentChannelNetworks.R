@@ -48,8 +48,7 @@ public:
   void one_par_em_iter();
   List em(int max_its, int type,
           double tol, double pTol, 
-          double alpha, double beta,
-          double w);
+          double alpha, double beta);
   
   NumericMatrix get_pmat();
   void set_pmat(NumericMatrix m);
@@ -167,7 +166,6 @@ double LCN::edgeProb(int i, int j){
   if(posInds[i].size() > posInds[j].size()){ pos_vec = &posInds[j]; }
   else{ pos_vec = &posInds[i]; }
   int nPosInds = pos_vec->size();
-//  for(int k = 0; k < dim; k++){
   int k;
   for(int k_ind = 0; k_ind < nPosInds; k_ind++){
     k = (*pos_vec)[k_ind];
@@ -225,7 +223,7 @@ double LCN::update_pik(int i, int k){
   if( pik < pTol ){ return(0.0); }
   // Number of edges shared with node. 
   int n_edges = edgeList[i].size(); 
-  if(n_edges == 0.0){ return(0.0); }
+  if(n_edges == 0){ return(0.0); }
   // Converting nNodes to double
   double d_nNodes = nNodes;
   
@@ -264,7 +262,7 @@ double LCN::update_pik(int i, int k){
     Rcout << ans << "\n";
     stop("Negative probability!");
     }
-  if(ans > 1){
+  if(ans > 1.0001){
     Rcout << "i = " << i << " k = " << k << " p = ";
     Rcout << ans << "\n";
     stop("Probability greater than one!");
@@ -383,8 +381,7 @@ void LCN::one_ecm_update(int i, int k){
 // Parallel EM (type = 3)
 List LCN::em(int max_its, int type, 
              double rtol, double rpTol,
-             double alpha, double beta, 
-             double w){
+             double alpha, double beta){
   a = alpha; b = beta;
   tol = rtol;
   pTol = rpTol;
@@ -400,10 +397,7 @@ List LCN::em(int max_its, int type,
     if(type == 1){ one_ecm_iter(); }
     if(type == 2){ one_em_iter(); }
     if(type == 3){ one_par_em_iter(); }
-    if(w > 0.0){
-      emRelaxedProb(pmat, pmat_old, w);
-      pmat_old = pmat.copy();
-    }
+    pmat_old = pmat.copy();
     setPosInds(posInds, pmat);
   }
   if(iter == max_its){

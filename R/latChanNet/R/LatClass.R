@@ -36,7 +36,8 @@ LatClass = setRefClass("LatClass",
                                   "modtype", 
                                   "max_node"), 
                        methods = c("fit", 
-                                   "predict")
+                                   "predict", 
+                                   "plot")
 )
 
 #' @export
@@ -101,13 +102,21 @@ LatClass$methods(
       alg_type = "EM"
       if(par){ alg_type = "ParEM" }
       emLCN(cmod, iters, type = alg_type, 
-            pTol = pTol, w = w, 
+            pTol = pTol,
             a = a, b = b)
     }
     else{
       emBKN(cmod, iters, par = par, 
-            pTol = pTol, w = w)
+            pTol = pTol)
     }
+  }
+)
+
+LatClass$methods(
+  plot = function(meta_data, minGrpSize = NULL, 
+                  xlab = " ", ylab = " "){
+    heatmapLCN(cmod, meta_data, minGrpSize = minGrpSize, 
+              xlab = xlab, ylab = ylab)
   }
 )
 

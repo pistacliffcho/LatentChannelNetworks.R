@@ -92,7 +92,7 @@ public:
   void imputeMissingEdges(){
     for(int i = 0; i < nNodes; i++){ imputeMissingEdges(i); }
   }
-  List em(int max_it, double tol, double pTol, bool par, double w);
+  List em(int max_it, double tol, double pTol, bool par);
 
   /**
    * Querying tools
@@ -106,8 +106,7 @@ public:
  **/
 
 List BKN::em(int max_it, double tol, 
-             double ptol, bool par, 
-             double w){
+             double ptol, bool par){
   pTol = ptol;
   double err = tol + 1.0;
   int iter = 0;
@@ -118,7 +117,6 @@ List BKN::em(int max_it, double tol,
     imputeMissingEdges();
     if(!par){ one_em(); }
     else{ par_one_em(); }
-//    emRelaxedPos(theta_mat, theta_old, w);
     err = compute_err(theta_old, theta_mat);
     theta_old = theta_mat.copy();
     iter++;
@@ -323,7 +321,9 @@ void BKN::ingestEdges(List lst){
  * All edges *must* be included on full edgeList
  **/
 void BKN::ingestUnknownEdges(List RunknownEdges){
-  if(RunknownEdges.size() != nNodes){ stop("Input unknownEdge list wrong length"); }
+  if(RunknownEdges.size() != nNodes){ 
+    stop("Input unknownEdge list wrong length"); 
+  }
   unknownEdges.resize(nNodes);
   int this_size, n_obs, j_ind, this_j_lookup;
   for(int i = 0; i < nNodes; i++){

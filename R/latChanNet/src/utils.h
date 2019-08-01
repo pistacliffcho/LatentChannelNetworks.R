@@ -142,6 +142,14 @@ double min(double a, double b){
   return(b);
 }
 
+
+/***
+ * 
+ * Tools for Over Relataxtion of EM algorithm,
+ * not currently used!!
+ * 
+ ***/
+
 // Monotonic Overrelaxation EM augmenteation step of Yu 2012
 // Specifically for probabilities
 void emRelaxedProb(Mat &theta_new, Mat &theta_old, double w){
