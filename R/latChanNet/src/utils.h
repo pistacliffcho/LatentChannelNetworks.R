@@ -101,6 +101,7 @@ double compute_err(Mat &m1, Mat &m2){
     for(int j = 0; j < m1.nCols; j++){
       this_err = my_abs(m1(i,j) - m2(i,j));
       err = max(err, this_err);
+//      err += this_err;
     }
   }
   return(err);

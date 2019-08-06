@@ -121,7 +121,7 @@ List BKN::em(int max_it, double tol,
     theta_old = theta_mat.copy();
     iter++;
   }
-  if(iter == max_it){ Rcout << "Warning: max iterations reached\n"; }
+//  if(iter == max_it){ Rcout << "Warning: max iterations reached\n"; }
   List ans = List::create(Named("err") = err, 
                           Named("its") = iter);
   return(ans);
@@ -362,6 +362,7 @@ void BKN::set_theta(NumericMatrix new_theta){
       theta_mat(i,j) = new_theta(i,j);
     }
   }
+  setPosInds(posInds, theta_mat);
 }
 
 

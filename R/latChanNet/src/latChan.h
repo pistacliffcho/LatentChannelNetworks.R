@@ -385,6 +385,12 @@ List LCN::em(int max_its, int type,
   a = alpha; b = beta;
   tol = rtol;
   pTol = rpTol;
+  // warm-up iterations; if dimensions are too large, sometimes initial EM steps too small
+  for(int i = 0; i < 100; i++){
+    if(type == 1){ one_ecm_iter(); }
+    if(type == 2){ one_em_iter(); }
+    if(type == 3){ one_par_em_iter(); }
+  }
   int iter = 0;
   err = tol + 1.0;
   Mat pmat_old = pmat.copy();
@@ -400,9 +406,7 @@ List LCN::em(int max_its, int type,
     pmat_old = pmat.copy();
     setPosInds(posInds, pmat);
   }
-  if(iter == max_its){
-    Rprintf("Warning: maximum iterations reached\n");
-  }
+//  if(iter == max_its){ Rprintf("Warning: maximum iterations reached\n"); }
   
   List ans = List::create(Named("err") = err, 
                           Named("its") = iter);
@@ -427,6 +431,7 @@ void LCN::set_pmat(NumericMatrix m){
   if(nRows != nNodes){ stop("nRows != nNodes");}
   if(nCols != dim){ stop("nCols != dim");}
   pmat = Mat(m);
+  setPosInds(posInds, pmat);
   initializeCache();
 }
 
