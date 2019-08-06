@@ -2,8 +2,9 @@
 #' @param edgeList nx2 matrix of edges
 #' @param max_n Maximum node ID. 
 #' @noRd
-ij2flat = function(edgeList, max_n ){
+ij2flat = function(edgeList, max_n, undirected = T){
   if(missing(max_n)){ stop("max_n must be provided") }
+  if(undirected){ edgeList = sort_ij(edgeList) }
   i = edgeList[,1]
   j = edgeList[,2]
   flat = i - 1 + (j - 1) * max_n
@@ -41,10 +42,8 @@ sort_ij = function(edgeList){
 #' @param edgeList A nx2 matrix of edges
 #' @export
 unq_edges = function(edgeList){
-  sorted_el = sort_ij(edgeList)
   max_n = max(edgeList)
-  
-  flat = ij2flat(sorted_el, max_n)
+  flat = ij2flat(sorted_el, max_n, undirected = T)
   unq_flat = unique(flat)
   ans = flat2ij(unq_flat, max_n)
   return(ans)
@@ -62,8 +61,8 @@ unq_nondiag_flat = function(flat, max_n){
 
 #' Check that there are no missing edges in original edge list
 checkMissingList = function(obs_edges, missing_edges, max_n){
-  flat_edges = ij2flat(obs_edges, max_n)
-  flat_missing = ij2flat(missing_edges, max_n)
+  flat_edges = ij2flat(obs_edges, max_n, undirected = T)
+  flat_missing = ij2flat(missing_edges, max_n, undirected = T)
   if(any(flat_missing %in% flat_edges))
     stop("Missing edges found in observed edges list!")
 }

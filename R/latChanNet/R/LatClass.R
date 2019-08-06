@@ -37,7 +37,10 @@ LatClass = setRefClass("LatClass",
                                   "max_node"), 
                        methods = c("fit", 
                                    "predict", 
-                                   "plot")
+                                   "plot", 
+                                   "llk", 
+                                   "get_pars", 
+                                   "mult_fit")
 )
 
 #' @export
@@ -94,10 +97,68 @@ makeLatentModel = function(edgeList, nDims,
 }
 
 LatClass$methods(
-  fit = function(iters = 10000, 
+  llk = function(){
+    return(cmod$llk())
+  }
+)
+
+LatClass$methods(
+  set_pars = function(pars){
+    if(modtype == "LCN"){ ans = cmod$set_pmat(pars) }
+    if(modtype == "BKN"){ ans = cmod$set_theta(pars) }
+  }
+)
+
+LatClass$methods(
+  get_pars = function(){
+    if(modtype == "LCN"){
+      ans = cmod$get_pmat()
+      return(ans)
+    }
+    if(modtype == "BKN"){
+      ans = cmod$get_theta()
+      return(ans)
+    }
+  }
+)
+
+LatClass$methods(
+  rand_start = function(){
+    samp_pars = get_pars()
+    nChans = ncol(samp_pars)
+    nNodes = nrow(samp_pars)
+    
+    new_vals = matrix(runif(nChans * nNodes, max = sqrt(1 / nChans)), 
+                      nrow = nNodes)
+    if(any(new_vals > 1) ) browser()
+    set_pars(new_vals)
+  }
+)
+
+LatClass$methods(
+  mult_fit = function(nFits = 5, 
+                      nInitIts = 500, 
+                      nFinalIts = 10000){
+    max_llk = -Inf
+    for(i in 1:nFits){
+      rand_start()
+      res = fit(iters = nInitIts)
+      this_llk = llk()
+      if(this_llk > max_llk){
+        max_llk = this_llk
+        max_vals = get_pars()
+      }
+    }
+    set_pars(max_vals)
+    fit(iters = nFinalIts)
+  }
+)
+
+LatClass$methods(
+  fit = function(iters = 10000,
                  par = F, 
                  pTol = 10^-5, 
-                 w = 1, a = 1, b = 1){
+                 a = 1, b = 1){
     if(modtype == "LCN"){
       alg_type = "EM"
       if(par){ alg_type = "ParEM" }
