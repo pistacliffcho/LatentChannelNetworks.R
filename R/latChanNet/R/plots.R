@@ -2,7 +2,8 @@
 #' @param mod LCN or BKN model 
 #' @param grp Vector of group categories for each node
 #' @param minGrpSize Minimum size of group in both. Smaller groups put in "other"
-#' @param cols Colors for color gradient
+#' @param prob_cols Colors for color gradient of probability range
+#' @param greater_col Color for color gradient beyond 1
 #' @param reorderChannels Should Channels be reorder by dependency on grp?
 #' @param xlab X-axis label
 #' @param ylab Y-asix label
@@ -11,7 +12,8 @@
 heatmapLCN = function(mod, 
                       grp, 
                       minGrpSize = NULL,
-                      cols = c("black", "lightblue","orange","red"),
+                      prob_cols = c("black", "grey","blue"),
+                      greater_col = "red",
                       plotChannelNumber = T,
                       xlab = " ", ylab = " ",
                       sortColumns = T,
@@ -58,10 +60,17 @@ heatmapLCN = function(mod,
   rownames(pmat_ord) = plot_grp_names
   
   # Make color gradient function
-  nColors = length(cols)
-  colFxn = circlize::colorRamp2(seq(from = 0, to = max(pmat_ord), 
-                                    length.out = nColors), 
-                                colors = cols)
+  prob_points = seq(from = 0, to = 1, 
+                    length.out = length(prob_cols))
+  if(max(pmat_ord) > 1){
+    cols2use = c(prob_cols, greater_col)
+    use_points = c(prob_points, max(pmat_ord))
+  }else{
+    cols2use = prob_cols
+    use_points = prob_points
+  }
+  colFxn = circlize::colorRamp2(use_points, 
+                                colors = cols2use)
   
   # Sorting columns by variance of category means
   if(sortColumns){
