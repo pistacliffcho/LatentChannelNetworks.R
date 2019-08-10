@@ -23,6 +23,8 @@ public:
   Mat pmat;
   vec<double> pbar;
   
+  bool use_fast_em;
+  
   vec<vec<double> > cache_probs;
   vec<vec<double*> > cache_map;
   
@@ -41,13 +43,23 @@ public:
   double node_llk(int i);
   double llk();
 
-  double update_pik(int i, int k);
+  // Update with basic EM
+  double update_pik_base(int i, int k);
+  // Update with accelerated EM
+  double update_pik_fast(int i, int k);
+  double update_pik(int i, int k){
+    double ans;
+    if(use_fast_em){ans = update_pik_fast(i, k); }
+    else{ans = update_pik_fast(i, k); }
+    return(ans);
+  }
   void one_ecm_update(int i, int k);
   void one_ecm_iter();
   void one_em_iter();
   void one_par_em_iter();
   List em(int max_its, int type,
-          double tol, double pTol, 
+          double rtol, double rpTol, 
+          bool fast_update,
           double alpha, double beta);
   
   NumericMatrix get_pmat();
@@ -217,7 +229,14 @@ double expectedLatent(double pik, double pjk, double edgeProb){
   return(ans);
 }
 
-double LCN::update_pik(int i, int k){
+double probNecessary(double pik, double pjk, double edgeProb){
+  double prob_no_edges = 1.0 - edgeProb;
+  double prob_no_other_edges = prob_no_edges / (1.0 - pik*pjk);
+  double ans = prob_no_other_edges * pik * pjk / edgeProb;
+  return(ans);
+}
+
+double LCN::update_pik_base(int i, int k){
   double pik = pmat(i,k);
   // If value is small enough, skip update
   if( pik < pTol ){ return(0.0); }
@@ -262,6 +281,66 @@ double LCN::update_pik(int i, int k){
     Rcout << ans << "\n";
     stop("Negative probability!");
     }
+  if(ans > 1.0001){
+    Rcout << "i = " << i << " k = " << k << " p = ";
+    Rcout << ans << "\n";
+    stop("Probability greater than one!");
+  }
+  return(ans);
+}
+
+
+
+
+double LCN::update_pik_fast(int i, int k){
+  double pik = pmat(i,k);
+  // If value is small enough, skip update
+  if( pik < pTol ){ return(0.0); }
+  // Number of edges shared with node. 
+  int n_edges = edgeList[i].size(); 
+  if(n_edges == 0){ return(0.0); }
+  // Converting nNodes to double
+  double d_nNodes = nNodes;
+//  double d_nEdges = n_edges;
+  
+  // Computing sum of latent edges
+  // Will represent contribution from pairs with observed edges
+  double edgeContribution = 0.0;
+  // Will represent contribution from pairs with no observed edges
+  double denomContribution = d_nNodes * pbar[k];
+  // Not self edges are not counted
+  denomContribution -= pik;
+  
+  // Subtracting out non-edge contribution of edges that are unknown
+  int n_miss = missingEdges[i].size();
+  int j;
+  for(int ii = 0; ii < n_miss; ii++){
+    j = missingEdges[i][ii];
+    denomContribution -= pmat(j, k);
+  }
+  double pjk, this_edgeP;
+  int* jPtr = &edgeList[i][0];
+  double* epPtr = &cache_probs[i][0];
+  double pNec;
+  for(int j_cnt = 0; j_cnt < n_edges; j_cnt++){
+    j = jPtr[j_cnt];
+    pjk = pmat(j,k);
+    if(pjk == 0.0){ continue; }
+    denomContribution -= pjk;
+//    denomContribution++;
+    this_edgeP = epPtr[j_cnt];
+    pNec = probNecessary(pik, pjk, this_edgeP);
+    edgeContribution += pNec;
+    denomContribution += pNec;
+  }
+  double denom =  a + b - 2 + denomContribution;
+  double ans = (edgeContribution + a - 1) / denom;
+  
+  if(ans < 0){
+    Rcout << "i = " << i << " k = " << k << " p = ";
+    Rcout << ans << "\n";
+    stop("Negative probability!");
+  }
   if(ans > 1.0001){
     Rcout << "i = " << i << " k = " << k << " p = ";
     Rcout << ans << "\n";
@@ -330,7 +409,9 @@ void LCN::one_em_iter(){
 
   Mat pmat_new = pmat.copy();
   for(int i = 0; i < nNodes; i++){
-    for(int k = 0; k < dim; k++){ pmat_new(i,k) = update_pik(i,k); }
+    for(int k = 0; k < dim; k++){ 
+      pmat_new(i,k) = update_pik(i,k); 
+      }
   }
   err = compute_err(pmat, pmat_new);
   pmat = pmat_new;
@@ -379,18 +460,14 @@ void LCN::one_ecm_update(int i, int k){
 // ECM (type = 1) 
 // EM  (type = 2)
 // Parallel EM (type = 3)
-List LCN::em(int max_its, int type, 
-             double rtol, double rpTol,
+List LCN::em(int max_its, int type,
+             double rtol, double rpTol, 
+             bool fast_update,
              double alpha, double beta){
+  use_fast_em = fast_update;
   a = alpha; b = beta;
   tol = rtol;
   pTol = rpTol;
-  // warm-up iterations; if dimensions are too large, sometimes initial EM steps too small
-  for(int i = 0; i < 100; i++){
-    if(type == 1){ one_ecm_iter(); }
-    if(type == 2){ one_em_iter(); }
-    if(type == 3){ one_par_em_iter(); }
-  }
   int iter = 0;
   err = tol + 1.0;
   Mat pmat_old = pmat.copy();

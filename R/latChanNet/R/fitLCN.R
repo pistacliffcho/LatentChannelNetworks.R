@@ -77,6 +77,7 @@ makeLCN = function(edgeList,
 #' @param LCN_mod LCN model, output from makeLCN
 #' @param iters Maximum iterations
 #' @param type Algorithm type. Choices are "ECM", "EM" and "ParEM"
+#' @param fast_em Logical: should fast EM update be used or basic? 
 #' @param tol Convergence tolerance
 #' @param pTol Tolerance for skipping parameter updates
 #' @details Fits a latent channel network with either an ECM algorithm 
@@ -91,6 +92,7 @@ makeLCN = function(edgeList,
 #' @export
 emLCN = function(LCN_mod, iters = 10000, 
                  type = "EM",
+                 fast_em = T,
                  a = 1, b = 1, 
                  tol = 10^-4, 
                  pTol = 10^-8){
@@ -98,6 +100,6 @@ emLCN = function(LCN_mod, iters = 10000,
   else if(type == "EM") int_type = 2
   else if(type == "ParEM") int_type = 3
   else stop("type must be 'ParEM', 'EM' or 'ECM'")
-  ans = LCN_mod$em(iters, int_type, tol, pTol, a, b)
+  ans = LCN_mod$em(iters, int_type, tol, pTol, fast_em, a, b)
   return(ans)
 }

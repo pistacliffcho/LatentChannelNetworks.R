@@ -4,9 +4,9 @@
 \alias{heatmapLCN}
 \title{Build heatmap from model}
 \usage{
-heatmapLCN(mod, grp, minGrpSize = NULL, cols = c("black", "lightblue",
-  "orange", "red"), plotChannelNumber = T, xlab = " ", ylab = " ",
-  sortColumns = T, ...)
+heatmapLCN(mod, grp, minGrpSize = NULL, prob_cols = c("black", "grey",
+  "blue"), greater_col = "red", plotChannelNumber = T, xlab = " ",
+  ylab = " ", sortColumns = T, ...)
 }
 \arguments{
 \item{mod}{LCN or BKN model}
@@ -15,7 +15,9 @@ heatmapLCN(mod, grp, minGrpSize = NULL, cols = c("black", "lightblue",
 
 \item{minGrpSize}{Minimum size of group in both. Smaller groups put in "other"}
 
-\item{cols}{Colors for color gradient}
+\item{prob_cols}{Colors for color gradient of probability range}
+
+\item{greater_col}{Color for color gradient beyond 1}
 
 \item{xlab}{X-axis label}
 
