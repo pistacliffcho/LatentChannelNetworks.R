@@ -7,7 +7,7 @@
 makeBKN(edgeCountList, nDims = 5, unknownEdges = NULL)
 }
 \arguments{
-\item{edgeCountList}{An nx3 matrix of edges. See details.}
+\item{edgeCountList}{An nx2 OR nx3 matrix of edges. See details.}
 
 \item{nDims}{Number of Latent Communities}
 
@@ -18,7 +18,9 @@ Make Ball-Karrer-Newman (BKN) Model
 }
 \details{
 `edgeCountList` should be an nx3 matrix, with columns 1 & 2
-being node ID's and column 3 being the number of edges. Note that 
+being node ID's and column 3 being the number of edges. 
+If an nx2 matrix is supplied instead, it is assumed that all 
+the edge counts in the list are 1. Note that 
 the graph is considered to be undirected, so `[1,3,4]` and `[3,1,4]`
 both imply that there are 4 edges between nodes 1 and 3. 
 If node pairs appear more than once in edgeCountList, edge counts are summed.
