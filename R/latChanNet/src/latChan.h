@@ -7,6 +7,7 @@
 #define vec std::vector
 using namespace Rcpp;
 
+
 /***
  * Latent Channel Class
  ***/
