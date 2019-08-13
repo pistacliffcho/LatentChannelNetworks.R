@@ -1,6 +1,8 @@
 // [[Rcpp::depends(RcppParallel)]]
 #include "latChan.h"
 #include "BKN_model.h"
+#include "simLCN.h"
+
 
 // LCN MODEL
 RCPP_MODULE(LCN){
@@ -30,3 +32,10 @@ RCPP_MODULE(BKN){
   .method("node_llk", &BKN::node_llk)
   .method("meanEdges", &BKN::meanEdges);
 }
+
+
+//' Simulate Latent Channel Network
+//' @param p_mat Matrix of channel usage probabilities
+//' @export
+// [[Rcpp::export]]
+NumericMatrix simLCN(NumericMatrix p_mat);

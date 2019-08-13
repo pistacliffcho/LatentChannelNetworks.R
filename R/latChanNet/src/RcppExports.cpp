@@ -5,11 +5,23 @@
 
 using namespace Rcpp;
 
+// simLCN
+NumericMatrix simLCN(NumericMatrix p_mat);
+RcppExport SEXP _latChanNet_simLCN(SEXP p_matSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type p_mat(p_matSEXP);
+    rcpp_result_gen = Rcpp::wrap(simLCN(p_mat));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 RcppExport SEXP _rcpp_module_boot_LCN();
 RcppExport SEXP _rcpp_module_boot_BKN();
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_latChanNet_simLCN", (DL_FUNC) &_latChanNet_simLCN, 1},
     {"_rcpp_module_boot_LCN", (DL_FUNC) &_rcpp_module_boot_LCN, 0},
     {"_rcpp_module_boot_BKN", (DL_FUNC) &_rcpp_module_boot_BKN, 0},
     {NULL, NULL, 0}
