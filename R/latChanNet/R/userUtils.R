@@ -111,3 +111,32 @@ est_auc = function(edgeList, models = c("LCN", "BKN"),
   }
   return(ans)
 }
+
+
+
+#' @export
+simBlockLCN = function(nBlocks = 8, nPerBlock = 32, 
+                       nSuper = 8,
+                       in_pars = c(2,2), 
+                       out_pars = c(1,20)){
+  nNodes = nBlocks * nPerBlock
+  pmat = matrix(rbeta(nNodes * nBlocks, 
+                      out_pars[1], out_pars[2]), 
+                nrow = nNodes)
+  for(i in 1:nBlocks){
+    this_block = 1:nPerBlock + (i-1)*nPerBlock
+    pmat[this_block, i] = rbeta(nPerBlock, 
+                                in_pars[1], in_pars[2])
+  }
+  super_pmat = matrix(rbeta(nSuper * nBlocks, 
+                            in_pars[1], in_pars[2]), 
+                      nrow = nSuper)
+  pmat = rbind(pmat, super_pmat)
+  blockID = c(rep(1:nBlocks, each = nPerBlock), 
+              rep("super", nSuper) )
+  edges = simLCN(pmat)
+  ans = list(edgeList = edges,
+             blockID = blockID,
+             chanProbs = pmat)
+  return(ans)
+}
