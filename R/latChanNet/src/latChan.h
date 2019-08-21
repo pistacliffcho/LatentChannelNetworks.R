@@ -231,9 +231,19 @@ double expectedLatent(double pik, double pjk, double edgeProb){
 }
 
 double probNecessary(double pik, double pjk, double edgeProb){
+  if(edgeProb == 0.0){ 
+//    Rcout << "Error: edge probability set to 0\n"; 
+    return(1.0);
+  }
+  if(pik*pjk > 0.9999999){ return(1.0); }
   double prob_no_edges = 1.0 - edgeProb;
   double prob_no_other_edges = prob_no_edges / (1.0 - pik*pjk);
   double ans = prob_no_other_edges * pik * pjk / edgeProb;
+  if(ans > 1.0){ 
+//    Rcout << "ans = " << ans;
+//    Rcout << " pik + " << pik << " pjk = " << pjk << " edgeP = " << edgeProb << "\n"; 
+    ans = 1.0;
+  }
   return(ans);
 }
 
@@ -334,8 +344,15 @@ double LCN::update_pik_fast(int i, int k){
     edgeContribution += pNec;
     denomContribution += pNec;
   }
-  double denom =  a + b - 2 + denomContribution;
-  double ans = (edgeContribution + a - 1) / denom;
+  double denom = denomContribution;
+  if(denom == 0){ return(0.0); }
+  double ans = edgeContribution / denom;
+/***    
+  if(NumericVector::is_na(ans) ){
+    Rcout << "denom = " << denom 
+          << " numerator = " << edgeContribution << "\n";
+    stop("na hit");
+  }
   
   if(ans < 0){
     Rcout << "i = " << i << " k = " << k << " p = ";
@@ -347,6 +364,8 @@ double LCN::update_pik_fast(int i, int k){
     Rcout << ans << "\n";
     stop("Probability greater than one!");
   }
+***/ 
+ 
   return(ans);
 }
 

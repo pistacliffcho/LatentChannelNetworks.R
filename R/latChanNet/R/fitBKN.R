@@ -84,10 +84,7 @@ makeBKN = function(edgeCountList, nDims = 5, unknownEdges = NULL){
   # in edgeCount list. Here we combine edgeCountList with unknownEdges
   aug_edgeCountList = rbind(edgeCountList, unknownEdges)
   preppedCountList = prepEdgeCountList(aug_edgeCountList)
-  theta_init = matrix(
-      runif(nNodes * nDims, 
-            max = 1 / sqrt(nDims)), 
-    nrow = nNodes)
+  theta_init = init_pars(nNodes, nDims)
   if(length(preppedCountList) != length(unknownList)) browser()
   ans = BKN$new(preppedCountList, theta_init, unknownList)
   return(ans)

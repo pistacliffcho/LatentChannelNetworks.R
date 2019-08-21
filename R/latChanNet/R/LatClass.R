@@ -157,11 +157,11 @@ LatClass$methods(
 LatClass$methods(
   fit = function(iters = 10000,
                  par = F, 
-                 pTol = 10^-5, 
+                 pTol = 10^-10, 
                  a = 1, b = 1){
     if(modtype == "LCN"){
-      alg_type = "EM"
-      if(par){ alg_type = "ParEM" }
+      alg_type = "ECM"
+#      if(par){ alg_type = "ParEM" }
       emLCN(cmod, iters, type = alg_type, 
             pTol = pTol,
             a = a, b = b)
@@ -209,3 +209,15 @@ LatClass$methods(
     return(ans)
   }
 )
+
+
+
+init_pars = function(nNodes, nDims){
+  ans = matrix(runif(nNodes * nDims, max = 1/100), 
+               nrow = nNodes)
+  row_ind = 1:nNodes
+  col_ind = (row_ind %% nDims) + 1
+  flat_ind = row_ind + (col_ind - 1) * nNodes
+  ans[flat_ind] = runif(nNodes)
+  return(ans)
+}

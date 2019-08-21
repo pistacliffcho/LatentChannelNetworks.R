@@ -32,7 +32,7 @@ get_auc = function(mod, edges, notEdges){
   all_edges = rbind(edges, notEdges)
   nEdges = nrow(edges)
   nNotEdges = nrow(notEdges)
-  preds = meanEdges(mod, all_edges)
+  preds = mod$predict(all_edges[,1],all_edges[,2])
   hasEdge = rep(0, nEdges + nNotEdges)
   hasEdge[seq_along(edges[,1])] = 1
   auc = mltools::auc_roc(preds, hasEdge)
@@ -83,8 +83,10 @@ est_auc = function(edgeList, models = c("LCN", "BKN"),
   out_edges = split_edges$masked_edges
   out_nonEdges = split_edges$masked_nonEdges
   if("LCN" %in% models){
-    lcn_mod = makeLCN(obs_edges, nChan, unseen_edges)
-    em_res = emLCN(lcn_mod, 10000, type = "ParEM")
+    lcn_mod = makeLatentModel(obs_edges, 
+                              nChan, model = "LCN",
+                              missingList = unseen_edges)
+    em_res = lcn_mod$fit()
     auc_res = get_both_auc(lcn_mod, 
                       out_edges, 
                       out_nonEdges, 
@@ -94,10 +96,10 @@ est_auc = function(edgeList, models = c("LCN", "BKN"),
     ans = auc_res
   }
   if("BKN" %in% models){
-    bkn_mod = makeBKN(cbind(obs_edges, 1), 
-                      nChan, 
-                      unseen_edges)
-    em_res = emBKN(bkn_mod, 10000, par = T)
+    bkn_mod = makeLatentModel(cbind(obs_edges, 1), 
+                      nChan, model = "BKN",
+                      missingList = unseen_edges)
+    em_res = bkn_mod$fit()
     auc_res = get_both_auc(bkn_mod, 
                            out_edges, 
                            out_nonEdges, 
@@ -114,15 +116,22 @@ est_auc = function(edgeList, models = c("LCN", "BKN"),
 
 
 
+
+
 #' @export
 simBlockLCN = function(nBlocks = 8, nPerBlock = 32, 
                        nSuper = 8,
                        in_pars = c(2,2), 
-                       out_pars = c(1,20)){
+                       out_pars = c(1,20), 
+                       sparse = 0.75){
   nNodes = nBlocks * nPerBlock
   pmat = matrix(rbeta(nNodes * nBlocks, 
                       out_pars[1], out_pars[2]), 
                 nrow = nNodes)
+  is_sparse = rbinom(nNodes * nBlocks, 
+                     1, prob = sparse)
+  pmat[is_sparse == 1] = 0
+  
   for(i in 1:nBlocks){
     this_block = 1:nPerBlock + (i-1)*nPerBlock
     pmat[this_block, i] = rbeta(nPerBlock, 

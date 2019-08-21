@@ -62,9 +62,7 @@ makeLCN = function(edgeList,
       stop("Problem: missing edges not same length as edgelist!")
     }
   }
-  pmat_init = matrix(
-    runif(nRows * nDims, max = 1 / sqrt(nDims)), 
-    nrow = nRows)
+  pmat_init = init_pars(max_n, nDims)
   
   ans = LCN$new(preppedEdgeList, 
                 pmat_init, 
@@ -91,7 +89,7 @@ makeLCN = function(edgeList,
 #' use \code{RcppParallel::setThreadOptions}.
 #' @export
 emLCN = function(LCN_mod, iters = 10000, 
-                 type = "EM",
+                 type = "ECM",
                  fast_em = T,
                  a = 1, b = 1, 
                  tol = 10^-4, 
