@@ -43,6 +43,7 @@ sort_ij = function(edgeList){
 #' @export
 unq_edges = function(edgeList){
   max_n = max(edgeList)
+  sorted_el = sort_ij(edgeList)
   flat = ij2flat(sorted_el, max_n, undirected = T)
   unq_flat = unique(flat)
   ans = flat2ij(unq_flat, max_n)
@@ -73,6 +74,7 @@ checkMissingList = function(obs_edges, missing_edges, max_n){
 #' @param n Number of samples
 #' @noRd
 sample_nonEdges = function(edgeList, n = 100){
+  edgeList = unq_edges(edgeList)
   max_n = max(edgeList)
   sort_edgeList = sort_ij(edgeList)
   flat_index = ij2flat(sort_edgeList, max_n)
@@ -108,6 +110,7 @@ sample_nonEdges = function(edgeList, n = 100){
 #' in `masked_nonEdges`
 #' @export
 random_splitEdges = function(edgeList, nEdges, nNotEdges){
+  edgeList = unq_edges(edgeList)
   nRow = nrow(edgeList)
   edge_indices = sample(1:nRow, nEdges, replace = F)
   edge_pairs = edgeList[edge_indices, ]
