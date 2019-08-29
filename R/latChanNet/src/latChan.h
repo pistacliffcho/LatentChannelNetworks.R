@@ -51,7 +51,7 @@ public:
   double update_pik(int i, int k){
     double ans;
     if(use_fast_em){ans = update_pik_fast(i, k); }
-    else{ans = update_pik_fast(i, k); }
+    else{ans = update_pik_base(i, k); }
     return(ans);
   }
   void one_ecm_update(int i, int k);
