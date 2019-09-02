@@ -156,14 +156,14 @@ LatClass$methods(
 
 LatClass$methods(
   fit = function(iters = 10000,
-                 par = F, 
-                 pTol = 10^-10, 
+                 par = T, 
+                 pTol = 10^-6, 
                  a = 1, b = 1){
     if(modtype == "LCN"){
-      alg_type = "ECM"
-#      if(par){ alg_type = "ParEM" }
+      alg_type = "EM"
+      if(par){ alg_type = "ParEM" }
       emLCN(cmod, iters, type = alg_type, 
-            pTol = pTol,
+            pTol = pTol, fast_em = F,
             a = a, b = b)
     }
     else{
