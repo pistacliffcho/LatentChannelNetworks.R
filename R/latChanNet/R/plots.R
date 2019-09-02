@@ -17,6 +17,7 @@ heatmapLCN = function(mod,
                       plotChannelNumber = T,
                       xlab = " ", ylab = " ",
                       sortColumns = T,
+                      name = "",
                       ...){
   if(is(mod, "Rcpp_LCN")){
     pmat = mod$get_pmat()
@@ -25,7 +26,7 @@ heatmapLCN = function(mod,
     pmat = mod$get_theta()
   }
   # Keeping track of original channel names
-  colnames(pmat) = 1:ncol(pmat)
+  if(plotChannelNumber){ colnames(pmat) = 1:ncol(pmat) }
   
   if(!is.null(minGrpSize)){
     cnts = table(grp)
@@ -84,7 +85,7 @@ heatmapLCN = function(mod,
   
   # Make plot
   p = ComplexHeatmap::Heatmap(t(pmat_ord), 
-                          name = "",
+                          name = name,
                           cluster_rows = F, 
                           cluster_columns = F,
                           col = colFxn,

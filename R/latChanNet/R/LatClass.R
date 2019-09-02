@@ -175,9 +175,12 @@ LatClass$methods(
 
 LatClass$methods(
   plot = function(meta_data, minGrpSize = NULL, 
-                  xlab = " ", ylab = " "){
+                  xlab = " ", ylab = " ", 
+                  prob_cols =  c("black", "white", "orange", "red"), 
+                  greater_col = "purple"){
     heatmapLCN(cmod, meta_data, minGrpSize = minGrpSize, 
-              xlab = xlab, ylab = ylab)
+              xlab = xlab, ylab = ylab, prob_cols = prob_cols, 
+              greater_col = greater_col)
   }
 )
 
