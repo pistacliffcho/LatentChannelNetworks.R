@@ -91,13 +91,12 @@ makeLCN = function(edgeList,
 emLCN = function(LCN_mod, iters = 10000, 
                  type = "ECM",
                  fast_em = T,
-                 a = 1, b = 1, 
                  tol = 10^-4, 
                  pTol = 10^-8){
   if(type == "ECM") int_type = 1
   else if(type == "EM") int_type = 2
   else if(type == "ParEM") int_type = 3
   else stop("type must be 'ParEM', 'EM' or 'ECM'")
-  ans = LCN_mod$em(iters, int_type, tol, pTol, fast_em, a, b)
+  ans = LCN_mod$em(iters, int_type, tol, pTol, fast_em)
   return(ans)
 }

@@ -60,7 +60,8 @@ get_both_auc = function(mod,
 est_auc = function(edgeList, models = c("LCN", "BKN"),
                    nChan = 10,
                    nEdgesMasked = 400, 
-                   nNonEdgesMasked = 400){
+                   nNonEdgesMasked = 400, 
+                   em_type = "base"){
   
   colnames(edgeList) = c("i", "j")
   
@@ -86,7 +87,25 @@ est_auc = function(edgeList, models = c("LCN", "BKN"),
     lcn_mod = makeLatentModel(obs_edges, 
                               nChan, model = "LCN",
                               missingList = unseen_edges)
-    em_res = lcn_mod$fit()
+    if(em_type == "base"){
+      em_res = lcn_mod$fit()
+    }
+    else if(em_type == "fast"){
+      em_res = emLCN(lcn_mod$cmod, 
+                     type = "ParEM", 
+                     fast_em = T)
+    }
+    else if(em_type == "hybrid"){
+      em_res1 = emLCN(lcn_mod$cmod, 
+                      iters = 100,
+                     type = "ParEM", 
+                     fast_em = F)
+      em_res2 = emLCN(lcn_mod$cmod, 
+                     type = "ParEM", 
+                     fast_em = T)
+    }
+    else{ stop("em_type not recognized") }
+    
     auc_res = get_both_auc(lcn_mod, 
                       out_edges, 
                       out_nonEdges, 

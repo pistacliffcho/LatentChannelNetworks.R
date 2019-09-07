@@ -37,6 +37,7 @@ LatClass = setRefClass("LatClass",
                                   "max_node"), 
                        methods = c("fit", 
                                    "predict", 
+                                   "softMax_prob",
                                    "plot", 
                                    "llk", 
                                    "get_pars", 
@@ -158,13 +159,12 @@ LatClass$methods(
   fit = function(iters = 10000,
                  par = T, 
                  pTol = 10^-6, 
-                 a = 1, b = 1){
+                 fast_em = F){
     if(modtype == "LCN"){
       alg_type = "EM"
       if(par){ alg_type = "ParEM" }
       emLCN(cmod, iters, type = alg_type, 
-            pTol = pTol, fast_em = F,
-            a = a, b = b)
+            pTol = pTol, fast_em = fast_em)
     }
     else{
       emBKN(cmod, iters, par = par, 
@@ -184,8 +184,59 @@ LatClass$methods(
   }
 )
 
+# Compute max probability class for meta categories
 LatClass$methods(
-  predict = function(i, j){
+  maxprob = function(i, cat){
+    all_probs = meta_probs(i, cat)
+    max_ind = numeric(length(i))
+    for(i in seq_along(max_ind)){
+      max_ind[i] = which.max(all_probs[i,])
+    }
+    ans = metanames[max_ind]
+    return(ans)
+  }
+)
+
+# Compute softmax probabilities for meta categories
+LatClass$methods(
+  meta_probs = function(i, cat){
+    if(!(cat %in% colnames(metadata))){
+      stop("meta type not found. See colnames(mod$metadata) for valid options")
+    }
+    all_cat = metanames[grep(cat, metanames)]
+    ans = matrix(nrow = length(i), 
+                         ncol = length(all_cat))
+    colnames(ans) = all_cat
+    for(ind in seq_along(all_cat) ){
+      this_cat = all_cat[ind]
+      ans[,this_cat] = predict(i, this_cat)
+    }
+    rsums = rowSums(ans)
+    for(i in seq_along(rsums)){
+      if(rsums[i] > 0){
+        ans[i,] = ans[i,]/rsums[i]
+      }
+    }
+    return(ans)
+  }
+)
+
+
+LatClass$methods(
+  predict = function(i, j, meta_type = NULL){
+    if(!is.null(meta_type)){
+      if(meta_type == "prob"){
+        ans = meta_probs(i,j)
+        return(ans)
+      }
+      else if(meta_type == "class"){
+        ans = maxprob(i,j)
+        return(ans)
+      }
+      else{
+        stop("meta_type not recognized. Options are 'prob' or 'class'")
+      }
+    }
     if(length(j) == 1 & length(i) > 1){
       j = rep(j, length(i))
     }

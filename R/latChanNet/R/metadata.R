@@ -51,6 +51,9 @@ augWithFactors = function(edgeList, meta_data,
                          max_node = max_node, 
                          addCount = count)
   metanames = augNodes$metanames
+  if( (ncol(edgeList) == 2) & (ncol(augNodes$edges) == 3)){
+    edgeList = cbind(edgeList, 1)
+  }
   colnames(edgeList) = colnames(augNodes$edges)
   augEdges = rbind(edgeList, augNodes$edges)
   missingList = rbind(missingList, augNodes$unknown_edges)

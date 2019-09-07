@@ -17,7 +17,6 @@ public:
   int nNodes;
   int dim;
   double tol, pTol;
-  double a, b;
   vec<vec<int> >edgeList;
   vec<vec<int> >missingEdges;
   vec<vec<int> >posInds;
@@ -60,8 +59,7 @@ public:
   void one_par_em_iter();
   List em(int max_its, int type,
           double rtol, double rpTol, 
-          bool fast_update,
-          double alpha, double beta);
+          bool fast_update);
   
   NumericMatrix get_pmat();
   void set_pmat(NumericMatrix m);
@@ -88,8 +86,6 @@ LCN::LCN(List input_edgeList,
   initializeCache();
   pTol = 0.00000001;
   tol = 0.0001;
-  a = 0.0;
-  b = 0.0;
 }
 
 void LCN::initializeNode(int i){
@@ -284,8 +280,8 @@ double LCN::update_pik_base(int i, int k){
     edgeContribution += expectedLatent(pik, pjk, this_edgeP);
   }
 //  noEdgeContribution -= this_J_tot * pik;
-  double denom = nNodes - n_miss - 1 + a + b - 2;
-  double ans = (edgeContribution + noEdgeContribution + a - 1) / denom;
+  double denom = nNodes - n_miss - 1;
+  double ans = (edgeContribution + noEdgeContribution) / denom;
   
   if(ans < 0){
     Rcout << "i = " << i << " k = " << k << " p = ";
@@ -482,10 +478,8 @@ void LCN::one_ecm_update(int i, int k){
 // Parallel EM (type = 3)
 List LCN::em(int max_its, int type,
              double rtol, double rpTol, 
-             bool fast_update,
-             double alpha, double beta){
+             bool fast_update){
   use_fast_em = fast_update;
-  a = alpha; b = beta;
   tol = rtol;
   pTol = rpTol;
   int iter = 0;
