@@ -275,3 +275,14 @@ init_pars = function(nNodes, nDims){
   ans[flat_ind] = runif(nNodes)
   return(ans)
 }
+
+#' @export
+expNodeConnectMat = function(mod){
+  # Extracting only for properly sized matrix
+  ans = mod$get_pars() * 0
+  nRows = nrow(ans)
+  for(i in 1:nRows){
+    ans[i,] = computeExpConnects(i, mod$cmod)
+  }
+  return(ans)
+}

@@ -539,6 +539,9 @@ NumericVector LCN::computeTheta(int i, int j){
 // Compute expected number of connections through each channel 
 // for a given node
 NumericVector LCN::expectedConnections(int i){
+  if(i < 0) stop("i (C) < 0");
+  int esize = edgeList.size();
+  if(i >= esize) stop("i (C) >= esize");
   NumericVector ans(dim);
   int this_j;
   int nNodes = edgeList[i].size();
