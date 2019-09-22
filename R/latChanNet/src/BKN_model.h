@@ -60,7 +60,9 @@ public:
   void ingestEdges(List lst);
   void ingestUnknownEdges(List unknownEdges);
   void set_theta(NumericMatrix theta);
+  void resize(NumericMatrix p);
   
+    
   /**
    * Likelihood tools
    **/
@@ -278,6 +280,16 @@ NumericMatrix BKN::get_theta(){
  * Model initialization
  **/
 
+void BKN::resize(NumericMatrix p){
+  int new_nrow = p.rows();
+  if(new_nrow != nNodes){ stop("wrong number of rows"); }
+  dim = p.cols();
+  theta_mat = Mat(p);
+  setPosInds(posInds, theta_mat);
+  QMat = theta_mat.copy();
+}
+
+
 BKN::BKN(List edgeCountList, 
          NumericMatrix input_pmat, 
          List missingList){
@@ -423,7 +435,7 @@ double BKN::llk(){
 struct ThetaUpdater : public RcppParallel::Worker{
   BKN* bkn_mod;
   void operator()(size_t begin, size_t end){
-    for(int i = begin; i < end; i++){ bkn_mod->update_ti(i); }
+    for(size_t i = begin; i < end; i++){ bkn_mod->update_ti(i); }
   }
   ThetaUpdater(BKN* ptr){
     bkn_mod = ptr;

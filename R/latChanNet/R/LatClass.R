@@ -41,7 +41,14 @@ LatClass = setRefClass("LatClass",
                                    "plot", 
                                    "llk", 
                                    "get_pars", 
-                                   "mult_fit")
+                                   "mult_fit", 
+                                   "resize")
+)
+
+LatClass$methods(
+  resize = function(new_pars){
+    cmod$resize(new_pars)
+  }
 )
 
 #' @export

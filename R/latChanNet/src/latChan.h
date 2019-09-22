@@ -66,6 +66,16 @@ public:
   NumericVector computeTheta(int i, int j);
   NumericVector expectedConnections(int i);
   double expectedDegree(int i);
+  
+  void resize(NumericMatrix p){
+    int new_nrow = p.rows();
+    if(new_nrow != nNodes){ stop("wrong number of rows"); }
+    dim = p.cols();
+    pmat = Mat(p);
+    setPosInds(posInds, pmat);
+    pbar = pmat.colMeans();
+    initializeCache();
+  }
 };
 
 
