@@ -1,0 +1,11 @@
+latChanNet-package	latChanNet-package
+computeExpConnects	computeExpConnects
+computeTheta	computeTheta
+get_auc	get_auc
+get_both_auc	get_both_auc
+heatmapLCN	heatmapLCN
+latChanNet	latChanNet-package
+makeLatentModel	makeLatentModel
+predict.LatClass	predict.LatClass
+simLCN	simLCN
+unq_nondiag_flat	unq_nondiag_flat

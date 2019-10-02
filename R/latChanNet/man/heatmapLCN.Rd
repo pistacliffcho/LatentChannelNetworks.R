@@ -4,9 +4,19 @@
 \alias{heatmapLCN}
 \title{Build heatmap from model}
 \usage{
-heatmapLCN(mod, grp, minGrpSize = NULL, prob_cols = c("black", "grey",
-  "blue"), greater_col = "red", plotChannelNumber = T, xlab = " ",
-  ylab = " ", sortColumns = T, ...)
+heatmapLCN(
+  mod,
+  grp,
+  minGrpSize = NULL,
+  prob_cols = c("black", "grey", "blue"),
+  greater_col = "red",
+  plotChannelNumber = T,
+  xlab = " ",
+  ylab = " ",
+  sortColumns = T,
+  name = "",
+  ...
+)
 }
 \arguments{
 \item{mod}{LCN or BKN model}

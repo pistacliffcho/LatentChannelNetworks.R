@@ -12,3 +12,4 @@ Imports: Rcpp (>= 1.0.1), RcppParallel (>= 4.4.3)
 LinkingTo: Rcpp, RcppParallel
 SystemRequirements: GNU make
 RoxygenNote: 6.1.99.9001
+Built: R 3.6.0; x86_64-apple-darwin15.6.0; 2019-10-02 03:23:34 UTC; unix

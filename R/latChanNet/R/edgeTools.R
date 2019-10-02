@@ -38,9 +38,10 @@ sort_ij = function(edgeList){
   return(ans)
 }
 
+#' @title Get unique edges from edgelist
 #' @description Return unique undirected edges from edgeList
 #' @param edgeList A nx2 matrix of edges
-#' @export
+#' @noRd
 unq_edges = function(edgeList){
   max_n = max(edgeList)
   sorted_el = sort_ij(edgeList)
@@ -50,7 +51,7 @@ unq_edges = function(edgeList){
   return(ans)
 }
 
-#' Return only unique non-selfloop samples from flat_index
+# Return only unique non-selfloop samples from flat_index
 unq_nondiag_flat = function(flat, max_n){
   ij = flat2ij(flat, max_n)
   ij = ij[ ij[,1] != ij[,2],,drop = F ]
@@ -61,6 +62,7 @@ unq_nondiag_flat = function(flat, max_n){
 }
 
 #' Check that there are no missing edges in original edge list
+#' @noRd
 checkMissingList = function(obs_edges, missing_edges, max_n){
   flat_edges = ij2flat(obs_edges, max_n, undirected = T)
   flat_missing = ij2flat(missing_edges, max_n, undirected = T)
@@ -99,7 +101,7 @@ sample_nonEdges = function(edgeList, n = 100){
   return(ans)
 }
 
-#' @description Randomly mask edge status
+#' @title Random split edges
 #' @param edgeList nx2 matrix of edges
 #' @param nEdges Number of edges to mask
 #' @param nNotEdges Number of non-edges that will be masked
@@ -108,7 +110,7 @@ sample_nonEdges = function(edgeList, n = 100){
 #' as `masked_edges` and `nNotEdges`, 
 #' which don't appear in original edgeList but will returned
 #' in `masked_nonEdges`
-#' @export
+#' @noRd
 random_splitEdges = function(edgeList, nEdges, nNotEdges){
   edgeList = unq_edges(edgeList)
   nRow = nrow(edgeList)

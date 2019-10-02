@@ -2,6 +2,7 @@
 #' @description Prepares edgelist for \code{makeLCN}
 #' @param edgeList An nx2 matrix of undirected edge pairs
 #' @param max_node Optional max node value: max(edgeList) used if null
+#' @noRd
 prepEdgeList = function(edgeList, max_node = NULL){
   edgeList = as.matrix(edgeList)
   if(is.null(max_node)){ max_node = max(edgeList) }
@@ -40,7 +41,7 @@ prepEdgeList = function(edgeList, max_node = NULL){
 #' @param edgeList A nx2 matrix of edges
 #' @param nDims Number of Latent Channels
 #' @param missingEdges A nx2 matrix of edges for which status in unknown
-#' @export
+#' @noRd
 makeLCN = function(edgeList, 
                    nDims = 5, 
                    missingEdges = NULL){
@@ -87,7 +88,7 @@ makeLCN = function(edgeList,
 #' 
 #' To control the number of threads used by the parallel EM algorithm, 
 #' use \code{RcppParallel::setThreadOptions}.
-#' @export
+#' @noRd
 emLCN = function(LCN_mod, iters = 10000, 
                  type = "ECM",
                  fast_em = T,

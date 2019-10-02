@@ -5,7 +5,7 @@
 #' @param lcn_mod LCN model
 #' @details Computes the expected channel usage between two nodes 
 #' \strong{conditional on the two nodes sharing an edge.}
-#' @export
+#' @noRd
 computeTheta = function(i, j, lcn_mod){
   # Converting R indices to C indices
   c_i = i - 1; c_j = j - 1
@@ -18,7 +18,7 @@ computeTheta = function(i, j, lcn_mod){
 #' @description Computes the estimated expected connections through each latent channel
 #' @param i Index of node
 #' @param lcn_mod LCN model
-#' @export
+#' @noRd
 computeExpConnects = function(i, lcn_mod){
   # Converting R index to C indices
   c_i = i - 1
@@ -27,7 +27,7 @@ computeExpConnects = function(i, lcn_mod){
   return(ans)
 }
 
-#' Get auc for a model from edges/notEdges list
+# Get auc for a model from edges/notEdges list
 get_auc = function(mod, edges, notEdges){
   all_edges = rbind(edges, notEdges)
   nEdges = nrow(edges)
@@ -39,7 +39,7 @@ get_auc = function(mod, edges, notEdges){
   return(auc)
 }
 
-#' Get both in sample and out of sample AUC
+# Get both in sample and out of sample AUC
 get_both_auc = function(mod, 
                         out_edges, 
                         out_notEdges, 
@@ -51,7 +51,7 @@ get_both_auc = function(mod,
   return(ans)
 }
 
-#' @description Estimate Out-of-Sample AUC
+#' @title Estimate Out-of-Sample AUC
 #' @param edgeList nx2 matrix of edges
 #' @param models Character vector of models to use
 #' @param nEdgesMasked Number of edges to mask

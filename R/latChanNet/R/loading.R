@@ -1,7 +1,6 @@
 #' @useDynLib latChanNet
-#' @import ComplexHeatmap grid circlize Rcpp
+#' @import grid Rcpp
 #' @importFrom RcppParallel RcppParallelLibs
-#' @importFrom mltools auc_roc
 
 loadModule("LCN", TRUE)
 loadModule("BKN", TRUE)

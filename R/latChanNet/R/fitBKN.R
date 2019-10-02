@@ -2,6 +2,7 @@
 #' @description Prepares edgelist for \code{makeLCN}
 #' @param edgeCountList An nx3 matrix of undirected edge pairs of the form 
 #' n1, n2, count
+#' @noRd
 prepEdgeCountList = function(edgeCountList){
   edgeCountList = as.matrix(edgeCountList)
   if(ncol(edgeCountList) != 3){ stop("edgeList should have three columns") }
@@ -52,7 +53,7 @@ prepEdgeCountList = function(edgeCountList){
 #' the graph is considered to be undirected, so `[1,3,4]` and `[3,1,4]`
 #' both imply that there are 4 edges between nodes 1 and 3. 
 #' If node pairs appear more than once in edgeCountList, edge counts are summed. 
-#' @export
+#' @noRd
 makeBKN = function(edgeCountList, nDims = 5, unknownEdges = NULL){
   # If no edge counts (i.e. column 3) provided, assume all counts = 1
   if(ncol(edgeCountList) == 2){
@@ -90,8 +91,6 @@ makeBKN = function(edgeCountList, nDims = 5, unknownEdges = NULL){
   return(ans)
 }
 
-
-#' @export
 emBKN = function(BKN_mod, max_its = 10000, 
                  tol = 10^-4, 
                  pTol = 10^-5, par = F){

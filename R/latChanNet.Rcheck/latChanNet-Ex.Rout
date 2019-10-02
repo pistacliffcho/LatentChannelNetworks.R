@@ -1,0 +1,79 @@
+
+R version 3.6.0 (2019-04-26) -- "Planting of a Tree"
+Copyright (C) 2019 The R Foundation for Statistical Computing
+Platform: x86_64-apple-darwin15.6.0 (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> pkgname <- "latChanNet"
+> source(file.path(R.home("share"), "R", "examples-header.R"))
+> options(warn = 1)
+> library('latChanNet')
+> 
+> base::assign(".oldSearch", base::search(), pos = 'CheckExEnv')
+> base::assign(".old_wd", base::getwd(), pos = 'CheckExEnv')
+> cleanEx()
+> nameEx("latChanNet-package")
+> ### * latChanNet-package
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: latChanNet-package
+> ### Title: A short title line describing what the package does
+> ### Aliases: latChanNet-package latChanNet
+> ### Keywords: package
+> 
+> ### ** Examples
+> 
+>   ## Not run: 
+> ##D      ## Optional simple examples of the most important functions
+> ##D      ## These can be in \dontrun{} and \donttest{} blocks.   
+> ##D   
+> ## End(Not run)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("makeLatentModel")
+> ### * makeLatentModel
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: makeLatentModel
+> ### Title: Make Latent Structure model
+> ### Aliases: makeLatentModel
+> 
+> ### ** Examples
+> 
+> data(email_data)
+> # Building model with metadata
+> df = data.frame(dpt = email_data$nodeDpt)
+> model = makeLatentModel(email_data$edgeList, 
++                         10, 
++                         metadata = df)
+> # Fitting model
+> model$fit()
+$err
+[1] 9.96054e-05
+
+$its
+[1] 3247
+
+> 
+> # Predicting a two edge probabilities
+> predict(model, )
+Error in mod$predict(i, j) : argument "j" is missing, with no default
+Calls: predict -> predict.LatClass -> <Anonymous>
+Execution halted

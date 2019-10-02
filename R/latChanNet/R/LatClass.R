@@ -1,27 +1,43 @@
-#' @description Predictions from LatClass objects
+#' @title Predictions from LatClass objects
+#' @description Predict edge probabilities and categorical metadata
 #' @param mod LatClass model
 #' @param i node index
-#' @param j Either an edge index or metadata colname name
+#' @param j Either an node index or metadata colname name
+#' @param type Should node pairs or cross of all combinations be predicted 
+#' @examples 
+#' data(email_data)
+#' df = data.frame(dpt = email_data$nodeDpt)
+#' # Grouping dpt for brevity
+#' df$dpt[df$dpt > 4] = "other"
+#' 
+#' # Building model and fitting
+#' mod = makeLatentModel(email_data$edgeList, 
+#'                       nDims = 10, 
+#'                       metadata = df)
+#' mod$fit(fast_em = T)
+#'
+#' # Predicting edge pairs
+#' predict(mod, i = 1:3, j = 4:2)
+#' 
+#' # Predicting all combinations of i and j
+#' predict(mod, i = 1:3, j = 1:3, type = "cross")
+#' 
+#' # Predicting metadata 
+#' predict(mod, i = 1:3, "dpt")
 #' @export
-predict.LatClass = function(mod, i, j, type = "edgeprob"){
-  if(type == "edgeprob"){ return(mod$predict(i,j)) }
-  if(type == "metaprob"){
-    if(length(i) != 1) stop("i must be length 1 if type == 'meta'")
-    mNames = grep(j, mod$metanames, value = T)
-    ans = mod$predict(i, mNames)
-    names(ans) = gsub(j, "", mNames)
-    ans = ans / sum(ans)
+predict.LatClass = function(mod, i, j, type = "pairs"){
+  if(type == 'pairs'){
+    ans = mod$predict(i,j)
     return(ans)
   }
-  if(type == "metamax"){
-    probs = predict(mod, i, j, type = "metaprob")
-    max_ind = which.max(probs)
-    ans = names(probs)[max_ind]
-    if(length(ans) == 0) ans = -1
+  else if(type == "cross"){
+    ans = mod$cmod$crossEdges(i, j)
+    rownames(ans) = paste("Node", i)
+    colnames(ans) = paste("Node", j)
     return(ans)
   }
   else{
-    stop("Unrecognized type. Options are 'edgeprob', 'metaprob' or 'metamax'")
+    stop("type must be 'pair' or 'cross'")
   }
 }
 
@@ -60,7 +76,7 @@ LatClass = setRefClass("LatClass",
 #' The model assumes an undirected graph. 
 #' 
 #' If edges are counts, use the BKN model. 
-#' The data format for each row should (i,j, count),
+#' The data format for each row is (i,j, count),
 #' with i,j as integer IDs starting at 1. 
 #' 
 #' If edges are binary, either a BKN or LCN model 
@@ -293,6 +309,7 @@ LatClass$methods(
         stop("i outside range of indices")
     }
     ans = meanEdges(cmod, cbind(i,j))
+    names(ans) = paste0("Nodes ", i, ":", j)
     return(ans)
   }
 )

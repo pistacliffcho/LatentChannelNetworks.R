@@ -3,29 +3,27 @@
 \alias{latChanNet}
 \docType{package}
 \title{
-  A short title line describing what the package does
+  Latent Network Models for edge and metadata prediction.
 }
 \description{
-  A more detailed description of what the package does. A length
-  of about one to five lines is recommended.
+  Fits Latent Channel Networks and the Poisson model of Ball, Karrer and Newman (2011). Allows for unknown edges statuses. Augments network with metadata to allow for metadata predictions. 
 }
 \details{
-  This section should provide a more detailed overview of how to use the
-  package, including the most important functions.
+  Models are built (but not fitted) with \code{makeLatentModel}. Models are fit with the \code{$fit()} method. Fitted parameters can be extracting via the \code{$get_pars()} method. Predictions of both edges and metadata can be done with \code{predict}. Heatmaps of parameters can be plotted with \code{plot}. 
 }
 \author{
-Your Name, email optional.
+Clifford Anderson-Bergman.
 
-Maintainer: Your Name <your@email.com>
+Maintainer: Clifford Anderson-Bergman <pistacliffcho@gmail.com>
 }
 \references{
-  This optional section can contain literature or other references for
-  background information.
+  Clifford Anderson-Bergman, Phan Nguyen, and Jose Cadena Pico. "Latent Channel Networks", submitted 2019
+
+BKN model:
+
+Brian Ball, Brian Karrer, and Mark EJ Newman. "Efficient and principled method for detecting communities in networks." Physical Review E 84.3 (2011): 036103.
 }
-\keyword{ package }
-\seealso{
-  Optional links to other man pages
-}
+\keyword{ network }
 \examples{
   \dontrun{
      ## Optional simple examples of the most important functions

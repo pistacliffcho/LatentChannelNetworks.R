@@ -1,0 +1,12 @@
+computeExpConnects      Compute expected connections for node
+computeTheta            Expected Channel Usage
+get_auc                 Get auc for a model from edges/notEdges list
+get_both_auc            Get both in sample and out of sample AUC
+heatmapLCN              Build heatmap from model
+latChanNet-package      A short title line describing what the package
+                        does
+makeLatentModel         Make Latent Structure model
+predict.LatClass        Predictions from LatClass objects
+simLCN                  Simulate Latent Channel Network
+unq_nondiag_flat        Return only unique non-selfloop samples from
+                        flat_index
