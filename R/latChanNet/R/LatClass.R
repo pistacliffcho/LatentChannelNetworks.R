@@ -33,6 +33,7 @@ LatClass = setRefClass("LatClass",
                                   "used_missingList",
                                   "metadata", 
                                   "metanames",
+                                  "metalookup",
                                   "modtype", 
                                   "max_node"), 
                        methods = c("fit", 
@@ -40,10 +41,57 @@ LatClass = setRefClass("LatClass",
                                    "softMax_prob",
                                    "plot", 
                                    "llk", 
-                                   "get_pars", 
-                                   "mult_fit")
+                                   "get_pars")
 )
 
+#' @title Make Latent Structure model
+#' @param edgeList An matrix edgelist. Can be nx2 (both) or nx3 (BKN only)
+#' @param nDim Number of latent dimensions to use
+#' @param model Type of model to fit. Options are "LCN" or "BKN"
+#' @param missingList A nx2 matrix edgelist of edges for which the value is unknown
+#' @param metadata A data.frame with all factors representing metadata
+#' @description Make a latent class model. 
+#' Can be used for predicting unknown edge status 
+#' and unknown metadata.
+#' @details 
+#' Fits either a Latent Channels Network (LCN), 
+#' or the symmetric low-rank Poisson model of 
+#' Ball, Karrer and Newman (BKN). 
+#' The model assumes an undirected graph. 
+#' 
+#' If edges are counts, use the BKN model. 
+#' The data format for each row should (i,j, count),
+#' with i,j as integer IDs starting at 1. 
+#' 
+#' If edges are binary, either a BKN or LCN model 
+#' may be used, 
+#' although an LCN model is somewhat more appropriate. 
+#' 
+#' LCN model:
+#' 
+#' Clifford Anderson-Bergman, Phan Nguyen, and Jose Cadena Pico.
+#' "Latent Channel Networks", submitted 2019
+#' 
+#' BKN model: 
+#' 
+#' Brian Ball, Brian Karrer, and Mark EJ Newman. 
+#' "Efficient and principled method for detecting 
+#' communities in networks." 
+#' Physical Review E 84.3 (2011): 036103.
+#' 
+#' @examples 
+#' data(email_data)
+#' # Building model with metadata
+#' df = data.frame(dpt = email_data$nodeDpt)
+#' model = makeLatentModel(email_data$edgeList, 
+#'                         10, 
+#'                         metadata = df)
+#' # Fitting model
+#' model$fit()
+#' 
+#' # Predicting a two edge probabilities
+#' predict(model, )
+#' 
 #' @export
 makeLatentModel = function(edgeList, nDims,
                            model = "LCN",
@@ -85,6 +133,7 @@ makeLatentModel = function(edgeList, nDims,
     ans$used_edgeList = edgeList
     ans$used_missingList = missingList
     ans$metanames = aug_edges$metanames
+    ans$metalookup = aug_edges$name_list
   }
   
   if(model == "LCN"){
@@ -136,24 +185,6 @@ LatClass$methods(
   }
 )
 
-LatClass$methods(
-  mult_fit = function(nFits = 5, 
-                      nInitIts = 500, 
-                      nFinalIts = 10000){
-    max_llk = -Inf
-    for(i in 1:nFits){
-      rand_start()
-      res = fit(iters = nInitIts)
-      this_llk = llk()
-      if(this_llk > max_llk){
-        max_llk = this_llk
-        max_vals = get_pars()
-      }
-    }
-    set_pars(max_vals)
-    fit(iters = nFinalIts)
-  }
-)
 
 LatClass$methods(
   fit = function(iters = 10000,
@@ -223,19 +254,28 @@ LatClass$methods(
 
 
 LatClass$methods(
-  predict = function(i, j, meta_type = NULL){
-    if(!is.null(meta_type)){
-      if(meta_type == "prob"){
-        ans = meta_probs(i,j)
-        return(ans)
-      }
-      else if(meta_type == "class"){
-        ans = maxprob(i,j)
-        return(ans)
-      }
-      else{
-        stop("meta_type not recognized. Options are 'prob' or 'class'")
-      }
+  predict_meta = function(i, meta){
+    if(length(meta) != 1) stop("meta must be a scalar")
+    all_names = metalookup[[meta]]
+    name_inds = match(all_names, metanames)
+    js = name_inds + max_node
+    ans = cmod$crossEdges(i, js)
+    
+    # softmax standardize
+    ans = ans / rowSums(ans)
+    # in case any divide by zeros
+    ans[is.na(ans)] = 1 / ncol(ans)
+    rownames(ans) = paste("Node", i)
+    colnames(ans) = all_names
+    return(ans)
+  }
+)
+
+LatClass$methods(
+  predict = function(i, j){
+    if(is.character(j)){
+      ans = predict_meta(i,j)
+      return(ans)
     }
     if(length(j) == 1 & length(i) > 1){
       j = rep(j, length(i))
@@ -251,13 +291,6 @@ LatClass$methods(
     if(is.numeric(j)){
       if(max(j) > max_node)
         stop("i outside range of indices")
-    }
-    if(is.character(j)){
-      name_inds = match(j, metanames)
-      if(any(is.na(name_inds))){
-        stop("invalid metaname. See $metanames for allowed names")
-      }
-      j = name_inds + max_node
     }
     ans = meanEdges(cmod, cbind(i,j))
     return(ans)

@@ -4,14 +4,18 @@ expandFactors = function(edgeList, meta_data){
     meta_data[,i] = as.factor(meta_data[,i])
   }
   colNames = colnames(meta_data)
-  ans = NULL
+  expand_names = list()
+  ind_matrix = NULL
   for(cn in colNames){
     frm_txt = paste0("~", cn, " + 0")
     frm = as.formula(frm_txt)
     mf = model.frame(frm, data = meta_data,
                      na.action = na.pass)
-    ans = cbind(ans, model.matrix(frm, mf) )
+    ind_matrix = cbind(ind_matrix, model.matrix(frm, mf) )
+    expand_names[[cn]] = colnames(ind_matrix)
   }
+  ans = list(name_list = expand_names, 
+             ind_mat = ind_matrix)
   return(ans)
 }
   
@@ -19,7 +23,8 @@ getAugNodes = function(edgeList,
                        meta_data, 
                        addCount = F, 
                        max_node){ 
-  expandedData = expandFactors(edgeList, meta_data)
+  expand_info = expandFactors(edgeList, meta_data)
+  expandedData = expand_info$ind_mat
   metanames = colnames(expandedData)
   aug_nodes = which(expandedData == 1, arr.ind = T)
   aug_nodes[,2] = aug_nodes[,2] + max_node
@@ -37,7 +42,8 @@ getAugNodes = function(edgeList,
   
   ans = list(edges = aug_nodes, 
              unknown_edges = miss_aug_nodes, 
-             metanames = metanames)
+             metanames = metanames, 
+             name_list = expand_info$name_list)
   return(ans)
 }
 
@@ -61,6 +67,7 @@ augWithFactors = function(edgeList, meta_data,
     missingList = NULL
   ans = list(edges = augEdges, 
              missingEdges = missingList[,1:2], 
-             metanames = metanames)
+             metanames = metanames, 
+             name_list = augNodes$name_list)
   return(ans)
 }

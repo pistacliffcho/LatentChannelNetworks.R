@@ -99,6 +99,7 @@ public:
    **/  
   double expectedDegree(int i);
   NumericMatrix get_theta();
+  NumericMatrix crossEdges(IntegerVector ris, IntegerVector rjs);
 };
 
 /**
@@ -471,3 +472,21 @@ void BKN::par_one_em(){
   RcppParallel::parallelFor(0, nNodes, tup);
 }
 
+// Compute all edge probabilities for all permutations of i & j
+NumericMatrix BKN::crossEdges(IntegerVector ris, IntegerVector rjs){
+  int nRow = ris.length();
+  int nCol = rjs.length();
+  NumericMatrix ans(nRow, nCol);
+  
+  int this_i, this_j;
+  for(int i = 0; i < nRow; i++){
+    this_i = ris[i] - 1;
+    if(this_i < 0 | this_i >= nNodes){ stop("invalid i"); }
+    for(int j = 0; j < nCol; j++){
+      this_j = rjs[j] - 1;
+      if(this_j < 0 | this_j >= nNodes){ stop("invalid j"); }
+      ans(i, j) = meanEdges(this_i, this_j);
+    }
+  }
+  return(ans);
+}

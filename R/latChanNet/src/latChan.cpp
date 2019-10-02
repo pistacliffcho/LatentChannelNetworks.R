@@ -16,6 +16,7 @@ RCPP_MODULE(LCN){
   .method("expectedConnections", &LCN::expectedConnections)
   .method("expectedDegree", &LCN::expectedDegree)
   .method("edgeProb", &LCN::edgeProb)
+  .method("crossEdges", &LCN::crossEdges)
   ;
 }
 
@@ -30,7 +31,8 @@ RCPP_MODULE(BKN){
   .method("set_theta", &BKN::set_theta)
   .method("expectedDegree", &BKN::expectedDegree)
   .method("node_llk", &BKN::node_llk)
-  .method("meanEdges", &BKN::meanEdges);
+  .method("meanEdges", &BKN::meanEdges)
+  .method("crossEdges", &BKN::crossEdges);
 }
 
 

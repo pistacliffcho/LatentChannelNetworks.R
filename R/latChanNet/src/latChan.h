@@ -66,6 +66,7 @@ public:
   NumericVector computeTheta(int i, int j);
   NumericVector expectedConnections(int i);
   double expectedDegree(int i);
+  NumericMatrix crossEdges(IntegerVector ris, IntegerVector rjs);
 };
 
 
@@ -562,6 +563,25 @@ double LCN::expectedDegree(int i){
   for(int j = 0; j < nNodes; j++){
     if(i == j){ continue; }
     ans += edgeProb(i, j);
+  }
+  return(ans);
+}
+
+// Compute all edge probabilities for all permutations of i & j
+NumericMatrix LCN::crossEdges(IntegerVector ris, IntegerVector rjs){
+  int nRow = ris.length();
+  int nCol = rjs.length();
+  NumericMatrix ans(nRow, nCol);
+  
+  int this_i, this_j;
+  for(int i = 0; i < nRow; i++){
+    this_i = ris[i] - 1;
+    if(this_i < 0 | this_i >= nNodes){ stop("invalid i"); }
+    for(int j = 0; j < nCol; j++){
+      this_j = rjs[j] - 1;
+      if(this_j < 0 | this_j >= nNodes){ stop("invalid j"); }
+      ans(i, j) = edgeProb(this_i, this_j);
+    }
   }
   return(ans);
 }
