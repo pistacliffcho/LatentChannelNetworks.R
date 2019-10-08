@@ -2,9 +2,8 @@
 
 S3method(predict,LatClass)
 export(est_auc)
-export(expNodeConnectMat)
-export(heatmapLCN)
 export(makeLatentModel)
+export(plot_net)
 export(simBlockLCN)
 export(simLCN)
 import(Rcpp)

@@ -177,14 +177,27 @@ LatClass$methods(
 
 LatClass$methods(
   get_pars = function(){
+    # Extracting full matrix
     if(modtype == "LCN"){
-      ans = cmod$get_pmat()
-      return(ans)
+      all_pars = cmod$get_pmat()
     }
     if(modtype == "BKN"){
-      ans = cmod$get_theta()
-      return(ans)
+      all_pars = cmod$get_theta()
     }
+    # Pulling out + naming node-only parameters
+    node_par_inds = seq_len(max_node)
+    node_pars = all_pars[node_par_inds,]
+    rownames(node_pars) = paste("Node", node_par_inds)
+    cnames = paste("Channel", seq_len(ncol(all_pars)))
+    colnames(node_pars) = cnames
+    ans = list(nodes = node_pars)
+    # Adding meta data nodes if they are used
+    if(!is.null(metanames)){
+      meta_pars = all_pars[-node_par_inds, ]
+      rownames(meta_pars) = metanames
+      ans[["meta"]] = meta_pars
+    }
+    return(ans)
   }
 )
 
@@ -225,7 +238,7 @@ LatClass$methods(
                   xlab = " ", ylab = " ", 
                   prob_cols =  c("black", "white", "orange", "red"), 
                   greater_col = "purple"){
-    heatmapLCN(cmod, meta_data, minGrpSize = minGrpSize, 
+    heatmapLCN(.self, meta_data, minGrpSize = minGrpSize, 
               xlab = xlab, ylab = ylab, prob_cols = prob_cols, 
               greater_col = greater_col)
   }
@@ -269,6 +282,12 @@ LatClass$methods(
 )
 
 
+remove_colname = function(fullnames, colnames){
+  nchar_col = nchar(colnames)
+  ans = substring(fullnames, nchar_col + 1)
+  return(ans)
+}
+
 LatClass$methods(
   predict_meta = function(i, meta){
     if(length(meta) != 1) stop("meta must be a scalar")
@@ -282,7 +301,7 @@ LatClass$methods(
     # in case any divide by zeros
     ans[is.na(ans)] = 1 / ncol(ans)
     rownames(ans) = paste("Node", i)
-    colnames(ans) = all_names
+    colnames(ans) = remove_colname(all_names, meta)
     return(ans)
   }
 )
@@ -326,7 +345,6 @@ init_pars = function(nNodes, nDims){
   return(ans)
 }
 
-#' @export
 expNodeConnectMat = function(mod){
   # Extracting only for properly sized matrix
   ans = mod$get_pars() * 0
