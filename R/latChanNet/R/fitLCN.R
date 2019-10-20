@@ -41,10 +41,12 @@ prepEdgeList = function(edgeList, max_node = NULL){
 #' @param edgeList A nx2 matrix of edges
 #' @param nDims Number of Latent Channels
 #' @param missingEdges A nx2 matrix of edges for which status in unknown
+#' @param pars Initial values of parameters
 #' @noRd
 makeLCN = function(edgeList, 
                    nDims = 5, 
-                   missingEdges = NULL){
+                   missingEdges = NULL, 
+                   pars){
   edgeList = as.matrix(edgeList)
   max_n = max(edgeList)
   if(!is.null(missingEdges)){
@@ -63,7 +65,7 @@ makeLCN = function(edgeList,
       stop("Problem: missing edges not same length as edgelist!")
     }
   }
-  pmat_init = init_pars(max_n, nDims)
+  pmat_init = pars
   
   ans = LCN$new(preppedEdgeList, 
                 pmat_init, 

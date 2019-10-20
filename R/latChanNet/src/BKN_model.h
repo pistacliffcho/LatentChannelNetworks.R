@@ -59,7 +59,7 @@ public:
       List missingList);
   void ingestEdges(List lst);
   void ingestUnknownEdges(List unknownEdges);
-  void set_theta(NumericMatrix theta);
+  void set_pars(NumericMatrix theta);
   
   /**
    * Likelihood tools
@@ -98,7 +98,7 @@ public:
    * Querying tools
    **/  
   double expectedDegree(int i);
-  NumericMatrix get_theta();
+  NumericMatrix get_pars();
   NumericMatrix crossEdges(IntegerVector ris, IntegerVector rjs);
 };
 
@@ -270,7 +270,7 @@ double BKN::expectedDegree(int i){
   return(ans);
 }
 
-NumericMatrix BKN::get_theta(){
+NumericMatrix BKN::get_pars(){
   NumericMatrix ans = theta_mat.getNumMat();
   return(ans);
 }
@@ -352,7 +352,7 @@ void BKN::ingestUnknownEdges(List RunknownEdges){
   }
 }
 
-void BKN::set_theta(NumericMatrix new_theta){
+void BKN::set_pars(NumericMatrix new_theta){
   if(new_theta.rows() != theta_mat.nRows || 
      new_theta.cols() != theta_mat.nCols){
     stop("Incorrect dimensions for new theta");

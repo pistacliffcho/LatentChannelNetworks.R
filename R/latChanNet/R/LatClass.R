@@ -3,7 +3,7 @@
 #' @param mod LatClass model
 #' @param i node index
 #' @param j Either an node index or metadata colname name
-#' @param type Should node pairs or cross of all combinations be predicted 
+#' @param type Should node pairs ('pairs') or cross ('cross') of all combinations be predicted 
 #' @examples 
 #' data(email_data)
 #' df = data.frame(dpt = email_data$nodeDpt)
@@ -12,7 +12,7 @@
 #' 
 #' # Building model and fitting
 #' mod = makeLatentModel(email_data$edgeList, 
-#'                       nDims = 10, 
+#'                       nChans = 10, 
 #'                       metadata = df)
 #' mod$fit(fast_em = T)
 #'
@@ -31,7 +31,7 @@ predict.LatClass = function(mod, i, j, type = "pairs"){
     return(ans)
   }
   else if(type == "cross"){
-    ans = mod$cmod$crossEdges(i, j)
+    ans = predict_crossedge(i, j, mod$pars, mod$model)
     rownames(ans) = paste("Node", i)
     colnames(ans) = paste("Node", j)
     return(ans)
@@ -42,22 +42,24 @@ predict.LatClass = function(mod, i, j, type = "pairs"){
 }
 
 LatClass = setRefClass("LatClass", 
-                       fields = c("cmod", 
-                                  "org_edgeList", 
+                       fields = c("org_edgeList", 
                                   "org_missingList",
-                                  "used_edgeList",
-                                  "used_missingList",
+                                  "edgeList",
+                                  "missingList",
                                   "metadata", 
                                   "metanames",
                                   "metalookup",
                                   "modtype", 
-                                  "max_node"), 
+                                  "max_node", 
+                                  "model", 
+                                  "pars"), 
                        methods = c("fit", 
                                    "predict", 
                                    "softMax_prob",
                                    "plot", 
-                                   "llk", 
-                                   "get_pars")
+                                   "get_pars", 
+                                   "make_cmod",
+                                   "llk" )
 )
 
 #' @title Make Latent Structure model
@@ -109,13 +111,14 @@ LatClass = setRefClass("LatClass",
 #' predict(model, )
 #' 
 #' @export
-makeLatentModel = function(edgeList, nDims,
+makeLatentModel = function(edgeList, nChans,
                            model = "LCN",
                            missingList = NULL, 
                            metadata = NULL){
-  if(missing(nDims)){ stop("nDims must be specified") }
+  if(missing(nChans)){ stop("nChans must be specified") }
   # Filling in basic fields
   ans = new("LatClass")
+  ans$model = model
   ans$org_edgeList = edgeList
   ans$org_missingList = missingList 
   ans$metadata = metadata
@@ -132,6 +135,8 @@ makeLatentModel = function(edgeList, nDims,
     checkMissingList(edgeList[,1:2], missingList, max_node)
   }
   
+  metanames = NULL
+  meta_lookup = NULL
   # Augmenting graph if metadata provided
   if(!is.null(metadata)){
     if(!is.data.frame(metadata)){
@@ -146,54 +151,51 @@ makeLatentModel = function(edgeList, nDims,
                               count = count)
     edgeList = aug_edges$edges
     missingList = aug_edges$missingEdges
-    ans$used_edgeList = edgeList
-    ans$used_missingList = missingList
-    ans$metanames = aug_edges$metanames
-    ans$metalookup = aug_edges$name_list
+    metanames = aug_edges$metanames
+    meta_lookup = aug_edges$name_list
   }
-  
-  if(model == "LCN"){
-    ans$cmod = makeLCN(edgeList, nDims, missingList)
-  }
-  else if(model == "BKN"){
-    ans$cmod = makeBKN(edgeList, nDims, missingList)
-  }
-  else{ stop("model not recognized") }
+  ans$edgeList = edgeList
+  ans$missingList = missingList
+  ans$metanames = metanames
+  ans$metalookup = meta_lookup
+  ans$rand_start(nNodes = max(ans$edgeList), nChans)
   return(ans)
 }
 
 LatClass$methods(
   llk = function(){
-    return(cmod$llk())
+    cmod = make_cmod()
+    ans = cmod$llk()
+    return(ans)
   }
 )
 
 LatClass$methods(
-  set_pars = function(pars){
-    if(modtype == "LCN"){ ans = cmod$set_pmat(pars) }
-    if(modtype == "BKN"){ ans = cmod$set_theta(pars) }
+  make_cmod = function(){
+    if(model == "LCN"){
+      cmod = makeLCN(edgeList, nChans, missingList, pars)
+    }
+    else if(model == "BKN"){
+      ans$cmod = makeBKN(edgeList, nChans, missingList, pars)
+    }
+    else{ stop("model not recognized") }
+    return(cmod)
   }
 )
+
 
 LatClass$methods(
   get_pars = function(){
-    # Extracting full matrix
-    if(modtype == "LCN"){
-      all_pars = cmod$get_pmat()
-    }
-    if(modtype == "BKN"){
-      all_pars = cmod$get_theta()
-    }
     # Pulling out + naming node-only parameters
     node_par_inds = seq_len(max_node)
-    node_pars = all_pars[node_par_inds,]
+    node_pars = pars[node_par_inds,]
     rownames(node_pars) = paste("Node", node_par_inds)
     cnames = paste("Channel", seq_len(ncol(all_pars)))
     colnames(node_pars) = cnames
     ans = list(nodes = node_pars)
     # Adding meta data nodes if they are used
     if(!is.null(metanames)){
-      meta_pars = all_pars[-node_par_inds, ]
+      meta_pars = pars[-node_par_inds, ]
       rownames(meta_pars) = metanames
       ans[["meta"]] = meta_pars
     }
@@ -202,15 +204,10 @@ LatClass$methods(
 )
 
 LatClass$methods(
-  rand_start = function(){
-    samp_pars = get_pars()
-    nChans = ncol(samp_pars)
-    nNodes = nrow(samp_pars)
-    
+  rand_start = function(nNodes, nChans){
     new_vals = matrix(runif(nChans * nNodes, max = sqrt(1 / nChans)), 
                       nrow = nNodes)
-    if(any(new_vals > 1) ) browser()
-    set_pars(new_vals)
+    pars <<- new_vals
   }
 )
 
@@ -220,16 +217,20 @@ LatClass$methods(
                  par = T, 
                  pTol = 10^-6, 
                  fast_em = F){
+    cmod = make_cmod()
     if(modtype == "LCN"){
       alg_type = "EM"
       if(par){ alg_type = "ParEM" }
       emLCN(cmod, iters, type = alg_type, 
             pTol = pTol, fast_em = fast_em)
+      all_pars <- cmod$get_pars()
     }
     else{
       emBKN(cmod, iters, par = par, 
             pTol = pTol)
+      all_pars <- cmod$get_pars()
     }
+    pars <<- all_pars
   }
 )
 
@@ -294,14 +295,14 @@ LatClass$methods(
     all_names = metalookup[[meta]]
     name_inds = match(all_names, metanames)
     js = name_inds + max_node
-    ans = cmod$crossEdges(i, js)
+    ans = predict_crossedge(i, js, pars, model)
     
     # softmax standardize
     ans = ans / rowSums(ans)
     # in case any divide by zeros
     ans[is.na(ans)] = 1 / ncol(ans)
     rownames(ans) = paste("Node", i)
-    colnames(ans) = remove_colname(all_names, meta)
+    colnames(ans) = all_names 
     return(ans)
   }
 )
@@ -327,7 +328,7 @@ LatClass$methods(
       if(max(j) > max_node)
         stop("i outside range of indices")
     }
-    ans = meanEdges(cmod, cbind(i,j))
+    ans = predict_lat_edges(i, j, pars, model)
     names(ans) = paste0("Nodes ", i, ":", j)
     return(ans)
   }
@@ -335,11 +336,11 @@ LatClass$methods(
 
 
 
-init_pars = function(nNodes, nDims){
-  ans = matrix(runif(nNodes * nDims, max = 1/100), 
+init_pars = function(nNodes, nChans){
+  ans = matrix(runif(nNodes * nChans, max = 1/100), 
                nrow = nNodes)
   row_ind = 1:nNodes
-  col_ind = (row_ind %% nDims) + 1
+  col_ind = (row_ind %% nChans) + 1
   flat_ind = row_ind + (col_ind - 1) * nNodes
   ans[flat_ind] = runif(nNodes)
   return(ans)

@@ -181,5 +181,53 @@ void emRelaxedPos(Mat &theta_new, Mat &theta_old, double w){
   }
 }
 
+NumericVector predict_lat_edges(IntegerVector r_i, IntegerVector r_j, 
+                      NumericMatrix pmat, std::string model){
+  int mod;
+  if(model == "LCN"){ mod = 1;}
+  else if(model == "BKN"){ mod = 2;}
+  else{ stop("model not recognized"); }
+  
+  int K = pmat.ncol();
+  int nRows = pmat.nrow();
+  
+  int n = r_i.size();
+  int nj = r_j.size();
+  int ci, cj;
+  if(n != nj) stop("length(i) != length(j)");
+  NumericVector ans(n);
+  double this_par = 0.0;
+  for(int i = 0; i < n; i++){
+    if(mod == 1){ this_par = 1.0; }
+    if(mod == 2){ this_par = 0.0; }
+    ci = r_i[i] - 1; cj = r_j[i] - 1;
+    if(ci < 0 | ci >= nRows | cj < 0 | cj >= nRows){ stop("invalid node id"); }
+    for(int k = 0; k < K; k++){
+      if(mod == 1){ this_par *= (1.0 - pmat(ci, k) * pmat(cj, k)); }
+      if(mod == 2){ this_par += pmat(ci, k) * pmat(cj, k); }
+    }
+    if(mod == 1){ ans[i] = 1.0 - this_par; }
+    if(mod == 2){ ans[i] = this_par; }
+  }
+  return(ans);
+}
+
+NumericMatrix predict_crossedge(IntegerVector r_i, IntegerVector r_j, 
+                                NumericMatrix pmat, std::string model){
+  int n_i = r_i.size();
+  int n_j = r_j.size();
+  
+  NumericMatrix ans(n_i, n_j);
+  IntegerVector rep_i(n_j);
+  for(int i = 0; i < n_i; i++){
+    rep_i = rep_i * 0;
+    rep_i = rep_i + r_i[i];
+    NumericVector this_row = predict_lat_edges(rep_i, r_j, pmat, model);
+    ans.row(i) = this_row;
+  }
+  return(ans);
+}
+
+
 
 #endif

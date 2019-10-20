@@ -11,8 +11,9 @@ expandFactors = function(edgeList, meta_data){
     frm = as.formula(frm_txt)
     mf = model.frame(frm, data = meta_data,
                      na.action = na.pass)
-    ind_matrix = cbind(ind_matrix, model.matrix(frm, mf) )
-    expand_names[[cn]] = colnames(ind_matrix)
+    this_mat = model.matrix(frm, mf)
+    expand_names[[cn]] = colnames(this_mat)
+    ind_matrix = cbind(ind_matrix, this_mat )
   }
   ans = list(name_list = expand_names, 
              ind_mat = ind_matrix)

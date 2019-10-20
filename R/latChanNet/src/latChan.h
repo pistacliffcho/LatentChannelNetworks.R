@@ -61,8 +61,8 @@ public:
           double rtol, double rpTol, 
           bool fast_update);
   
-  NumericMatrix get_pmat();
-  void set_pmat(NumericMatrix m);
+  NumericMatrix get_pars();
+  void set_pars(NumericMatrix m);
   NumericVector computeTheta(int i, int j);
   NumericVector expectedConnections(int i);
   double expectedDegree(int i);
@@ -511,13 +511,13 @@ List LCN::em(int max_its, int type,
  ***/
 
 // extract fitted p-matrix
-NumericMatrix LCN::get_pmat(){
+NumericMatrix LCN::get_pars(){
   NumericMatrix ans = pmat.getNumMat();
   return(ans);
 }
 
 // set p-matrix
-void LCN::set_pmat(NumericMatrix m){
+void LCN::set_pars(NumericMatrix m){
   int nRows = m.rows();
   int nCols = m.cols();
   if(nRows != nNodes){ stop("nRows != nNodes");}

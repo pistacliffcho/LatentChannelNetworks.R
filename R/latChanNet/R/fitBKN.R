@@ -46,6 +46,7 @@ prepEdgeCountList = function(edgeCountList){
 #' @param edgeCountList An nx2 OR nx3 matrix of edges. See details.
 #' @param nDims Number of Latent Communities
 #' @param unknownEdges An nx2 matrix of edges for which the count is unknown
+#' @param pars Initial value of parameters
 #' @details `edgeCountList` should be an nx3 matrix, with columns 1 & 2
 #' being node ID's and column 3 being the number of edges. 
 #' If an nx2 matrix is supplied instead, it is assumed that all 
@@ -54,7 +55,7 @@ prepEdgeCountList = function(edgeCountList){
 #' both imply that there are 4 edges between nodes 1 and 3. 
 #' If node pairs appear more than once in edgeCountList, edge counts are summed. 
 #' @noRd
-makeBKN = function(edgeCountList, nDims = 5, unknownEdges = NULL){
+makeBKN = function(edgeCountList, nDims = 5, unknownEdges = NULL, pars){
   # If no edge counts (i.e. column 3) provided, assume all counts = 1
   if(ncol(edgeCountList) == 2){
     edgeCountList = cbind(edgeCountList, 1)
@@ -85,7 +86,7 @@ makeBKN = function(edgeCountList, nDims = 5, unknownEdges = NULL){
   # in edgeCount list. Here we combine edgeCountList with unknownEdges
   aug_edgeCountList = rbind(edgeCountList, unknownEdges)
   preppedCountList = prepEdgeCountList(aug_edgeCountList)
-  theta_init = init_pars(nNodes, nDims)
+  theta_init = pars
   if(length(preppedCountList) != length(unknownList)) browser()
   ans = BKN$new(preppedCountList, theta_init, unknownList)
   return(ans)

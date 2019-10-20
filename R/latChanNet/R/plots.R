@@ -47,18 +47,22 @@ LatPlot$methods(
 #' @param ... Additional arguments passed to ComplexHeatmap::Heatmap
 #' @export
 plot_net = function(mod, 
-                      grp = NULL, 
-                      metanames = NULL,
-                      minGrpSize = NULL,
-                      subset = NULL,
-                      name = "",
-                      ...){
+                    grp = NULL, 
+                    metanames = NULL,
+                    minGrpSize = NULL,
+                    row_subset = NULL,
+                    col_subset = NULL,
+                    name = "",
+                    plotratio = 2,
+                    ...){
   
   # Node plot
   node_info = hm_node_info(mod, grp = grp, 
                            minGrpSize = minGrpSize,
-                           subset = subset)
-  node_p = nodeinfo2ComplexHeatmap(node_info)
+                           row_subset = row_subset, 
+                           col_subset = col_subset)
+  node_p = nodeinfo2ComplexHeatmap(node_info, 
+                                   width = grid::unit(plotratio, "cm"))
   nodeList = list(plot = node_p, info = node_info)
   if(is.null(metanames)){ 
     ans = LatPlot$new(nodeList)
@@ -68,9 +72,11 @@ plot_net = function(mod,
   # Meta plot
   meta_info = hm_meta_info(mod, metanames = metanames, 
                            colFxn = node_info$colFxn, 
-                           chanOrder = node_info$chan_order)
+                           chanOrder = node_info$chan_order, 
+                           col_subset = col_subset)
   
-  meta_p = meta2ComplexHeatmap(meta_info)
+  meta_p = meta2ComplexHeatmap(meta_info,
+                               width = grid::unit(plotratio, "cm"))
   metaList = list(plot = meta_p, info = meta_info)
   ans = LatPlot$new(nodeList, metaList)
   return(ans)
@@ -86,19 +92,30 @@ hm_node_info = function(mod,
                         plotChannelNumber = T,
                         xlab = NULL, ylab = NULL,
                         sortColumns = T,
-                        subset = NULL,
+                        row_subset = NULL,
+                        col_subset = NULL,
                         name = "",
                         ...){
+  
+  if(!is.null(grp)){
+    is_unknown = is.na(grp)
+    grp = as.character(grp)
+    grp[is_unknown] = "Unknown"
+  }
+    
+  
   pmat = mod$get_pars()$nodes
   if(is.null(ylab)) ylab = "Channels"
   
   # Keeping track of original channel names
   if(plotChannelNumber){ colnames(pmat) = 1:ncol(pmat) }
   
-  if(!is.null(subset)){
-    if(!is.null(grp)){ grp = grp[subset] }
-    pmat = pmat[subset,]
+  if(!is.null(row_subset)){
+    if(!is.null(grp)){ grp = grp[row_subset] }
+    pmat = pmat[row_subset,]
   }
+  
+  if(!is.null(col_subset)){ pmat = pmat[,col_subset] }
   
   if(!is.null(minGrpSize)){
     grp = as.character(grp)
@@ -197,7 +214,8 @@ nodeinfo2ComplexHeatmap = function(hmi,
 hm_meta_info = function(mod,
                         metanames = NULL,
                         colFxn, 
-                        chanOrder){
+                        chanOrder, 
+                        col_subset = NULL){
   if(is.null(metanames)){ return() }
   if(is.null(mod$metanames)){ stop("Model does not contain metadata") }
   if(any(!metanames %in% metanames) ){
@@ -205,6 +223,9 @@ hm_meta_info = function(mod,
   }
   
   meta_pmat = mod$get_pars()$meta
+  if(!is.null(col_subset)){
+    meta_pmat = meta_pmat[,col_subset]
+  }
   meta_pmat = meta_pmat[metanames, ]
   meta_pmat = meta_pmat[,chanOrder]
   
