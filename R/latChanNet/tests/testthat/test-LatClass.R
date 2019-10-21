@@ -1,5 +1,3 @@
-library(testthat)
-library(latChanNet)
 data("email_data")
 
 set.seed(1)
@@ -22,3 +20,6 @@ comb_preds = rbind(row1_preds, row2_preds)
 all_eq = all(cross_preds == comb_preds)
 test_that("Cross prediction == row by row predictions", {
   expect_true(all_eq)})
+
+
+# Testing metadata

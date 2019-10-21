@@ -221,16 +221,17 @@ LatClass$methods(
     if(modtype == "LCN"){
       alg_type = "EM"
       if(par){ alg_type = "ParEM" }
-      emLCN(cmod, iters, type = alg_type, 
+      alg_res <- emLCN(cmod, iters, type = alg_type, 
             pTol = pTol, fast_em = fast_em)
       all_pars <- cmod$get_pars()
     }
     else{
-      emBKN(cmod, iters, par = par, 
+      alg_res <- emBKN(cmod, iters, par = par, 
             pTol = pTol)
       all_pars <- cmod$get_pars()
     }
     pars <<- all_pars
+    return(alg_res)
   }
 )
 
