@@ -6,7 +6,7 @@
 \usage{
 makeLatentModel(
   edgeList,
-  nDims,
+  nChans,
   model = "LCN",
   missingList = NULL,
   metadata = NULL
@@ -15,13 +15,13 @@ makeLatentModel(
 \arguments{
 \item{edgeList}{An matrix edgelist. Can be nx2 (both) or nx3 (BKN only)}
 
+\item{nChans}{Number of latent dimensions to use}
+
 \item{model}{Type of model to fit. Options are "LCN" or "BKN"}
 
 \item{missingList}{A nx2 matrix edgelist of edges for which the value is unknown}
 
 \item{metadata}{A data.frame with all factors representing metadata}
-
-\item{nDim}{Number of latent dimensions to use}
 }
 \description{
 Make a latent class model. 
@@ -57,14 +57,13 @@ Physical Review E 84.3 (2011): 036103.
 \examples{
 data(email_data)
 # Building model with metadata
-df = data.frame(dpt = email_data$nodeDpt)
 model = makeLatentModel(email_data$edgeList, 
                         10, 
-                        metadata = df)
+                        metadata = email_data$meta)
 # Fitting model
 model$fit()
 
-# Predicting a two edge probabilities
-predict(model, )
+# Predicting two edge probabilities
+predict(model, i = c(2,3), j = c(4,5))
 
 }

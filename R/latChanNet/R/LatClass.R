@@ -6,15 +6,12 @@
 #' @param type Should node pairs ('pairs') or cross ('cross') of all combinations be predicted 
 #' @examples 
 #' data(email_data)
-#' df = data.frame(dpt = email_data$nodeDpt)
-#' # Grouping dpt for brevity
-#' df$dpt[df$dpt > 4] = "other"
 #' 
 #' # Building model and fitting
 #' mod = makeLatentModel(email_data$edgeList, 
 #'                       nChans = 10, 
-#'                       metadata = df)
-#' mod$fit(fast_em = T)
+#'                       metadata = email_data$meta)
+#' mod$fit(fast_em = TRUE)
 #'
 #' # Predicting edge pairs
 #' predict(mod, i = 1:3, j = 4:2)
@@ -23,7 +20,8 @@
 #' predict(mod, i = 1:3, j = 1:3, type = "cross")
 #' 
 #' # Predicting metadata 
-#' predict(mod, i = 1:3, "dpt")
+#' # Subsetting for brevity
+#' predict(mod, i = 1:3, "dpt")[,1:5]
 #' @export
 predict.LatClass = function(mod, i, j, type = "pairs"){
   if(type == 'pairs'){
@@ -64,7 +62,7 @@ LatClass = setRefClass("LatClass",
 
 #' @title Make Latent Structure model
 #' @param edgeList An matrix edgelist. Can be nx2 (both) or nx3 (BKN only)
-#' @param nDim Number of latent dimensions to use
+#' @param nChans Number of latent dimensions to use
 #' @param model Type of model to fit. Options are "LCN" or "BKN"
 #' @param missingList A nx2 matrix edgelist of edges for which the value is unknown
 #' @param metadata A data.frame with all factors representing metadata
@@ -100,15 +98,14 @@ LatClass = setRefClass("LatClass",
 #' @examples 
 #' data(email_data)
 #' # Building model with metadata
-#' df = data.frame(dpt = email_data$nodeDpt)
 #' model = makeLatentModel(email_data$edgeList, 
 #'                         10, 
-#'                         metadata = df)
+#'                         metadata = email_data$meta)
 #' # Fitting model
 #' model$fit()
 #' 
-#' # Predicting a two edge probabilities
-#' predict(model, )
+#' # Predicting two edge probabilities
+#' predict(model, i = c(2,3), j = c(4,5))
 #' 
 #' @export
 makeLatentModel = function(edgeList, nChans,

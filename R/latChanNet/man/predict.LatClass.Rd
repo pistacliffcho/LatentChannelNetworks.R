@@ -13,22 +13,19 @@
 
 \item{j}{Either an node index or metadata colname name}
 
-\item{type}{Should node pairs or cross of all combinations be predicted}
+\item{type}{Should node pairs ('pairs') or cross ('cross') of all combinations be predicted}
 }
 \description{
 Predict edge probabilities and categorical metadata
 }
 \examples{
 data(email_data)
-df = data.frame(dpt = email_data$nodeDpt)
-# Grouping dpt for brevity
-df$dpt[df$dpt > 4] = "other"
 
 # Building model and fitting
 mod = makeLatentModel(email_data$edgeList, 
-                      nDims = 10, 
-                      metadata = df)
-mod$fit(fast_em = T)
+                      nChans = 10, 
+                      metadata = email_data$meta)
+mod$fit(fast_em = TRUE)
 
 # Predicting edge pairs
 predict(mod, i = 1:3, j = 4:2)
@@ -37,5 +34,6 @@ predict(mod, i = 1:3, j = 4:2)
 predict(mod, i = 1:3, j = 1:3, type = "cross")
 
 # Predicting metadata 
-predict(mod, i = 1:3, "dpt")
+# Subsetting for brevity
+predict(mod, i = 1:3, "dpt")[,1:5]
 }

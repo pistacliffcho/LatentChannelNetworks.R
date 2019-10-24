@@ -1,31 +1,3 @@
-#' @title Expected Channel Usage
-#' @description Compute expected channel usage between two connected nodes.
-#' @param i Index of first node
-#' @param j Index of second node
-#' @param lcn_mod LCN model
-#' @details Computes the expected channel usage between two nodes 
-#' \strong{conditional on the two nodes sharing an edge.}
-#' @noRd
-computeTheta = function(i, j, lcn_mod){
-  # Converting R indices to C indices
-  c_i = i - 1; c_j = j - 1
-  ans = lcn_mod$computeTheta(c_i,c_j)
-  return(ans)
-}
-
-
-#' @title Compute expected connections for node
-#' @description Computes the estimated expected connections through each latent channel
-#' @param i Index of node
-#' @param lcn_mod LCN model
-#' @noRd
-computeExpConnects = function(i, lcn_mod){
-  # Converting R index to C indices
-  c_i = i - 1
-  ans = lcn_mod$expectedConnections(c_i)
-  names(ans) = paste("Channel", seq_along(ans))
-  return(ans)
-}
 
 # Get auc for a model from edges/notEdges list
 get_auc = function(mod, edges, notEdges){
@@ -54,15 +26,15 @@ get_both_auc = function(mod,
 #' @title Estimate Out-of-Sample AUC
 #' @param edgeList nx2 matrix of edges
 #' @param models Character vector of models to use
+#' @param nChan Number of channels to use
 #' @param nEdgesMasked Number of edges to mask
 #' @param nNonEdgesMasked Number of non-edges to mask
 #' @export
 est_auc = function(edgeList, models = c("LCN", "BKN"),
                    nChan = 10,
                    nEdgesMasked = 400, 
-                   nNonEdgesMasked = 400, 
-                   em_type = "base"){
-  
+                   nNonEdgesMasked = 400){
+  em_type = "base"
   colnames(edgeList) = c("i", "j")
   
   split_edges = random_splitEdges(edgeList, 
@@ -137,7 +109,6 @@ est_auc = function(edgeList, models = c("LCN", "BKN"),
 
 
 
-#' @export
 simBlockLCN = function(nBlocks = 8, nPerBlock = 32, 
                        nSuper = 8,
                        in_pars = c(2,2), 

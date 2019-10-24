@@ -12,9 +12,9 @@ nameEx("latChanNet-package")
 flush(stderr()); flush(stdout())
 
 ### Name: latChanNet-package
-### Title: A short title line describing what the package does
+### Title: Latent Network Models for edge and metadata prediction.
 ### Aliases: latChanNet-package latChanNet
-### Keywords: package
+### Keywords: network
 
 ### ** Examples
 
@@ -40,15 +40,14 @@ flush(stderr()); flush(stdout())
 
 data(email_data)
 # Building model with metadata
-df = data.frame(dpt = email_data$nodeDpt)
 model = makeLatentModel(email_data$edgeList, 
                         10, 
-                        metadata = df)
+                        metadata = email_data$meta)
 # Fitting model
 model$fit()
 
-# Predicting a two edge probabilities
-predict(model, )
+# Predicting two edge probabilities
+predict(model, i = c(2,3), j = c(4,5))
 
 
 
@@ -66,23 +65,22 @@ flush(stderr()); flush(stdout())
 ### ** Examples
 
 data(email_data)
-df = data.frame(dpt = email_data$nodeDpt)
-# Grouping dpt for brevity
-df$dpt[df$dpt > 5] = "other"
+
 # Building model and fitting
 mod = makeLatentModel(email_data$edgeList, 
-                      nDims = 10, 
-                      metadata = df)
-mod$fit(fast_em = T)
+                      nChans = 10, 
+                      metadata = email_data$meta)
+mod$fit(fast_em = TRUE)
 
 # Predicting edge pairs
-predict(mod, i = 1:3, j = 1:3)
+predict(mod, i = 1:3, j = 4:2)
 
 # Predicting all combinations of i and j
 predict(mod, i = 1:3, j = 1:3, type = "cross")
 
-# Predicting meta data 
-predict(mod, i = 1:3, "dpt")
+# Predicting metadata 
+# Subsetting for brevity
+predict(mod, i = 1:3, "dpt")[,1:5]
 
 
 

@@ -9,14 +9,15 @@ est_auc(
   models = c("LCN", "BKN"),
   nChan = 10,
   nEdgesMasked = 400,
-  nNonEdgesMasked = 400,
-  em_type = "base"
+  nNonEdgesMasked = 400
 )
 }
 \arguments{
 \item{edgeList}{nx2 matrix of edges}
 
 \item{models}{Character vector of models to use}
+
+\item{nChan}{Number of channels to use}
 
 \item{nEdgesMasked}{Number of edges to mask}
 

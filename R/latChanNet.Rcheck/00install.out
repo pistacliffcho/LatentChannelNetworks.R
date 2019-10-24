@@ -2,15 +2,22 @@
 ** using staged installation
 ** libs
 make: Nothing to be done for `all'.
+make: `symbols.rds' is up to date.
 installing to /Users/andersonberg1/Documents/GitHub/LatentChannelNetworks.R/R/latChanNet.Rcheck/00LOCK-latChanNet/00new/latChanNet/libs
 ** R
 ** data
 ** byte-compile and prepare package for lazy loading
+Warning: replacing previous import ‘Rcpp::prompt’ by ‘utils::prompt’ when loading ‘latChanNet’
+Warning: replacing previous import ‘Rcpp::.DollarNames’ by ‘utils::.DollarNames’ when loading ‘latChanNet’
 ** help
 *** installing help indices
 ** building package indices
 ** testing if installed package can be loaded from temporary location
+Warning: replacing previous import ‘Rcpp::prompt’ by ‘utils::prompt’ when loading ‘latChanNet’
+Warning: replacing previous import ‘Rcpp::.DollarNames’ by ‘utils::.DollarNames’ when loading ‘latChanNet’
 ** checking absolute paths in shared objects and dynamic libraries
 ** testing if installed package can be loaded from final location
+Warning: replacing previous import ‘Rcpp::prompt’ by ‘utils::prompt’ when loading ‘latChanNet’
+Warning: replacing previous import ‘Rcpp::.DollarNames’ by ‘utils::.DollarNames’ when loading ‘latChanNet’
 ** testing if installed package keeps a record of temporary installation path
 * DONE (latChanNet)

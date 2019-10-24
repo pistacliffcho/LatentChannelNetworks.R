@@ -9,8 +9,10 @@ plot_net(
   grp = NULL,
   metanames = NULL,
   minGrpSize = NULL,
-  subset = NULL,
+  row_subset = NULL,
+  col_subset = NULL,
   name = "",
+  plotratio = 2,
   ...
 )
 }
@@ -19,19 +21,19 @@ plot_net(
 
 \item{grp}{Vector of group categories for each node}
 
+\item{metanames}{Names of metavariables to plot}
+
 \item{minGrpSize}{Minimum size of group in both. Smaller groups put in "other"}
 
+\item{row_subset}{Subset of nodes to plot}
+
+\item{col_subset}{Subset of channels to plot}
+
+\item{name}{Legend names for plot}
+
+\item{plotratio}{If node parameters + meta parameters plotted, ratio between plots}
+
 \item{...}{Additional arguments passed to ComplexHeatmap::Heatmap}
-
-\item{prob_cols}{Colors for color gradient of probability range}
-
-\item{greater_col}{Color for color gradient beyond 1}
-
-\item{reorderChannels}{Should Channels be reorder by dependency on grp?}
-
-\item{xlab}{X-axis label}
-
-\item{ylab}{Y-asix label}
 }
 \description{
 Build heatmap from model

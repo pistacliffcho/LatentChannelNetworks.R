@@ -15,6 +15,7 @@ Object files/libraries should not be included in a source package.
 * checking for executable files ... OK
 * checking for hidden files and directories ... NOTE
 Found the following hidden files and directories:
+  .Rhistory
   R/.DS_Store
   src/.gitignore
   tests/.DS_Store
@@ -23,7 +24,11 @@ These were most likely included in error. See section ‘Package
 structure’ in the ‘Writing R Extensions’ manual.
 * checking for portable file names ... OK
 * checking for sufficient/correct file permissions ... OK
-* checking whether package ‘latChanNet’ can be installed ... OK
+* checking whether package ‘latChanNet’ can be installed ... WARNING
+Found the following significant warnings:
+  Warning: replacing previous import ‘Rcpp::prompt’ by ‘utils::prompt’ when loading ‘latChanNet’
+  Warning: replacing previous import ‘Rcpp::.DollarNames’ by ‘utils::.DollarNames’ when loading ‘latChanNet’
+See ‘/Users/andersonberg1/Documents/GitHub/LatentChannelNetworks.R/R/latChanNet.Rcheck/00install.out’ for details.
 * checking installed package size ... OK
 * checking package directory ... OK
 * checking DESCRIPTION meta-information ... NOTE
@@ -43,7 +48,6 @@ Checking should be performed on sources prepared by ‘R CMD build’.
 * checking dependencies in R code ... WARNING
 '::' or ':::' imports not declared from:
   ‘ComplexHeatmap’ ‘circlize’ ‘mltools’
-package 'methods' is used but not declared
 * checking S3 generic/method consistency ... WARNING
 predict:
   function(object, ...)
@@ -55,135 +59,37 @@ Extensions’ manual.
 * checking replacement functions ... OK
 * checking foreign function calls ... OK
 * checking R code for possible problems ... NOTE
-LatClass: no visible global function definition for ‘new’
-expandFactors: no visible global function definition for ‘as.formula’
-expandFactors: no visible global function definition for ‘model.frame’
-expandFactors: no visible binding for global variable ‘na.pass’
-expandFactors: no visible global function definition for ‘model.matrix’
-heatmapLCN: no visible global function definition for ‘is’
-heatmapLCN: no visible global function definition for ‘head’
-heatmapLCN: no visible global function definition for ‘tail’
-init_pars: no visible global function definition for ‘runif’
-makeLatentModel: no visible global function definition for ‘new’
-meanEdges: no visible global function definition for ‘is’
-simBlockLCN: no visible global function definition for ‘rbeta’
-simBlockLCN: no visible global function definition for ‘rbinom’
-weighted_coefs: no visible global function definition for ‘lm’
-weighted_coefs: no visible global function definition for ‘coef’
+expNodeConnectMat: no visible global function definition for
+  ‘computeExpConnects’
 Undefined global functions or variables:
-  as.formula coef head is lm model.frame model.matrix na.pass new rbeta
-  rbinom runif tail
-Consider adding
-  importFrom("methods", "is", "new")
-  importFrom("stats", "as.formula", "coef", "lm", "model.frame",
-             "model.matrix", "na.pass", "rbeta", "rbinom", "runif")
-  importFrom("utils", "head", "tail")
-to your NAMESPACE file (and ensure that your DESCRIPTION Imports field
-contains 'methods').
+  computeExpConnects
 * checking Rd files ... OK
 * checking Rd metadata ... OK
 * checking Rd cross-references ... OK
 * checking for missing documentation entries ... WARNING
-Undocumented code objects:
-  ‘est_auc’ ‘expNodeConnectMat’ ‘random_splitEdges’ ‘simBlockLCN’
-  ‘unq_edges’
 Undocumented data sets:
   ‘email_data’
 All user-level objects in a package should have documentation entries.
 See chapter ‘Writing R documentation files’ in the ‘Writing R
 Extensions’ manual.
 * checking for code/documentation mismatches ... OK
-* checking Rd \usage sections ... WARNING
-Undocumented arguments in documentation object 'get_auc'
-  ‘mod’ ‘edges’ ‘notEdges’
-
-Undocumented arguments in documentation object 'get_both_auc'
-  ‘mod’ ‘out_edges’ ‘out_notEdges’ ‘in_edges’ ‘in_notEdges’
-
-Undocumented arguments in documentation object 'heatmapLCN'
-  ‘plotChannelNumber’ ‘sortColumns’ ‘name’
-Documented arguments not in \usage in documentation object 'heatmapLCN':
-  ‘reorderChannels’
-
-Undocumented arguments in documentation object 'makeLatentModel'
-  ‘nDims’
-Documented arguments not in \usage in documentation object 'makeLatentModel':
-  ‘nDim’
-
-Undocumented arguments in documentation object 'unq_nondiag_flat'
-  ‘flat’ ‘max_n’
-
-Functions with \usage entries need to have the appropriate \alias
-entries, and all their arguments documented.
-The \usage entries must correspond to syntactically valid R code.
-See chapter ‘Writing R documentation files’ in the ‘Writing R
-Extensions’ manual.
+* checking Rd \usage sections ... OK
 * checking Rd contents ... OK
 * checking for unstated dependencies in examples ... OK
 * checking contents of ‘data’ directory ... OK
 * checking data for non-ASCII characters ... OK
 * checking data for ASCII and uncompressed saves ... OK
-* checking line endings in C/C++/Fortran sources/headers ... NOTE
-Found the following sources/headers not terminated with a newline:
-  src/latChan.cpp
-  src/simLCN.h
-Some compilers warn on such files.
+* checking line endings in C/C++/Fortran sources/headers ... OK
 * checking line endings in Makefiles ... OK
 * checking compilation flags in Makevars ... OK
 * checking for GNU extensions in Makefiles ... NOTE
 GNU make is a SystemRequirements.
 * checking for portable use of $(BLAS_LIBS) and $(LAPACK_LIBS) ... OK
 * checking compiled code ... OK
-* checking examples ... ERROR
-Running examples in ‘latChanNet-Ex.R’ failed
-The error most likely occurred in:
-
-> ### Name: makeLatentModel
-> ### Title: Make Latent Structure model
-> ### Aliases: makeLatentModel
-> 
-> ### ** Examples
-> 
-> data(email_data)
-> # Building model with metadata
-> df = data.frame(dpt = email_data$nodeDpt)
-> model = makeLatentModel(email_data$edgeList, 
-+                         10, 
-+                         metadata = df)
-> # Fitting model
-> model$fit()
-$err
-[1] 9.96054e-05
-
-$its
-[1] 3247
-
-> 
-> # Predicting a two edge probabilities
-> predict(model, )
-Error in mod$predict(i, j) : argument "j" is missing, with no default
-Calls: predict -> predict.LatClass -> <Anonymous>
-Execution halted
+* checking examples ... OK
 * checking for unstated dependencies in ‘tests’ ... OK
-* checking tests ... ERROR
-  Running ‘basicBuildTests.R’
-Running the tests in ‘tests/basicBuildTests.R’ failed.
-Last 13 lines of output:
-  [[1]]
-  [1] 2 3 4
-  
-  [[2]]
-  [1] 3 1
-  
-  [[3]]
-  [1] 2 1
-  
-  [[4]]
-  [1] 1
-  
-  > lcn = makeLCN(edgeList, 2)
-  Error in makeLCN(edgeList, 2) : could not find function "makeLCN"
-  Execution halted
+* checking tests ... OK
+  Running ‘testthat.R’
 * checking PDF version of manual ... OK
 * DONE
-Status: 2 ERRORs, 5 WARNINGs, 5 NOTEs
+Status: 5 WARNINGs, 4 NOTEs

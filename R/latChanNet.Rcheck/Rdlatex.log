@@ -63,10 +63,10 @@ No file Rd2.aux.
 (/usr/local/texlive/2018/texmf-dist/tex/latex/inconsolata/t1zi4.fd)
 (/usr/local/texlive/2018/texmf-dist/tex/latex/psnfss/t1phv.fd)
 (/usr/local/texlive/2018/texmf-dist/tex/latex/base/utf8.def) [1{/usr/local/texl
-ive/2018/texmf-var/fonts/map/pdftex/updmap/pdftex.map}] [2] [3] [4]
-(/usr/local/texlive/2018/texmf-dist/tex/latex/inconsolata/ts1zi4.fd) [5]
+ive/2018/texmf-var/fonts/map/pdftex/updmap/pdftex.map}] [2] [3]
+(/usr/local/texlive/2018/texmf-dist/tex/latex/inconsolata/ts1zi4.fd) [4]
 No file Rd2.ind.
-[6] (./Rd2.aux)
+[5] (./Rd2.aux)
 
 Package rerunfilecheck Warning: File `Rd2.out' has changed.
 (rerunfilecheck)                Rerun to get outlines right
@@ -81,12 +81,12 @@ e/2018/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2018/tex
 mf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/local/texlive/2018/texmf-dist/fo
 nts/type1/urw/times/utmr8a.pfb></usr/local/texlive/2018/texmf-dist/fonts/type1/
 urw/times/utmri8a.pfb>
-Output written on Rd2.pdf (6 pages, 91591 bytes).
+Output written on Rd2.pdf (5 pages, 87185 bytes).
 Transcript written on Rd2.log.
 This is makeindex, version 2.15 [TeX Live 2018] (kpathsea + Thai support).
-Scanning input file Rd2.idx....done (12 entries accepted, 0 rejected).
-Sorting entries....done (44 comparisons).
-Generating output file Rd2.ind....done (42 lines written, 0 warnings).
+Scanning input file Rd2.idx....done (8 entries accepted, 0 rejected).
+Sorting entries....done (24 comparisons).
+Generating output file Rd2.ind....done (29 lines written, 0 warnings).
 Output written in Rd2.ind.
 Transcript written in Rd2.ilg.
 This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018) (preloaded format=pdflatex)
@@ -152,14 +152,14 @@ Writing index file Rd2.idx
 (/usr/local/texlive/2018/texmf-dist/tex/latex/inconsolata/t1zi4.fd)
 (/usr/local/texlive/2018/texmf-dist/tex/latex/psnfss/t1phv.fd) (./Rd2.toc)
 (/usr/local/texlive/2018/texmf-dist/tex/latex/base/utf8.def) [1{/usr/local/texl
-ive/2018/texmf-var/fonts/map/pdftex/updmap/pdftex.map}] [2] [3] [4] [5]
-(/usr/local/texlive/2018/texmf-dist/tex/latex/inconsolata/ts1zi4.fd) [6]
-(./Rd2.ind [7]
+ive/2018/texmf-var/fonts/map/pdftex/updmap/pdftex.map}] [2] [3]
+(/usr/local/texlive/2018/texmf-dist/tex/latex/inconsolata/ts1zi4.fd) [4]
+(./Rd2.ind [5]
 
 LaTeX Font Warning: Font shape `T1/zi4/m/it' undefined
-(Font)              using `T1/zi4/m/n' instead on input line 22.
+(Font)              using `T1/zi4/m/n' instead on input line 12.
 
-[8]) (./Rd2.aux)
+[6]) (./Rd2.aux)
 
 Package rerunfilecheck Warning: File `Rd2.out' has changed.
 (rerunfilecheck)                Rerun to get outlines right
@@ -178,12 +178,12 @@ texlive/2018/texmf-dist/fonts/type1/urw/helvetic/uhvr8a.pfb></usr/local/texlive
 f-dist/fonts/type1/urw/times/utmr8a.pfb></usr/local/texlive/2018/texmf-dist/fon
 ts/type1/urw/times/utmr8a.pfb></usr/local/texlive/2018/texmf-dist/fonts/type1/u
 rw/times/utmri8a.pfb>
-Output written on Rd2.pdf (8 pages, 102243 bytes).
+Output written on Rd2.pdf (6 pages, 96669 bytes).
 Transcript written on Rd2.log.
 This is makeindex, version 2.15 [TeX Live 2018] (kpathsea + Thai support).
-Scanning input file Rd2.idx....done (12 entries accepted, 0 rejected).
-Sorting entries....done (44 comparisons).
-Generating output file Rd2.ind....done (42 lines written, 0 warnings).
+Scanning input file Rd2.idx....done (8 entries accepted, 0 rejected).
+Sorting entries....done (24 comparisons).
+Generating output file Rd2.ind....done (29 lines written, 0 warnings).
 Output written in Rd2.ind.
 Transcript written in Rd2.ilg.
 This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018) (preloaded format=pdflatex)
@@ -249,14 +249,14 @@ Writing index file Rd2.idx
 (/usr/local/texlive/2018/texmf-dist/tex/latex/inconsolata/t1zi4.fd)
 (/usr/local/texlive/2018/texmf-dist/tex/latex/psnfss/t1phv.fd) (./Rd2.toc)
 (/usr/local/texlive/2018/texmf-dist/tex/latex/base/utf8.def) [1{/usr/local/texl
-ive/2018/texmf-var/fonts/map/pdftex/updmap/pdftex.map}] [2] [3] [4] [5]
-(/usr/local/texlive/2018/texmf-dist/tex/latex/inconsolata/ts1zi4.fd) [6]
-(./Rd2.ind [7]
+ive/2018/texmf-var/fonts/map/pdftex/updmap/pdftex.map}] [2] [3]
+(/usr/local/texlive/2018/texmf-dist/tex/latex/inconsolata/ts1zi4.fd) [4]
+(./Rd2.ind [5]
 
 LaTeX Font Warning: Font shape `T1/zi4/m/it' undefined
-(Font)              using `T1/zi4/m/n' instead on input line 22.
+(Font)              using `T1/zi4/m/n' instead on input line 12.
 
-[8]) (./Rd2.aux)
+[6]) (./Rd2.aux)
 
 LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 
@@ -270,8 +270,8 @@ texlive/2018/texmf-dist/fonts/type1/urw/helvetic/uhvr8a.pfb></usr/local/texlive
 f-dist/fonts/type1/urw/times/utmr8a.pfb></usr/local/texlive/2018/texmf-dist/fon
 ts/type1/urw/times/utmr8a.pfb></usr/local/texlive/2018/texmf-dist/fonts/type1/u
 rw/times/utmri8a.pfb>
-Output written on Rd2.pdf (8 pages, 102979 bytes).
+Output written on Rd2.pdf (6 pages, 96995 bytes).
 Transcript written on Rd2.log.
 Saving output to ‘latChanNet-manual.pdf’ ...
 Done
-You may want to clean up by 'rm -Rf /var/folders/_f/6mtnww_s0m3b6b56jpsdw4gm000w1f/T//RtmpeVPnVR/Rd2pdf105c963fa118'
+You may want to clean up by 'rm -Rf /var/folders/_f/6mtnww_s0m3b6b56jpsdw4gm000w1f/T//Rtmp1baokY/Rd2pdf51427166611e'

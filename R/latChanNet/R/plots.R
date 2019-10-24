@@ -38,12 +38,12 @@ LatPlot$methods(
 #' @title Build heatmap from model
 #' @param mod LatClass object 
 #' @param grp Vector of group categories for each node
+#' @param metanames Names of metavariables to plot
 #' @param minGrpSize Minimum size of group in both. Smaller groups put in "other"
-#' @param prob_cols Colors for color gradient of probability range
-#' @param greater_col Color for color gradient beyond 1
-#' @param reorderChannels Should Channels be reorder by dependency on grp?
-#' @param xlab X-axis label
-#' @param ylab Y-asix label
+#' @param row_subset Subset of nodes to plot
+#' @param col_subset Subset of channels to plot
+#' @param name Legend names for plot
+#' @param plotratio If node parameters + meta parameters plotted, ratio between plots
 #' @param ... Additional arguments passed to ComplexHeatmap::Heatmap
 #' @export
 plot_net = function(mod, 
@@ -130,9 +130,7 @@ hm_node_info = function(mod,
   }
   
   # Function for making colors
-  colFxn = latChanNet:::make_colFxn(prob_cols, 
-                                    greater_col, 
-                                    pmat)
+  colFxn = make_colFxn(prob_cols, greater_col, pmat)
   
   # If grp is provided, need to sort and break up rows by grp
   if(!is.null(grp)){
