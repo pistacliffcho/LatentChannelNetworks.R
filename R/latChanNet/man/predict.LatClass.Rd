@@ -4,16 +4,18 @@
 \alias{predict.LatClass}
 \title{Predictions from LatClass objects}
 \usage{
-\method{predict}{LatClass}(mod, i, j, type = "pairs")
+\method{predict}{LatClass}(object, i, j, type = "pairs", ...)
 }
 \arguments{
-\item{mod}{LatClass model}
+\item{object}{LatClass model}
 
 \item{i}{node index}
 
 \item{j}{Either an node index or metadata colname name}
 
 \item{type}{Should node pairs ('pairs') or cross ('cross') of all combinations be predicted}
+
+\item{...}{Additional arguments. Ignored.}
 }
 \description{
 Predict edge probabilities and categorical metadata

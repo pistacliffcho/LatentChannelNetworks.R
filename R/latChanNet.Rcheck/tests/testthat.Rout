@@ -17,9 +17,6 @@ Type 'q()' to quit R.
 
 > library(testthat)
 > library(latChanNet)
-Warning messages:
-1: replacing previous import 'Rcpp::prompt' by 'utils::prompt' when loading 'latChanNet' 
-2: replacing previous import 'Rcpp::.DollarNames' by 'utils::.DollarNames' when loading 'latChanNet' 
 > 
 > test_check("latChanNet")
 ══ testthat results  ═══════════════════════════════════════════════════════════
@@ -27,4 +24,4 @@ Warning messages:
 > 
 > proc.time()
    user  system elapsed 
-  1.718   0.083   1.005 
+  1.699   0.087   1.008 

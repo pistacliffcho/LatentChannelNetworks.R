@@ -1,9 +1,10 @@
 #' @title Predictions from LatClass objects
 #' @description Predict edge probabilities and categorical metadata
-#' @param mod LatClass model
+#' @param object LatClass model
 #' @param i node index
 #' @param j Either an node index or metadata colname name
 #' @param type Should node pairs ('pairs') or cross ('cross') of all combinations be predicted 
+#' @param ... Additional arguments. Ignored. 
 #' @examples 
 #' data(email_data)
 #' 
@@ -23,13 +24,13 @@
 #' # Subsetting for brevity
 #' predict(mod, i = 1:3, "dpt")[,1:5]
 #' @export
-predict.LatClass = function(mod, i, j, type = "pairs"){
+predict.LatClass = function(object, i, j, type = "pairs", ...){
   if(type == 'pairs'){
-    ans = mod$predict(i,j)
+    ans = object$predict(i,j)
     return(ans)
   }
   else if(type == "cross"){
-    ans = predict_crossedge(i, j, mod$pars, mod$model)
+    ans = predict_crossedge(i, j, object$pars, object$model)
     rownames(ans) = paste("Node", i)
     colnames(ans) = paste("Node", j)
     return(ans)
@@ -332,8 +333,6 @@ LatClass$methods(
   }
 )
 
-
-
 init_pars = function(nNodes, nChans){
   ans = matrix(runif(nNodes * nChans, max = 1/100), 
                nrow = nNodes)
@@ -341,15 +340,5 @@ init_pars = function(nNodes, nChans){
   col_ind = (row_ind %% nChans) + 1
   flat_ind = row_ind + (col_ind - 1) * nNodes
   ans[flat_ind] = runif(nNodes)
-  return(ans)
-}
-
-expNodeConnectMat = function(mod){
-  # Extracting only for properly sized matrix
-  ans = mod$get_pars() * 0
-  nRows = nrow(ans)
-  for(i in 1:nRows){
-    ans[i,] = computeExpConnects(i, mod$cmod)
-  }
   return(ans)
 }

@@ -15,6 +15,7 @@ Object files/libraries should not be included in a source package.
 * checking for executable files ... OK
 * checking for hidden files and directories ... NOTE
 Found the following hidden files and directories:
+  .DS_Store
   .Rhistory
   R/.DS_Store
   src/.gitignore
@@ -24,15 +25,10 @@ These were most likely included in error. See section ‘Package
 structure’ in the ‘Writing R Extensions’ manual.
 * checking for portable file names ... OK
 * checking for sufficient/correct file permissions ... OK
-* checking whether package ‘latChanNet’ can be installed ... WARNING
-Found the following significant warnings:
-  Warning: replacing previous import ‘Rcpp::prompt’ by ‘utils::prompt’ when loading ‘latChanNet’
-  Warning: replacing previous import ‘Rcpp::.DollarNames’ by ‘utils::.DollarNames’ when loading ‘latChanNet’
-See ‘/Users/andersonberg1/Documents/GitHub/LatentChannelNetworks.R/R/latChanNet.Rcheck/00install.out’ for details.
+* checking whether package ‘latChanNet’ can be installed ... OK
 * checking installed package size ... OK
 * checking package directory ... OK
 * checking DESCRIPTION meta-information ... NOTE
-Malformed Description field: should contain one or more complete sentences.
 Checking should be performed on sources prepared by ‘R CMD build’.
 * checking top-level files ... OK
 * checking for left-over files ... OK
@@ -45,33 +41,15 @@ Checking should be performed on sources prepared by ‘R CMD build’.
 * checking whether the package can be unloaded cleanly ... OK
 * checking whether the namespace can be loaded with stated dependencies ... OK
 * checking whether the namespace can be unloaded cleanly ... OK
-* checking dependencies in R code ... WARNING
-'::' or ':::' imports not declared from:
-  ‘ComplexHeatmap’ ‘circlize’ ‘mltools’
-* checking S3 generic/method consistency ... WARNING
-predict:
-  function(object, ...)
-predict.LatClass:
-  function(mod, i, j, type)
-
-See section ‘Generic functions and methods’ in the ‘Writing R
-Extensions’ manual.
+* checking dependencies in R code ... OK
+* checking S3 generic/method consistency ... OK
 * checking replacement functions ... OK
 * checking foreign function calls ... OK
-* checking R code for possible problems ... NOTE
-expNodeConnectMat: no visible global function definition for
-  ‘computeExpConnects’
-Undefined global functions or variables:
-  computeExpConnects
+* checking R code for possible problems ... OK
 * checking Rd files ... OK
 * checking Rd metadata ... OK
 * checking Rd cross-references ... OK
-* checking for missing documentation entries ... WARNING
-Undocumented data sets:
-  ‘email_data’
-All user-level objects in a package should have documentation entries.
-See chapter ‘Writing R documentation files’ in the ‘Writing R
-Extensions’ manual.
+* checking for missing documentation entries ... OK
 * checking for code/documentation mismatches ... OK
 * checking Rd \usage sections ... OK
 * checking Rd contents ... OK
@@ -92,4 +70,4 @@ GNU make is a SystemRequirements.
   Running ‘testthat.R’
 * checking PDF version of manual ... OK
 * DONE
-Status: 5 WARNINGs, 4 NOTEs
+Status: 1 WARNING, 3 NOTEs

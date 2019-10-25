@@ -105,10 +105,6 @@ est_auc = function(edgeList, models = c("LCN", "BKN"),
   return(ans)
 }
 
-
-
-
-
 simBlockLCN = function(nBlocks = 8, nPerBlock = 32, 
                        nSuper = 8,
                        in_pars = c(2,2), 

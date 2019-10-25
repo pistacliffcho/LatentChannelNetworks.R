@@ -1,4 +1,5 @@
 latChanNet-package	latChanNet-package
+email_data	email_data
 est_auc	est_auc
 latChanNet	latChanNet-package
 makeLatentModel	makeLatentModel
