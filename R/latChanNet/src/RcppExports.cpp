@@ -33,6 +33,20 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// chanConnect
+NumericMatrix chanConnect(IntegerVector r_i, IntegerVector r_j, NumericMatrix pmat, std::string model);
+RcppExport SEXP _latChanNet_chanConnect(SEXP r_iSEXP, SEXP r_jSEXP, SEXP pmatSEXP, SEXP modelSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< IntegerVector >::type r_i(r_iSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type r_j(r_jSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type pmat(pmatSEXP);
+    Rcpp::traits::input_parameter< std::string >::type model(modelSEXP);
+    rcpp_result_gen = Rcpp::wrap(chanConnect(r_i, r_j, pmat, model));
+    return rcpp_result_gen;
+END_RCPP
+}
 // simLCN
 NumericMatrix simLCN(NumericMatrix p_mat);
 RcppExport SEXP _latChanNet_simLCN(SEXP p_matSEXP) {
@@ -51,6 +65,7 @@ RcppExport SEXP _rcpp_module_boot_BKN();
 static const R_CallMethodDef CallEntries[] = {
     {"_latChanNet_predict_lat_edges", (DL_FUNC) &_latChanNet_predict_lat_edges, 4},
     {"_latChanNet_predict_crossedge", (DL_FUNC) &_latChanNet_predict_crossedge, 4},
+    {"_latChanNet_chanConnect", (DL_FUNC) &_latChanNet_chanConnect, 4},
     {"_latChanNet_simLCN", (DL_FUNC) &_latChanNet_simLCN, 1},
     {"_rcpp_module_boot_LCN", (DL_FUNC) &_rcpp_module_boot_LCN, 0},
     {"_rcpp_module_boot_BKN", (DL_FUNC) &_rcpp_module_boot_BKN, 0},

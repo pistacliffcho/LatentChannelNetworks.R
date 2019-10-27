@@ -43,6 +43,10 @@ NumericVector predict_lat_edges(IntegerVector r_i, IntegerVector r_j,
 NumericMatrix predict_crossedge(IntegerVector r_i, IntegerVector r_j, 
                                 NumericMatrix pmat, std::string model);
 
+// [[Rcpp::export]]
+NumericMatrix chanConnect(IntegerVector r_i, IntegerVector r_j, 
+                          NumericMatrix pmat, std::string model);
+
 //' Simulate Latent Channel Network
 //' @param p_mat Matrix of channel usage probabilities
 //' @export

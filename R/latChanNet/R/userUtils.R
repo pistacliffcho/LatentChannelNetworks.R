@@ -135,3 +135,84 @@ simBlockLCN = function(nBlocks = 8, nPerBlock = 32,
              chanProbs = pmat)
   return(ans)
 }
+
+
+#' Compute sizes of channels
+#' 
+#' @param mod LatClass model
+#' @param type How size is defined. Either 'nodes_using' or 'exp_connects'
+#' @description Returns the size of each channel
+#' @details The size of each channel can be defined in two ways: 
+#' number of nodes that have non-zero attachment to a channel 
+#' ('nodes_using') *or* 
+#' the expected number of connections through a channel a new node 
+#' would have if it connected through that channel with probability 1
+#' ('exp_connects')
+#' We note that the 'exp_connects' metric is a better description of size, 
+#' but 'nodes_using' is more intuitive. 
+#' @export 
+#' @examples 
+#' data(email_data)
+#' mod = makeLatentModel(email_data$edgeList, 10, 
+#'                       metadata = email_data$meta)
+#' mod$fit(fast_em = T)
+#' 
+#' channel_sizes(mod, "exp_connects") 
+channel_sizes = function(mod, type = "nodes_using"){
+  node_pars = mod$get_pars(all = FALSE)$node
+  if(type == "nodes_using"){
+    binary_usage = node_pars > 0
+    ans = colSums(binary_usage)
+    names(ans) = colnames(node_pars)
+  }
+  else if(type == "exp_connects"){
+    ans = colSums(node_pars)
+  }
+  else{
+    stop("'type' not recognized. Choices are 'nodes_using' or 'exp_connects'")
+  }
+  return(ans)
+}
+
+#' Estimate Channels Nodes Connect Through
+#' @param i Node ids
+#' @param j Node ids. If left blank, will select *all* edges with i
+#' @param model LatClass model
+#' @description Estimates probability two nodes 
+#' are connected through a channel, *conditional on them having an edge.*
+#' 
+#' @examples 
+#' data("email_data")
+#' mod = makeLatentModel(email_data$edgeList, 10, 
+#'                       meta = email_data$meta)
+#' mod$fit(fast_em = TRUE)
+#' 
+#' # Checking channel usage for 
+#' # first few edges
+#' nodes_1 = email_data$edgeList[1:5, 1]
+#' nodes_2 = email_data$edgeList[1:5, 2]
+#' chan_connect(nodes_1, nodes_2, mod)
+#' 
+#' # Checking channel usage for all edges 
+#' # for first two nodes
+#' chan_connect(i = c(1000, 1001), model = mod)
+#' @export
+chan_connect = function(i, j = NULL, model){
+  if(is.null(j)){
+    expanded_i = NULL
+    for(this_i in i){
+      these_j = c(model$edgeList_list[[this_i]], 
+                  model$missingList_list[[this_i]])
+      these_i = rep(this_i, length(these_j))
+      expanded_i = c(expanded_i, these_i)
+      j = c(j, these_j)
+    }
+    i = expanded_i
+  }
+  
+  param_mat = model$get_pars(all = FALSE)$nodes
+  ans = chanConnect(i, j, param_mat, mod$model)
+  colnames(ans) = paste0("Channel ", seq_len(ncol(ans)))
+  rownames(ans) = paste0("Nodes ", i, ":", j)
+  return(ans)
+}

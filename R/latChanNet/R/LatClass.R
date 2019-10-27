@@ -44,12 +44,15 @@ LatClass = setRefClass("LatClass",
                        fields = c("org_edgeList", 
                                   "org_missingList",
                                   "edgeList",
+                                  "edgeList_list",
                                   "missingList",
+                                  "missingList_list",
                                   "metadata", 
                                   "metanames",
                                   "metalookup",
                                   "modtype", 
                                   "max_node", 
+                                  "tot_node",
                                   "model", 
                                   "pars"), 
                        methods = c("fit", 
@@ -135,6 +138,13 @@ makeLatentModel = function(edgeList, nChans,
   
   metanames = NULL
   meta_lookup = NULL
+  
+  ans$edgeList = edgeList
+  ans$edgeList_list = prepEdgeList(edgeList, ans$max_node)
+  tot_nodes = max_node + length(metanames)
+  ans$tot_node = tot_nodes
+  ans$missingList = missingList
+  
   # Augmenting graph if metadata provided
   if(!is.null(metadata)){
     if(!is.data.frame(metadata)){
@@ -152,11 +162,15 @@ makeLatentModel = function(edgeList, nChans,
     metanames = aug_edges$metanames
     meta_lookup = aug_edges$name_list
   }
-  ans$edgeList = edgeList
-  ans$missingList = missingList
+  if(is.null(missingList)){
+    ans$missingList_list = lapply(rep(0, tot_nodes), numeric)
+  }
+  else{
+    ans$missingList_list = prepEdgeList(missingList, tot_nodes)
+  }
   ans$metanames = metanames
   ans$metalookup = meta_lookup
-  ans$rand_start(nNodes = max(ans$edgeList), nChans)
+  ans$rand_start(nNodes = tot_nodes, nChans)
   return(ans)
 }
 
@@ -183,18 +197,19 @@ LatClass$methods(
 
 
 LatClass$methods(
-  get_pars = function(){
+  get_pars = function(all = TRUE){
     # Pulling out + naming node-only parameters
     node_par_inds = seq_len(max_node)
     node_pars = pars[node_par_inds,]
     rownames(node_pars) = paste("Node", node_par_inds)
-    cnames = paste("Channel", seq_len(ncol(all_pars)))
+    cnames = paste("Channel", seq_len(ncol(node_pars)))
     colnames(node_pars) = cnames
     ans = list(nodes = node_pars)
     # Adding meta data nodes if they are used
-    if(!is.null(metanames)){
+    if(!is.null(metanames) & all){
       meta_pars = pars[-node_par_inds, ]
       rownames(meta_pars) = metanames
+      colnames(meta_pars) = cnames
       ans[["meta"]] = meta_pars
     }
     return(ans)

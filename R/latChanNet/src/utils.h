@@ -229,5 +229,29 @@ NumericMatrix predict_crossedge(IntegerVector r_i, IntegerVector r_j,
 }
 
 
+NumericMatrix chanConnect(IntegerVector r_i, IntegerVector r_j, 
+                          NumericMatrix pmat, std::string model){
+  if(model == "BKN"){stop("chanConnect not implemented for BKN yet");}
+  NumericVector exp_connects = predict_lat_edges(r_i, r_j, pmat, model);
+  int nChans = pmat.ncol();
+  int nRows = exp_connects.size();
+  NumericMatrix ans(nRows, nChans);
+  double this_prob;
+  int ci,cj;
+  for(int i = 0; i < nRows; i++){
+    this_prob = exp_connects[i];
+    ci = r_i[i] - 1;
+    cj = r_j[i] - 1;
+    if(this_prob == 0){
+      for(int j = 0; j < nChans; j++){ ans(i,j) = 0.0; }
+    }
+    else{
+      for(int j = 0; j < nChans; j++){
+        ans(i,j) = pmat(ci, j) * pmat(cj, j) / this_prob;
+      }
+    }
+  }
+  return(ans);
+}
 
 #endif

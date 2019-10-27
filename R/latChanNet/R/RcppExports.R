@@ -9,6 +9,10 @@ predict_crossedge <- function(r_i, r_j, pmat, model) {
     .Call('_latChanNet_predict_crossedge', PACKAGE = 'latChanNet', r_i, r_j, pmat, model)
 }
 
+chanConnect <- function(r_i, r_j, pmat, model) {
+    .Call('_latChanNet_chanConnect', PACKAGE = 'latChanNet', r_i, r_j, pmat, model)
+}
+
 #' Simulate Latent Channel Network
 #' @param p_mat Matrix of channel usage probabilities
 #' @export
