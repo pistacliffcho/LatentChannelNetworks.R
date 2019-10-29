@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/pistacliffcho/LatentChannelNetworks.R.svg?branch=master)](https://travis-ci.org/pistacliffcho/LatentChannelNetworks.R)
 
-R implementation of the [Latent Channel Networks](https://arxiv.org/abs/1906.04563) EM algorithm. The Julia implementation can be found [here](https://github.com/pistacliffcho/LatentChannelNetwork.jl).
+R implementation of the [Latent Channel Networks](https://arxiv.org/abs/1906.04563) (LCN) model and the model of [Ball, Karrer and Newman 2011](https://journals.aps.org/pre/abstract/10.1103/PhysRevE.84.036103) (BKN) model. 
 
 ## Introduction
 
