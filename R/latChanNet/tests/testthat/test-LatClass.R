@@ -5,7 +5,7 @@ set.seed(1)
 # Testing basic model w/out metadata
 mod = makeLatentModel(email_data$edgeList, 10)
 llk_before = mod$llk()
-mod$fit(fast_em = T)
+alg_res <- mod$fit(fast_em = T)
 llk_after = mod$llk()
 llk_greater = llk_after > llk_before
 test_that("Base LCN EM", 
@@ -23,3 +23,5 @@ test_that("Cross prediction == row by row predictions", {
 
 
 # Testing metadata
+mod = makeLatentModel(email_data$edgeList, 10, metadata = email_data$meta)
+alg_res <- mod$fit(fast_em = T)

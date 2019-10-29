@@ -155,11 +155,11 @@ simBlockLCN = function(nBlocks = 8, nPerBlock = 32,
 #' data(email_data)
 #' mod = makeLatentModel(email_data$edgeList, 10, 
 #'                       metadata = email_data$meta)
-#' mod$fit(fast_em = T)
+#' mod$fit(fast_em = TRUE)
 #' 
 #' channel_sizes(mod, "exp_connects") 
 channel_sizes = function(mod, type = "nodes_using"){
-  node_pars = mod$get_pars(all = FALSE)$node
+  node_pars = mod$get_pars(node = TRUE, meta = FALSE)$nodes
   if(type == "nodes_using"){
     binary_usage = node_pars > 0
     ans = colSums(binary_usage)
@@ -201,8 +201,8 @@ chan_connect = function(i, j = NULL, model){
   if(is.null(j)){
     expanded_i = NULL
     for(this_i in i){
-      these_j = c(model$edgeList_list[[this_i]], 
-                  model$missingList_list[[this_i]])
+      these_j = c(model$edgeList_nodesOnly[[this_i]], 
+                  model$missingList_nodesOnly[[this_i]])
       these_i = rep(this_i, length(these_j))
       expanded_i = c(expanded_i, these_i)
       j = c(j, these_j)
@@ -210,9 +210,54 @@ chan_connect = function(i, j = NULL, model){
     i = expanded_i
   }
   
-  param_mat = model$get_pars(all = FALSE)$nodes
-  ans = chanConnect(i, j, param_mat, mod$model)
+  param_mat = model$get_pars(nodes = TRUE, meta = FALSE)$nodes
+  ans = chanConnect(i, j, param_mat, model$model)
   colnames(ans) = paste0("Channel ", seq_len(ncol(ans)))
-  rownames(ans) = paste0("Nodes ", i, ":", j)
+  rownames(ans) = paste0("Edge ", i, ":", j)
+  return(ans)
+}
+
+#' Subsets channels that are predictive of metadata
+#' 
+#' @param model LatClass model
+#' @param metanames Vector of names of metadata values to predict
+#' @param metavars Vector of column names of metadata to predict
+#' @param threshold Minimal parameter value to be considered predictive
+#' @param sumFun Summary function: suggest either \code{max} or \code{sum}
+#' 
+#' @description 
+#' Returns both a vector of channels that are predictive of at least one
+#' of the metadata values of interest and a parameter matrix of channels by 
+#' metadata.
+#' 
+#' @details 
+#' \code{metanames} refers to the individual values we might want to predict, 
+#' while \code{metavars} is the column names. 
+#' 
+#' @examples 
+#' data(email_data)
+#' mod = makeLatentModel(email_data$edgeList, 20,
+#'                       meta = email_data$meta)
+#' mod$fit(fast_em = TRUE)
+#' 
+#' # Returns channels that are predictive 
+#' # of dpt == 1 or 2
+#' predicts_meta(mod, metanames = c("dpt1", "dpt2") ) 
+#' # Returns channels that are predictive 
+#' # of *any* dpt
+#' predicts_meta(mod, metanames = NULL, metavars = "dpt")
+#' @export
+predicts_meta = function(model, metanames = NULL, 
+                         metavars = NULL, threshold = 0.5, 
+                         sumFun = max){
+  for(v in metavars){
+    metanames = c(metanames, model$metalookup[[v]])
+  }
+  pars = model$get_pars(nodes = FALSE, meta = TRUE)$meta[metanames,,drop=F]
+  sum_vals = apply(pars, 2, sumFun)
+  keep = sum_vals > threshold
+
+  ans = list(channels = as.numeric(which(keep)), 
+       pars = pars[,keep])
   return(ans)
 }

@@ -44,9 +44,9 @@ LatClass = setRefClass("LatClass",
                        fields = c("org_edgeList", 
                                   "org_missingList",
                                   "edgeList",
-                                  "edgeList_list",
+                                  "edgeList_nodesOnly",
                                   "missingList",
-                                  "missingList_list",
+                                  "missingList_nodesOnly",
                                   "metadata", 
                                   "metanames",
                                   "metalookup",
@@ -139,11 +139,7 @@ makeLatentModel = function(edgeList, nChans,
   metanames = NULL
   meta_lookup = NULL
   
-  ans$edgeList = edgeList
-  ans$edgeList_list = prepEdgeList(edgeList, ans$max_node)
-  tot_nodes = max_node + length(metanames)
-  ans$tot_node = tot_nodes
-  ans$missingList = missingList
+  ans$edgeList_nodesOnly = prepEdgeList(edgeList, ans$max_node)
   
   # Augmenting graph if metadata provided
   if(!is.null(metadata)){
@@ -162,11 +158,20 @@ makeLatentModel = function(edgeList, nChans,
     metanames = aug_edges$metanames
     meta_lookup = aug_edges$name_list
   }
+  
+  ans$edgeList = edgeList
+  ans$missingList = missingList
+  
+  tot_nodes = max_node + length(metanames)
+  ans$tot_node = tot_nodes
+  
   if(is.null(missingList)){
-    ans$missingList_list = lapply(rep(0, tot_nodes), numeric)
+    ans$missingList_nodesOnly = 
+      lapply(rep(0, max_node), numeric)
   }
   else{
-    ans$missingList_list = prepEdgeList(missingList, tot_nodes)
+    ans$missingList_nodesOnly = 
+      prepEdgeList(missingList, max_node)
   }
   ans$metanames = metanames
   ans$metalookup = meta_lookup
@@ -197,16 +202,19 @@ LatClass$methods(
 
 
 LatClass$methods(
-  get_pars = function(all = TRUE){
-    # Pulling out + naming node-only parameters
+  get_pars = function(nodes = TRUE, meta = TRUE){
+    ans = list()
     node_par_inds = seq_len(max_node)
-    node_pars = pars[node_par_inds,]
-    rownames(node_pars) = paste("Node", node_par_inds)
-    cnames = paste("Channel", seq_len(ncol(node_pars)))
-    colnames(node_pars) = cnames
-    ans = list(nodes = node_pars)
+    cnames = paste("Channel", seq_len(ncol(pars)))
+    if(nodes){
+      # Pulling out + naming node-only parameters
+      node_pars = pars[node_par_inds,]
+      rownames(node_pars) = paste("Node", node_par_inds)
+      colnames(node_pars) = cnames
+      ans[["nodes"]] = node_pars
+    }
     # Adding meta data nodes if they are used
-    if(!is.null(metanames) & all){
+    if(!is.null(metanames) & meta){
       meta_pars = pars[-node_par_inds, ]
       rownames(meta_pars) = metanames
       colnames(meta_pars) = cnames
@@ -343,7 +351,7 @@ LatClass$methods(
         stop("i outside range of indices")
     }
     ans = predict_lat_edges(i, j, pars, model)
-    names(ans) = paste0("Nodes ", i, ":", j)
+    names(ans) = paste0("Edge ", i, ":", j)
     return(ans)
   }
 )

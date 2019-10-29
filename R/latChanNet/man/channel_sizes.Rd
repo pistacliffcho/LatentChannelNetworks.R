@@ -28,7 +28,7 @@ but 'nodes_using' is more intuitive.
 data(email_data)
 mod = makeLatentModel(email_data$edgeList, 10, 
                       metadata = email_data$meta)
-mod$fit(fast_em = T)
+mod$fit(fast_em = TRUE)
 
 channel_sizes(mod, "exp_connects") 
 }
