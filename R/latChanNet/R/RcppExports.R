@@ -21,7 +21,7 @@ chanConnect <- function(r_i, r_j, pmat, model) {
 #' 
 #' # Fitting model
 #' mod = makeLatentModel(email_data$edgeList, 10)
-#' mod$fit(fast_em = T)
+#' mod$fit(fast_em = TRUE)
 #' # Extracting fitted p-matrix
 #' pmat_hat = mod$get_pars()$nodes
 #' # Resampling according to given pmat_hat
