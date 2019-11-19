@@ -16,6 +16,16 @@ chanConnect <- function(r_i, r_j, pmat, model) {
 #' Simulate Latent Channel Network
 #' @param p_mat Matrix of channel usage probabilities
 #' @export
+#' @examples
+#' data(email_data)
+#' 
+#' # Fitting model
+#' mod = makeLatentModel(email_data$edgeList, 10)
+#' mod$fit(fast_em = T)
+#' # Extracting fitted p-matrix
+#' pmat_hat = mod$get_pars()$nodes
+#' # Resampling according to given pmat_hat
+#' new_edgeList = simLCN(pmat_hat)
 simLCN <- function(p_mat) {
     .Call('_latChanNet_simLCN', PACKAGE = 'latChanNet', p_mat)
 }

@@ -12,3 +12,14 @@ simLCN(p_mat)
 \description{
 Simulate Latent Channel Network
 }
+\examples{
+data(email_data)
+
+# Fitting model
+mod = makeLatentModel(email_data$edgeList, 10)
+mod$fit(fast_em = T)
+# Extracting fitted p-matrix
+pmat_hat = mod$get_pars()$nodes
+# Resampling according to given pmat_hat
+new_edgeList = simLCN(pmat_hat)
+}

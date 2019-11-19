@@ -30,6 +30,6 @@ nodes_2 = email_data$edgeList[1:5, 2]
 chan_connect(nodes_1, nodes_2, mod)
 
 # Checking channel usage for all edges 
-# for first two nodes
+# for pair of nodes with only a few edges
 chan_connect(i = c(1000, 1001), model = mod)
 }

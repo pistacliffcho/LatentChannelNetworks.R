@@ -1,3 +1,5 @@
+chan_connect            Estimate Channels Nodes Connect Through
+channel_sizes           Compute sizes of channels
 email_data              Email data for EU Univeristy
 est_auc                 Estimate Out-of-Sample AUC
 latChanNet-package      Latent Network Models for edge and metadata
@@ -5,4 +7,6 @@ latChanNet-package      Latent Network Models for edge and metadata
 makeLatentModel         Make Latent Structure model
 plot_net                Build heatmap from model
 predict.LatClass        Predictions from LatClass objects
+predicts_meta           Subsets channels that are predictive of
+                        metadata
 simLCN                  Simulate Latent Channel Network

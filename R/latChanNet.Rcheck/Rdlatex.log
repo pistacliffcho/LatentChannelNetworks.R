@@ -63,10 +63,11 @@ No file Rd2.aux.
 (/usr/local/texlive/2018/texmf-dist/tex/latex/inconsolata/t1zi4.fd)
 (/usr/local/texlive/2018/texmf-dist/tex/latex/psnfss/t1phv.fd)
 (/usr/local/texlive/2018/texmf-dist/tex/latex/base/utf8.def) [1{/usr/local/texl
-ive/2018/texmf-var/fonts/map/pdftex/updmap/pdftex.map}] [2] [3] [4]
-(/usr/local/texlive/2018/texmf-dist/tex/latex/inconsolata/ts1zi4.fd) [5]
+ive/2018/texmf-var/fonts/map/pdftex/updmap/pdftex.map}] [2] [3] [4] [5]
+(/usr/local/texlive/2018/texmf-dist/tex/latex/inconsolata/ts1zi4.fd) [6]
+[7]
 No file Rd2.ind.
-[6] (./Rd2.aux)
+[8] (./Rd2.aux)
 
 Package rerunfilecheck Warning: File `Rd2.out' has changed.
 (rerunfilecheck)                Rerun to get outlines right
@@ -81,12 +82,12 @@ e/2018/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2018/tex
 mf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/local/texlive/2018/texmf-dist/fo
 nts/type1/urw/times/utmr8a.pfb></usr/local/texlive/2018/texmf-dist/fonts/type1/
 urw/times/utmri8a.pfb>
-Output written on Rd2.pdf (6 pages, 88544 bytes).
+Output written on Rd2.pdf (8 pages, 93402 bytes).
 Transcript written on Rd2.log.
 This is makeindex, version 2.15 [TeX Live 2018] (kpathsea + Thai support).
-Scanning input file Rd2.idx....done (10 entries accepted, 0 rejected).
-Sorting entries....done (32 comparisons).
-Generating output file Rd2.ind....done (32 lines written, 0 warnings).
+Scanning input file Rd2.idx....done (13 entries accepted, 0 rejected).
+Sorting entries....done (44 comparisons).
+Generating output file Rd2.ind....done (38 lines written, 0 warnings).
 Output written in Rd2.ind.
 Transcript written in Rd2.ilg.
 This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018) (preloaded format=pdflatex)
@@ -152,14 +153,14 @@ Writing index file Rd2.idx
 (/usr/local/texlive/2018/texmf-dist/tex/latex/inconsolata/t1zi4.fd)
 (/usr/local/texlive/2018/texmf-dist/tex/latex/psnfss/t1phv.fd) (./Rd2.toc)
 (/usr/local/texlive/2018/texmf-dist/tex/latex/base/utf8.def) [1{/usr/local/texl
-ive/2018/texmf-var/fonts/map/pdftex/updmap/pdftex.map}] [2] [3] [4]
-(/usr/local/texlive/2018/texmf-dist/tex/latex/inconsolata/ts1zi4.fd) [5]
-(./Rd2.ind [6]
+ive/2018/texmf-var/fonts/map/pdftex/updmap/pdftex.map}] [2] [3] [4] [5]
+(/usr/local/texlive/2018/texmf-dist/tex/latex/inconsolata/ts1zi4.fd) [6]
+[7] (./Rd2.ind [8]
 
 LaTeX Font Warning: Font shape `T1/zi4/m/it' undefined
-(Font)              using `T1/zi4/m/n' instead on input line 15.
+(Font)              using `T1/zi4/m/n' instead on input line 20.
 
-[7]) (./Rd2.aux)
+[9]) (./Rd2.aux)
 
 Package rerunfilecheck Warning: File `Rd2.out' has changed.
 (rerunfilecheck)                Rerun to get outlines right
@@ -178,12 +179,12 @@ texlive/2018/texmf-dist/fonts/type1/urw/helvetic/uhvr8a.pfb></usr/local/texlive
 f-dist/fonts/type1/urw/times/utmr8a.pfb></usr/local/texlive/2018/texmf-dist/fon
 ts/type1/urw/times/utmr8a.pfb></usr/local/texlive/2018/texmf-dist/fonts/type1/u
 rw/times/utmri8a.pfb>
-Output written on Rd2.pdf (7 pages, 97845 bytes).
+Output written on Rd2.pdf (9 pages, 103188 bytes).
 Transcript written on Rd2.log.
 This is makeindex, version 2.15 [TeX Live 2018] (kpathsea + Thai support).
-Scanning input file Rd2.idx....done (10 entries accepted, 0 rejected).
-Sorting entries....done (32 comparisons).
-Generating output file Rd2.ind....done (32 lines written, 0 warnings).
+Scanning input file Rd2.idx....done (13 entries accepted, 0 rejected).
+Sorting entries....done (44 comparisons).
+Generating output file Rd2.ind....done (38 lines written, 0 warnings).
 Output written in Rd2.ind.
 Transcript written in Rd2.ilg.
 This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018) (preloaded format=pdflatex)
@@ -249,14 +250,14 @@ Writing index file Rd2.idx
 (/usr/local/texlive/2018/texmf-dist/tex/latex/inconsolata/t1zi4.fd)
 (/usr/local/texlive/2018/texmf-dist/tex/latex/psnfss/t1phv.fd) (./Rd2.toc)
 (/usr/local/texlive/2018/texmf-dist/tex/latex/base/utf8.def) [1{/usr/local/texl
-ive/2018/texmf-var/fonts/map/pdftex/updmap/pdftex.map}] [2] [3] [4]
-(/usr/local/texlive/2018/texmf-dist/tex/latex/inconsolata/ts1zi4.fd) [5]
-(./Rd2.ind [6]
+ive/2018/texmf-var/fonts/map/pdftex/updmap/pdftex.map}] [2] [3] [4] [5]
+(/usr/local/texlive/2018/texmf-dist/tex/latex/inconsolata/ts1zi4.fd) [6]
+[7] (./Rd2.ind [8]
 
 LaTeX Font Warning: Font shape `T1/zi4/m/it' undefined
-(Font)              using `T1/zi4/m/n' instead on input line 15.
+(Font)              using `T1/zi4/m/n' instead on input line 20.
 
-[7]) (./Rd2.aux)
+[9]) (./Rd2.aux)
 
 LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 
@@ -270,100 +271,8 @@ texlive/2018/texmf-dist/fonts/type1/urw/helvetic/uhvr8a.pfb></usr/local/texlive
 f-dist/fonts/type1/urw/times/utmr8a.pfb></usr/local/texlive/2018/texmf-dist/fon
 ts/type1/urw/times/utmr8a.pfb></usr/local/texlive/2018/texmf-dist/fonts/type1/u
 rw/times/utmri8a.pfb>
-Output written on Rd2.pdf (7 pages, 98060 bytes).
-Transcript written on Rd2.log.
-This is makeindex, version 2.15 [TeX Live 2018] (kpathsea + Thai support).
-Scanning input file Rd2.idx....done (10 entries accepted, 0 rejected).
-Sorting entries....done (32 comparisons).
-Generating output file Rd2.ind....done (32 lines written, 0 warnings).
-Output written in Rd2.ind.
-Transcript written in Rd2.ilg.
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018) (preloaded format=pdflatex)
- restricted \write18 enabled.
-entering extended mode
-LaTeX2e <2018-04-01> patch level 2
-Babel <3.18> and hyphenation patterns for 84 language(s) loaded.
-(./Rd2.tex
-(/usr/local/texlive/2018/texmf-dist/tex/latex/base/book.cls
-Document Class: book 2014/09/29 v1.4h Standard LaTeX document class
-(/usr/local/texlive/2018/texmf-dist/tex/latex/base/bk10.clo))
-(/Library/Frameworks/R.framework/Resources/share/texmf/tex/latex/Rd.sty
-(/usr/local/texlive/2018/texmf-dist/tex/latex/base/ifthen.sty)
-(/usr/local/texlive/2018/texmf-dist/tex/latex/tools/longtable.sty)
-(/usr/local/texlive/2018/texmf-dist/tex/latex/tools/bm.sty)
-(/usr/local/texlive/2018/texmf-dist/tex/latex/base/alltt.sty)
-(/usr/local/texlive/2018/texmf-dist/tex/latex/tools/verbatim.sty)
-(/usr/local/texlive/2018/texmf-dist/tex/latex/url/url.sty)
-(/usr/local/texlive/2018/texmf-dist/tex/latex/base/textcomp.sty
-(/usr/local/texlive/2018/texmf-dist/tex/latex/base/ts1enc.def
-(/usr/local/texlive/2018/texmf-dist/tex/latex/base/ts1enc.dfu)))
-(/usr/local/texlive/2018/texmf-dist/tex/latex/base/fontenc.sty
-(/usr/local/texlive/2018/texmf-dist/tex/latex/base/t1enc.def))
-(/usr/local/texlive/2018/texmf-dist/tex/latex/psnfss/times.sty)
-(/usr/local/texlive/2018/texmf-dist/tex/latex/inconsolata/zi4.sty
-`inconsolata-zi4' v1.112, 2017/01/04 Text macros for Inconsolata (msharpe)
-(/usr/local/texlive/2018/texmf-dist/tex/latex/xkeyval/xkeyval.sty
-(/usr/local/texlive/2018/texmf-dist/tex/generic/xkeyval/xkeyval.tex
-(/usr/local/texlive/2018/texmf-dist/tex/generic/xkeyval/xkvutils.tex
-(/usr/local/texlive/2018/texmf-dist/tex/generic/xkeyval/keyval.tex)))))
-(/usr/local/texlive/2018/texmf-dist/tex/latex/graphics/color.sty
-(/usr/local/texlive/2018/texmf-dist/tex/latex/graphics-cfg/color.cfg)
-(/usr/local/texlive/2018/texmf-dist/tex/latex/graphics-def/pdftex.def))
-(/usr/local/texlive/2018/texmf-dist/tex/latex/hyperref/hyperref.sty
-(/usr/local/texlive/2018/texmf-dist/tex/generic/oberdiek/hobsub-hyperref.sty
-(/usr/local/texlive/2018/texmf-dist/tex/generic/oberdiek/hobsub-generic.sty))
-(/usr/local/texlive/2018/texmf-dist/tex/generic/ifxetex/ifxetex.sty)
-(/usr/local/texlive/2018/texmf-dist/tex/latex/oberdiek/auxhook.sty)
-(/usr/local/texlive/2018/texmf-dist/tex/latex/oberdiek/kvoptions.sty)
-(/usr/local/texlive/2018/texmf-dist/tex/latex/hyperref/pd1enc.def)
-(/usr/local/texlive/2018/texmf-dist/tex/latex/latexconfig/hyperref.cfg))
-(/usr/local/texlive/2018/texmf-dist/tex/latex/hyperref/hpdftex.def
-(/usr/local/texlive/2018/texmf-dist/tex/latex/oberdiek/rerunfilecheck.sty))
-
-Package hyperref Warning: Option `hyperindex' has already been used,
-(hyperref)                setting the option has no effect on input line 377.
-
-
-Package hyperref Warning: Option `pagebackref' has already been used,
-(hyperref)                setting the option has no effect on input line 377.
-
-) (/usr/local/texlive/2018/texmf-dist/tex/latex/base/makeidx.sty)
-(/usr/local/texlive/2018/texmf-dist/tex/latex/base/inputenc.sty
-(/usr/local/texlive/2018/texmf-dist/tex/latex/base/latin1.def))
-Writing index file Rd2.idx
-(./Rd2.aux) (/usr/local/texlive/2018/texmf-dist/tex/latex/base/ts1cmr.fd)
-(/usr/local/texlive/2018/texmf-dist/tex/latex/psnfss/t1ptm.fd)
-(/usr/local/texlive/2018/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
-[Loading MPS to PDF converter (version 2006.09.02).]
-) (/usr/local/texlive/2018/texmf-dist/tex/latex/hyperref/nameref.sty
-(/usr/local/texlive/2018/texmf-dist/tex/generic/oberdiek/gettitlestring.sty))
-(./Rd2.out) (./Rd2.out)
-(/usr/local/texlive/2018/texmf-dist/tex/latex/inconsolata/t1zi4.fd)
-(/usr/local/texlive/2018/texmf-dist/tex/latex/psnfss/t1phv.fd) (./Rd2.toc)
-(/usr/local/texlive/2018/texmf-dist/tex/latex/base/utf8.def) [1{/usr/local/texl
-ive/2018/texmf-var/fonts/map/pdftex/updmap/pdftex.map}] [2] [3] [4]
-(/usr/local/texlive/2018/texmf-dist/tex/latex/inconsolata/ts1zi4.fd) [5]
-(./Rd2.ind [6]
-
-LaTeX Font Warning: Font shape `T1/zi4/m/it' undefined
-(Font)              using `T1/zi4/m/n' instead on input line 15.
-
-[7]) (./Rd2.aux)
-
-LaTeX Font Warning: Some font shapes were not available, defaults substituted.
-
- ){/usr/local/texlive/2018/texmf-dist/fonts/enc/dvips/inconsolata/i4-ts1.enc}{/
-usr/local/texlive/2018/texmf-dist/fonts/enc/dvips/base/8r.enc}{/usr/local/texli
-ve/2018/texmf-dist/fonts/enc/dvips/inconsolata/i4-t1-0.enc}</usr/local/texlive/
-2018/texmf-dist/fonts/type1/public/inconsolata/Inconsolata-zi4r.pfb></usr/local
-/texlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/
-texlive/2018/texmf-dist/fonts/type1/urw/helvetic/uhvr8a.pfb></usr/local/texlive
-/2018/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2018/texm
-f-dist/fonts/type1/urw/times/utmr8a.pfb></usr/local/texlive/2018/texmf-dist/fon
-ts/type1/urw/times/utmr8a.pfb></usr/local/texlive/2018/texmf-dist/fonts/type1/u
-rw/times/utmri8a.pfb>
-Output written on Rd2.pdf (7 pages, 98050 bytes).
+Output written on Rd2.pdf (9 pages, 103444 bytes).
 Transcript written on Rd2.log.
 Saving output to ‘latChanNet-manual.pdf’ ...
 Done
-You may want to clean up by 'rm -Rf /var/folders/_f/6mtnww_s0m3b6b56jpsdw4gm000w1f/T//RtmpEzTmzN/Rd2pdf175822e2a9fd8'
+You may want to clean up by 'rm -Rf /var/folders/_f/6mtnww_s0m3b6b56jpsdw4gm000w1f/T//RtmpFASpf5/Rd2pdf2de1ec12053'

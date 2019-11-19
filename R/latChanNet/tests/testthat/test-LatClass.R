@@ -23,5 +23,6 @@ test_that("Cross prediction == row by row predictions", {
 
 
 # Testing metadata
-mod = makeLatentModel(email_data$edgeList, 10, metadata = email_data$meta)
+mod = makeLatentModel(email_data$edgeList, 10, 
+                      metadata = email_data$meta)
 alg_res <- mod$fit(fast_em = T)

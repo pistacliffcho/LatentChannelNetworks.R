@@ -14,4 +14,7 @@ LinkingTo: Rcpp, RcppParallel
 SystemRequirements: GNU make
 RoxygenNote: 6.1.99.9001
 Suggests: testthat (>= 2.1.0)
-Built: R 3.6.0; x86_64-apple-darwin15.6.0; 2019-10-25 16:56:09 UTC; unix
+NeedsCompilation: yes
+Packaged: 2019-11-19 04:46:37 UTC; andersonberg1
+Depends: R (>= 3.5.0)
+Built: R 3.6.0; x86_64-apple-darwin15.6.0; 2019-11-19 04:47:51 UTC; unix

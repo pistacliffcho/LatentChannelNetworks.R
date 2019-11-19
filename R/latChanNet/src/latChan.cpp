@@ -50,5 +50,15 @@ NumericMatrix chanConnect(IntegerVector r_i, IntegerVector r_j,
 //' Simulate Latent Channel Network
 //' @param p_mat Matrix of channel usage probabilities
 //' @export
+//' @examples
+//' data(email_data)
+//' 
+//' # Fitting model
+//' mod = makeLatentModel(email_data$edgeList, 10)
+//' mod$fit(fast_em = T)
+//' # Extracting fitted p-matrix
+//' pmat_hat = mod$get_pars()$nodes
+//' # Resampling according to given pmat_hat
+//' new_edgeList = simLCN(pmat_hat)
 // [[Rcpp::export]]
 NumericMatrix simLCN(NumericMatrix p_mat);

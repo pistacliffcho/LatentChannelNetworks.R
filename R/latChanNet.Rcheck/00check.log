@@ -7,29 +7,16 @@
 * this is package ‘latChanNet’ version ‘1.0’
 * checking package namespace information ... OK
 * checking package dependencies ... OK
-* checking if this is a source package ... WARNING
-Subdirectory ‘latChanNet/src’ contains apparent object files/libraries
-  RcppExports.o init.o latChan.o latChanNet.so
-Object files/libraries should not be included in a source package.
+* checking if this is a source package ... OK
 * checking if there is a namespace ... OK
 * checking for executable files ... OK
-* checking for hidden files and directories ... NOTE
-Found the following hidden files and directories:
-  .DS_Store
-  .Rhistory
-  R/.DS_Store
-  src/.gitignore
-  tests/.DS_Store
-  .Rproj.user
-These were most likely included in error. See section ‘Package
-structure’ in the ‘Writing R Extensions’ manual.
+* checking for hidden files and directories ... OK
 * checking for portable file names ... OK
 * checking for sufficient/correct file permissions ... OK
 * checking whether package ‘latChanNet’ can be installed ... OK
 * checking installed package size ... OK
 * checking package directory ... OK
-* checking DESCRIPTION meta-information ... NOTE
-Checking should be performed on sources prepared by ‘R CMD build’.
+* checking DESCRIPTION meta-information ... OK
 * checking top-level files ... OK
 * checking for left-over files ... OK
 * checking index information ... OK
@@ -70,4 +57,4 @@ GNU make is a SystemRequirements.
   Running ‘testthat.R’
 * checking PDF version of manual ... OK
 * DONE
-Status: 1 WARNING, 3 NOTEs
+Status: 1 NOTE

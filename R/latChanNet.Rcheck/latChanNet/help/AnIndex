@@ -1,8 +1,11 @@
 latChanNet-package	latChanNet-package
+channel_sizes	channel_sizes
+chan_connect	chan_connect
 email_data	email_data
 est_auc	est_auc
 latChanNet	latChanNet-package
 makeLatentModel	makeLatentModel
 plot_net	plot_net
 predict.LatClass	predict.LatClass
+predicts_meta	predicts_meta
 simLCN	simLCN
