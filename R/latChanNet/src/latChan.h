@@ -238,7 +238,8 @@ double probNecessary(double pik, double pjk, double edgeProb){
   double ans = prob_no_other_edges * pik * pjk / edgeProb;
   if(ans > 1.0){ 
 //    Rcout << "ans = " << ans;
-//    Rcout << " pik + " << pik << " pjk = " << pjk << " edgeP = " << edgeProb << "\n"; 
+//    Rcout << " pik = " << pik << "\npjk = " << pjk << "\nedgeP = " << edgeProb << "\n"; 
+//    Rcpp::stop("invalid update");
     ans = 1.0;
   }
   return(ans);
@@ -259,7 +260,7 @@ double LCN::update_pik_base(int i, int k){
   double edgeContribution = 0.0;
   // Will represent contribution from pairs with no observed edges
   double noEdgeContribution = d_nNodes * pik * (1.0 - pbar[k]);
-  // Not self edges are not counted
+  // Self edges are not counted
   noEdgeContribution -= pik * (1.0 - pik);
   
   // Subtracting out non-edge contribution of edges that are unknown

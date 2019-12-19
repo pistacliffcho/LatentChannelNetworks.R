@@ -62,3 +62,5 @@ NumericMatrix chanConnect(IntegerVector r_i, IntegerVector r_j,
 //' new_edgeList = simLCN(pmat_hat)
 // [[Rcpp::export]]
 NumericMatrix simLCN(NumericMatrix p_mat);
+
+
