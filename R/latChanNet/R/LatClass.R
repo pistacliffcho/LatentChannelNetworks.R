@@ -237,7 +237,7 @@ LatClass$methods(
   fit = function(iters = 10000,
                  par = T, 
                  pTol = 10^-6, 
-                 fast_em = F){
+                 fast_em = T){
     cmod = make_cmod()
     if(modtype == "LCN"){
       alg_type = "EM"

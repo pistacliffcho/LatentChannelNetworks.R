@@ -209,7 +209,7 @@ chan_connect = function(i, j = NULL, model){
     }
     i = expanded_i
   }
-  
+  if(length(i) == 0){ return(NULL) }
   param_mat = model$get_pars(nodes = TRUE, meta = FALSE)$nodes
   ans = chanConnect(i, j, param_mat, model$model)
   colnames(ans) = paste0("Channel ", seq_len(ncol(ans)))

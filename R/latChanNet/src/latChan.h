@@ -22,7 +22,7 @@ public:
   vec<vec<int> >posInds;
   Mat pmat;
   vec<double> pbar;
-  
+  bool probs_need_repair;
   bool use_fast_em;
   
   vec<vec<double> > cache_probs;
@@ -61,6 +61,8 @@ public:
           double rtol, double rpTol, 
           bool fast_update);
   
+  void repair_pair(int i, int j);
+  
   NumericMatrix get_pars();
   void set_pars(NumericMatrix m);
   NumericVector computeTheta(int i, int j);
@@ -92,14 +94,26 @@ LCN::LCN(List input_edgeList,
 void LCN::initializeNode(int i){
   int j, n_these_edges;
   n_these_edges = edgeList[i].size();
+  double this_prob;
+  double min_eprob = pow(10., -12);
   for(int ii = 0; ii < n_these_edges; ii++){
     j = edgeList[i][ii];
-    cache_probs[i][ii] = edgeProb(i,j);
+    this_prob = edgeProb(i,j);
+    if(this_prob < min_eprob){
+      repair_pair(i,j);
+      probs_need_repair = true;
+    }
+    cache_probs[i][ii] = this_prob;
   }
 }
 
 void LCN::initializeCache(){
+  probs_need_repair = false;
   for(int i = 0; i < nNodes; i++){ initializeNode(i); }
+  if(probs_need_repair){
+    probs_need_repair = false;
+    for(int i = 0; i < nNodes; i++){ initializeNode(i); }
+  }
 }
 
 
@@ -186,6 +200,17 @@ double LCN::edgeProb(int i, int j){
   double ans = 1.0 - pNoEdge;
   return(ans);
 }
+
+void LCN::repair_pair(int i, int j){
+  double min_prob = 1.0 / dim;
+  for(int k = 0; k < dim; k++){
+    if(pmat(i,k) < min_prob){ pmat(i,k) = min_prob; }
+    if(pmat(j,k) < min_prob){ pmat(i,k) = min_prob; }
+  }
+  fillPosVector(i, posInds[i], pmat);
+  fillPosVector(j, posInds[j], pmat);
+}
+
 
 double LCN::node_llk(int i){
   // Make vector of indicators that edge exists
@@ -336,7 +361,6 @@ double LCN::update_pik_fast(int i, int k){
     pjk = pmat(j,k);
     if(pjk == 0.0){ continue; }
     denomContribution -= pjk;
-//    denomContribution++;
     this_edgeP = epPtr[j_cnt];
     pNec = probNecessary(pik, pjk, this_edgeP);
     edgeContribution += pNec;
@@ -345,25 +369,6 @@ double LCN::update_pik_fast(int i, int k){
   double denom = denomContribution;
   if(denom == 0){ return(0.0); }
   double ans = edgeContribution / denom;
-/***    
-  if(NumericVector::is_na(ans) ){
-    Rcout << "denom = " << denom 
-          << " numerator = " << edgeContribution << "\n";
-    stop("na hit");
-  }
-  
-  if(ans < 0){
-    Rcout << "i = " << i << " k = " << k << " p = ";
-    Rcout << ans << "\n";
-    stop("Negative probability!");
-  }
-  if(ans > 1.0001){
-    Rcout << "i = " << i << " k = " << k << " p = ";
-    Rcout << ans << "\n";
-    stop("Probability greater than one!");
-  }
-***/ 
- 
   return(ans);
 }
 
@@ -385,7 +390,11 @@ struct ParInitCache : public RcppParallel::Worker{
 
 void LCN::parInitCache(){
   ParInitCache cache_worker(this);
+  probs_need_repair = false;
   RcppParallel::parallelFor(0, nNodes, cache_worker);
+  if(probs_need_repair){
+    RcppParallel::parallelFor(0, nNodes, cache_worker);
+  }
 }
 
 struct ParEMIter : public RcppParallel::Worker{
